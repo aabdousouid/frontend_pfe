@@ -1,0 +1,112 @@
+<!-- 
+<div class="chat-toggle" (click)="toggleChat()">
+  <i class="pi pi-comments"></i> Besoin d'aide ?
+</div>
+
+<div class="chat-box" *ngIf="visible">
+  <div class="chat-header">
+    <span>🤖 Virtual Assistant</span>
+    <button class="close-btn" (click)="toggleChat()">✖</button>
+  </div>
+
+  <div class="chat-body">
+    <div class="message bot">Bonjour ! Je suis votre assistant virtuel. Comment puis-je vous aider aujourd'hui ?</div>
+    <div class="quick-replies">
+      <button *ngFor="let q of quickReplies" (click)="sendMessage(q)">{{ q }}</button>
+    </div>
+
+    <div class="messages">
+      <div *ngFor="let msg of messages" [ngClass]="msg.from">
+        {{ msg.text }}
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input [(ngModel)]="userInput" (keydown.enter)="sendMessage(userInput)" placeholder="Tapez votre message ici..." />
+    <button (click)="sendMessage(userInput)"><i class="pi pi-send"></i></button>
+  </div>
+</div>
+ -->
+
+
+<!-- Floating Help Button -->
+<button
+  type="button"
+  pButton
+  icon="pi pi-comments"
+  class="chat-toggle-button"
+  (click)="visible = true"
+></button>
+
+<!-- Chat Dialog -->
+<p-dialog
+  [(visible)]="visible"
+  [modal]="false"
+  [style]="{ width: '320px' }"
+  [baseZIndex]="10000"
+  [draggable]="false"
+  [closable]="true"
+  [resizable]="false"
+  header="🤖 Assistant virtuel"
+  [position]="'bottomright'"
+  contentStyle="padding: 0; border-radius: 0 0 10px 10px;"
+>
+  <!-- Chat body -->
+  <div style="height: 260px; padding: 10px">
+    <p-scrollPanel [style]="{ height: '100%' }">
+      <div *ngFor="let msg of messages">
+        <div
+          [ngClass]="{
+            'p-text-left': msg.from === 'bot',
+            'p-text-right': msg.from === 'user'
+          }"
+        >
+          <div
+            [ngStyle]="{
+              'background-color': msg.from === 'bot' ? '#f3f4f6' : '#d1fae5',
+              'border-radius': '12px',
+              'margin': '6px 0',
+              'padding': '8px 12px',
+              'display': 'inline-block',
+              'max-width': '85%'
+            }"
+          >
+            {{ msg.text }}
+          </div>
+        </div>
+      </div>
+    </p-scrollPanel>
+  </div>
+
+  <!-- Quick replies -->
+  <div style="padding: 0 10px 10px 10px;">
+  <div class="quick-replies">
+    <p-button
+      *ngFor="let q of quickReplies"
+      label="{{ q }}"
+      (click)="sendMessage(q)"
+      class="p-button-text p-button-sm p-button-secondary"
+    ></p-button>
+  </div>
+
+    <!-- Input -->
+    <div class="p-d-flex p-mt-2">
+      <input
+        type="text"
+        pInputText
+        class="p-flex-1"
+        [(ngModel)]="userInput"
+        (keydown.enter)="sendMessage(userInput)"
+        placeholder="Votre message..."
+        style="font-size: 13px;"
+      />
+      <button
+        pButton
+        icon="pi pi-send"
+        class="p-ml-2 p-button-sm p-button-success"
+        (click)="sendMessage(userInput)"
+      ></button>
+    </div>
+  </div>
+</p-dialog>

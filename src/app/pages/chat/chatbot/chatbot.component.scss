@@ -1,0 +1,390 @@
+.cv-chatbot-container {
+      max-width: 800px;
+      margin: 0 auto;
+      height: 100%;
+      background: #f8f9fa;
+    }
+
+    .chatbot-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      background: white;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .chatbot-header h3 {
+      color: #1f2937;
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .chatbot-header small {
+      color: #6b7280;
+    }
+
+    .chat-messages {
+      margin-bottom: 1rem;
+      background: white;
+    }
+
+    .messages-container {
+      padding: 1.5rem;
+      min-height: 350px;
+    }
+
+    .message-wrapper {
+      margin-bottom: 1.5rem;
+    }
+
+    .message {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      max-width: 80%;
+    }
+
+    .user-message {
+      justify-content: flex-end;
+    }
+
+    .user-message .message {
+      flex-direction: row-reverse;
+    }
+
+    .bot-message {
+      justify-content: flex-start;
+    }
+
+    .message-content {
+      background: #f3f4f6;
+      padding: 1rem 1.25rem;
+      border-radius: 18px;
+      position: relative;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-message .message-content {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    .bot-message .message-content {
+      background: #f9fafb;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+    }
+
+    .timestamp {
+      color: #9ca3af;
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      display: block;
+    }
+
+    .file-message {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .job-suggestions {
+      max-width: 500px;
+    }
+
+    .job-suggestions h4 {
+      color: #059669;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .job-suggestion-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .job-suggestion-card:hover {
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+      border-color: #10b981;
+    }
+
+    .suggestion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .suggestion-header h5 {
+      margin: 0;
+      color: #059669;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .suggestion-description {
+      color: #6b7280;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .suggestion-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .detail-item strong {
+      color: #374151;
+      font-weight: 600;
+    }
+
+    .skills-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .upload-section {
+      margin-bottom: 1rem;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 0 0 12px 12px;
+    }
+
+    .upload-area {
+      text-align: center;
+      padding: 3rem;
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      background: #f9fafb;
+      transition: all 0.2s ease;
+    }
+
+    .upload-area:hover {
+      border-color: #10b981;
+      background: #ecfdf5;
+    }
+
+    .upload-area i {
+      font-size: 2.5rem;
+      color: #10b981;
+      margin-bottom: 1rem;
+    }
+
+    .upload-area p {
+      color: #374151;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-area small {
+      color: #6b7280;
+    }
+
+    .analysis-progress {
+      margin-bottom: 1rem;
+      padding: 1.5rem;
+      background: #ecfdf5;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid #d1fae5;
+    }
+
+    .analysis-progress p {
+      color: #059669;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .chat-input {
+      border-top: 1px solid #e5e7eb;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 0 0 12px 12px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .input-group input {
+      border-radius: 25px;
+      border: 1px solid #d1d5db;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.95rem;
+    }
+
+    .input-group input:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .input-group p-button {
+      border-radius: 50%;
+    }
+
+    .flex-1 {
+      flex: 1;
+    }
+
+    .typing-indicator .message-content {
+      display: flex;
+      align-items: center;
+      min-height: 20px;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .typing-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.5;
+      }
+      30% {
+        transform: translateY(-10px);
+        opacity: 1;
+      }
+    }
+
+    /* Custom PrimeNG overrides to match theme */
+    ::ng-deep .p-card {
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: none;
+    }
+
+    ::ng-deep .p-card .p-card-content {
+      padding: 0;
+    }
+
+    ::ng-deep .p-badge.p-badge-success {
+      background-color: #10b981;
+    }
+
+    ::ng-deep .p-chip {
+      background-color: #ecfdf5;
+      color: #059669;
+      border: 1px solid #d1fae5;
+    }
+
+    ::ng-deep .p-button.p-button-success {
+      background-color: #10b981;
+      border-color: #10b981;
+    }
+
+    ::ng-deep .p-button.p-button-success:hover {
+      background-color: #059669;
+      border-color: #059669;
+    }
+
+    ::ng-deep .p-progressbar .p-progressbar-value {
+      background-color: #10b981;
+    }
+
+    ::ng-deep .p-fileupload .p-fileupload-choose {
+      background-color: #10b981;
+      border-color: #10b981;
+      color: white;
+      border-radius: 8px;
+    }
+
+    ::ng-deep .p-fileupload .p-fileupload-choose:hover {
+      background-color: #059669;
+      border-color: #059669;
+    }
+
+    ::ng-deep .p-avatar {
+      background-color: #10b981;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .cv-chatbot-container {
+        max-width: 100%;
+        margin: 0;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+      
+      .job-suggestions {
+        max-width: 100%;
+      }
+
+      .chatbot-header {
+        padding: 1rem;
+      }
+
+      .messages-container {
+        padding: 1rem;
+      }
+
+      .upload-area {
+        padding: 2rem;
+      }
+    }
+    .job-suggestion-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #f9f9f9;
+
+  .suggestion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .suggestion-description {
+    margin-bottom: 0.5rem;
+  }
+
+  .skills-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .detail-item {
+    margin: 0.25rem 0;
+  }
+}
