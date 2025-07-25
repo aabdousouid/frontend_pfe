@@ -767,43 +767,60 @@ export class JobApplicationComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.applicationForm.valid) {
-      this.loading = true;
-      
-      // Create FormData for file upload
-      const formData = new FormData();
-      formData.append('fullName', this.applicationForm.get('fullName')?.value);
-      formData.append('email', this.applicationForm.get('email')?.value);
-      formData.append('jobOfferId', this.jobOffer?.id.toString() || '');
-      
-      if (this.uploadedFiles.length > 0) {
-        formData.append('cv', this.uploadedFiles[0]);
-      }
+  if (this.applicationForm.valid) {
+    this.loading = true;
 
-      // Replace with actual service call
-      this.submitApplication(formData);
-    } else {
-      this.markFormGroupTouched();
+    const formData = new FormData();
+
+    if (this.uploadedFiles.length > 0) {
+      formData.append('cv', this.uploadedFiles[0]);
     }
 
-   /*  this.jobService.applyToJob(this.jobId,) */
+    this.submitApplication(formData);
+  } else {
+    this.markFormGroupTouched();
+  }
+}
+
+
+private submitApplication(formData: FormData) {
+  const userId = this.user?.id; // Assuming your user object contains `id`
+  const jobId = this.jobId;
+
+  if (!userId || !jobId) {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Erreur',
+      detail: 'Utilisateur ou offre non trouvés.'
+    });
+    this.loading = false;
+    return;
   }
 
-  private submitApplication(formData: FormData) {
-    // Simulate API call
-    setTimeout(() => {
+  this.jobService.applyToJob(jobId, userId, formData).subscribe({
+    next: () => {
       this.loading = false;
       this.messageService.add({
         severity: 'success',
         summary: 'Succès',
         detail: 'Votre candidature a été soumise avec succès!'
       });
-      
-      // Redirect or reset form
+
       this.applicationForm.reset();
       this.uploadedFiles = [];
-    }, 2000);
-  }
+    },
+    error: (error:any) => {
+      this.loading = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Une erreur est survenue lors de la soumission. Veuillez réessayer.'
+      });
+      console.error(error);
+    }
+  });
+}
+
 
   private markFormGroupTouched() {
     Object.keys(this.applicationForm.controls).forEach(key => {

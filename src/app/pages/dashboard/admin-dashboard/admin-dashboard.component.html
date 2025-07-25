@@ -1,0 +1,380 @@
+<div class="recruiter-dashboard">
+      <!-- Header Section -->
+      <div class="dashboard-header">
+        <div class="header-content">
+          <h1 class="dashboard-title">
+            <i class="pi pi-briefcase"></i>
+            Espace Recruteur
+          </h1>
+          <p class="dashboard-subtitle">Gérez vos offres d'emploi et candidatures</p>
+        </div>
+        <div class="header-actions">
+          <p-button 
+            label="Nouvelle Offre" 
+            icon="pi pi-plus" 
+            styleClass="p-button-success"
+            (onClick)="showCreateJobDialog = true">
+          </p-button>
+        </div>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="stats-grid">
+        <p-card styleClass="stat-card active-jobs">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="pi pi-briefcase"></i>
+            </div>
+            <div class="stat-details">
+              <h3>{{ activeJobs }}</h3>
+              <p>Offres Actives</p>
+            </div>
+          </div>
+        </p-card>
+
+        <p-card styleClass="stat-card pending-candidates">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="pi pi-users"></i>
+            </div>
+            <div class="stat-details">
+              <h3>{{ pendingCandidates }}</h3>
+              <p>Candidatures en Attente</p>
+            </div>
+          </div>
+        </p-card>
+
+        <p-card styleClass="stat-card interviews">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="pi pi-calendar"></i>
+            </div>
+            <div class="stat-details">
+              <h3>{{ scheduledInterviews }}</h3>
+              <p>Entretiens Programmés</p>
+            </div>
+          </div>
+        </p-card>
+
+        <p-card styleClass="stat-card hiring-rate">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="pi pi-chart-line"></i>
+            </div>
+            <div class="stat-details">
+              <h3>{{ hiringRate }}%</h3>
+              <p>Taux d'Embauche</p>
+            </div>
+          </div>
+        </p-card>
+      </div>
+
+      <!-- Main Content Tabs -->
+      <p-tabView styleClass="main-tabs">
+        <!-- Job Offers Tab -->
+        <p-tabPanel header="Mes Offres d'Emploi" leftIcon="pi pi-briefcase">
+          <div class="tab-content">
+            <div class="table-toolbar">
+              <div class="search-filters">
+                <span class="p-input-icon-left">
+                  <i class="pi pi-search"></i>
+                  <input 
+                    type="text" 
+                    pInputText 
+                    placeholder="Rechercher une offre..."
+                    [(ngModel)]="jobSearchTerm">
+                </span>
+                <p-dropdown 
+                  [options]="statusOptions" 
+                  placeholder="Statut"
+                  styleClass="filter-dropdown">
+                </p-dropdown>
+              </div>
+            </div>
+
+            <p-table 
+              [value]="jobOffers" 
+              [paginator]="true" 
+              [rows]="10"
+              styleClass="modern-table"
+              responsiveLayout="scroll">
+              
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Titre du Poste</th>
+                  <th>Département</th>
+                  <th>Localisation</th>
+                  <th>Type</th>
+                  <th>Statut</th>
+                  <th>Candidatures</th>
+                  <th>Date de Publication</th>
+                  <th>Actions</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-job>
+                <tr>
+                  <td>
+                    <div class="job-title">
+                      <strong>{{ job.title }}</strong>
+                      <p-tag 
+                        *ngIf="job.urgency === 'high'" 
+                        value="Urgent" 
+                        severity="danger" 
+                        styleClass="urgency-tag">
+                      </p-tag>
+                    </div>
+                  </td>
+                  <td>{{ job.department }}</td>
+                  <td>
+                    <i class="pi pi-map-marker"></i>
+                    {{ job.location }}
+                  </td>
+                  <td>{{ job.type }}</td>
+                  <td>
+                    <p-tag 
+                      [value]="job.status" 
+                      [severity]="getJobStatusSeverity(job.status)">
+                    </p-tag>
+                  </td>
+                  <td>
+                    <div class="applicants-count">
+                      <p-badge 
+                        [value]="job.applicants" 
+                        severity="info">
+                      </p-badge>
+                      candidats
+                    </div>
+                  </td>
+                  <td>{{ job.datePosted | date:'dd/MM/yyyy' }}</td>
+                  <td>
+                    <div class="table-actions">
+                      <p-button 
+                        icon="pi pi-eye" 
+                        styleClass="p-button-rounded p-button-text p-button-sm"
+                        pTooltip="Voir les candidatures">
+                      </p-button>
+                      <p-button 
+                        icon="pi pi-pencil" 
+                        styleClass="p-button-rounded p-button-text p-button-sm"
+                        pTooltip="Modifier l'offre">
+                      </p-button>
+                      <p-button 
+                        icon="pi pi-chart-bar" 
+                        styleClass="p-button-rounded p-button-text p-button-sm"
+                        pTooltip="Statistiques">
+                      </p-button>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabPanel>
+
+        <!-- Candidates Tab -->
+        <p-tabPanel header="Candidatures Récentes" leftIcon="pi pi-users">
+          <div class="tab-content">
+            <div class="table-toolbar">
+              <div class="search-filters">
+                <span class="p-input-icon-left">
+                  <i class="pi pi-search"></i>
+                  <input 
+                    type="text" 
+                    pInputText 
+                    placeholder="Rechercher un candidat..."
+                    [(ngModel)]="candidateSearchTerm">
+                </span>
+                <p-dropdown 
+                  [options]="candidateStatusOptions" 
+                  placeholder="Statut"
+                  styleClass="filter-dropdown">
+                </p-dropdown>
+              </div>
+            </div>
+
+            <p-table 
+              [value]="recentCandidates" 
+              [paginator]="true" 
+              [rows]="10"
+              styleClass="modern-table candidates-table"
+              responsiveLayout="scroll">
+              
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Candidat</th>
+                  <th>Poste Visé</th>
+                  <th>Score de Matching</th>
+                  <th>Statut</th>
+                  <th>Date de Candidature</th>
+                  <th>Actions</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-candidate>
+                <tr>
+                  <td>
+                    <div class="candidate-info">
+                      <p-avatar 
+                        [image]="candidate.avatar" 
+                        [label]="!candidate.avatar ? candidate.name.charAt(0) : ''"
+                        shape="circle"
+                        size="large"
+                        styleClass="candidate-avatar">
+                      </p-avatar>
+                      <div class="candidate-details">
+                        <strong>{{ candidate.name }}</strong>
+                        <p>{{ candidate.email }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ candidate.position }}</td>
+                  <td>
+                    <div class="score-container">
+                      <p-progressBar 
+                        [value]="candidate.score" 
+                        [style]="{'height': '8px'}"
+                        [styleClass]="getScoreClass(candidate.score)">
+                      </p-progressBar>
+                      <span class="score-text">{{ candidate.score }}%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <p-tag 
+                      [value]="getCandidateStatusLabel(candidate.status)" 
+                      [severity]="getCandidateStatusSeverity(candidate.status)">
+                    </p-tag>
+                  </td>
+                  <td>{{ candidate.appliedDate | date:'dd/MM/yyyy' }}</td>
+                  <td>
+                    <div class="table-actions">
+                      <p-button 
+                        icon="pi pi-eye" 
+                        styleClass="p-button-rounded p-button-text p-button-sm"
+                        pTooltip="Voir le profil">
+                      </p-button>
+                      <p-button 
+                        icon="pi pi-calendar-plus" 
+                        styleClass="p-button-rounded p-button-text p-button-sm"
+                        pTooltip="Programmer un entretien">
+                      </p-button>
+                      <p-button 
+                        icon="pi pi-download" 
+                        styleClass="p-button-rounded p-button-text p-button-sm"
+                        pTooltip="Télécharger CV">
+                      </p-button>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabPanel>
+
+        <!-- Analytics Tab -->
+        <p-tabPanel header="Analytiques" leftIcon="pi pi-chart-line">
+          <div class="tab-content analytics-content">
+            <div class="charts-grid">
+              <p-card header="Candidatures par Mois" styleClass="chart-card">
+                <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
+              </p-card>
+              
+              <p-card header="Répartition par Statut" styleClass="chart-card">
+                <p-chart type="doughnut" [data]="doughnutData" [options]="doughnutOptions"></p-chart>
+              </p-card>
+            </div>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+
+      <!-- Create Job Dialog -->
+      <p-dialog 
+        header="Créer une Nouvelle Offre d'Emploi" 
+        [(visible)]="showCreateJobDialog" 
+        [modal]="true" 
+        [responsive]="true"
+        [style]="{width: '800px'}"
+        styleClass="create-job-dialog">
+        
+        <div class="dialog-content">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="jobTitle">Titre du Poste *</label>
+              <input 
+                id="jobTitle" 
+                type="text" 
+                pInputText 
+                placeholder="Ex: Développeur Full Stack"
+                [(ngModel)]="newJob.title">
+            </div>
+
+            <div class="form-group">
+              <label for="department">Département *</label>
+              <p-dropdown 
+                id="department"
+                [options]="departments" 
+                placeholder="Sélectionner un département"
+                [(ngModel)]="newJob.department">
+              </p-dropdown>
+            </div>
+
+            <div class="form-group">
+              <label for="location">Localisation *</label>
+              <input 
+                id="location" 
+                type="text" 
+                pInputText 
+                placeholder="Ex: Paris, France"
+                [(ngModel)]="newJob.location">
+            </div>
+
+            <div class="form-group">
+              <label for="jobType">Type de Contrat *</label>
+              <p-dropdown 
+                id="jobType"
+                [options]="contractTypes" 
+                placeholder="Type de contrat"
+                [(ngModel)]="newJob.type">
+              </p-dropdown>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="description">Description du Poste *</label>
+              <textarea 
+                id="description" 
+                pInputTextarea 
+                rows="6" 
+                placeholder="Décrivez les responsabilités et exigences du poste..."
+                [(ngModel)]="newJob.description">
+              </textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <label>Documents Joints</label>
+              <p-fileUpload 
+                mode="basic" 
+                chooseLabel="Ajouter des fichiers"
+                [multiple]="true"
+                accept=".pdf,.doc,.docx"
+                [maxFileSize]="10000000">
+              </p-fileUpload>
+            </div>
+          </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+          <p-button 
+            label="Annuler" 
+            icon="pi pi-times" 
+            styleClass="p-button-text"
+            (onClick)="showCreateJobDialog = false">
+          </p-button>
+          <p-button 
+            label="Publier l'Offre" 
+            icon="pi pi-check" 
+            styleClass="p-button-success"
+            (onClick)="createJob()">
+          </p-button>
+        </ng-template>
+      </p-dialog>
+    </div>

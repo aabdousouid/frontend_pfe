@@ -4,9 +4,9 @@ export class Job {
   company!: string;
   description!: string;
   location!: string;
-  jobType!: 'Full-time' | 'Part-time' | 'Contract' | 'Remote';
+  jobType!: 'CDI' | 'STAGE_PFE' | 'STAGE_ETE' | 'ALTERNANCE';
   experience!: string;
-  salary!: string;
+  /* salary!: string; */
   
   requirements!: string[];
   skills!: string[];

@@ -1,0 +1,84 @@
+
+
+<div *ngIf="!interviews || interviews.length === 0">
+          <p>Aucun entretien programmé.</p>
+        </div>
+        
+        <div *ngFor="let interview of interviews">
+          
+    <p-dialog [(visible)]="visible" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+       <!--  <ng-template #header>
+           
+        </ng-template> -->
+            <app-user-interview-details [interview]="interview"></app-user-interview-details>
+        <ng-template #footer>
+            <p-button label="Fermer" [text]="true" severity="secondary" (click)="visible = false" />
+            
+        </ng-template>
+    </p-dialog>
+
+          <p-fieldset [legend]="setLegend(interview.interviewTest)" [toggleable]="true">
+            <p>Confirmation de l'entretien : </p>
+             <div class="flex flex-col sm:flex-row sm:items-center p-6 gap-4" >
+                
+                                <div class="md:w-40 relative">
+                                    
+                                    <div class="absolute bg-black/70 rounded-border" [style]="{ left: '4px', top: '4px' }" *ngIf="interview.status == 'CONFIRMED'">
+                                        <p-tag [value]="interview.status" [severity]="getInterviewStatusSeverity(interview.status)"></p-tag>
+                                    </div>
+
+                                <p-dropdown *ngIf="interview.status == 'SCHEDULED'"
+                                [options]="statusOptionsForDropdown" 
+                                [(ngModel)]="interview.status"
+                                optionLabel="label" 
+                                optionValue="value"
+                                 (onChange)="updateInterviewStatus(interview.interviewId, $event.value)"
+                                [style]="{'width': '180px'}"
+                                [appendTo]="'body'"
+                                [virtualScroll]="false"
+                                [scrollHeight]="'200px'"
+                                [panelStyleClass]="'status-dropdown-panel'">
+                                <ng-template pTemplate="selectedItem" let-selectedOption>
+                                    <p-tag 
+                                    [value]="getStatusLabel(selectedOption.value)" 
+                                    [severity]="getStatusSeverity(selectedOption.value)">
+                                    </p-tag>
+                                </ng-template>
+                                <ng-template pTemplate="item" let-option>
+                                    <p-tag 
+                                    [value]="option.label" 
+                                    [severity]="getStatusSeverity(option.value)">
+                                    </p-tag>
+                                </ng-template>
+                                </p-dropdown>
+                                </div>
+                                <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6" style="padding-left: 3rem;">
+                                    <div class="flex flex-row md:flex-col justify-between items-start gap-2">
+                                        <div>
+                                            
+                                            <div class="text-lg font-medium mt-2">Nom de la personne chargée de l'entretien</div>
+                                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{interview.interviewerName}}</span>
+                                        </div>
+                                        
+                                        <div class="p-1" >
+                                            <p-chip> <span class="font-medium text-sm">Date et Temps : </span>
+                                                {{interview.scheduledDate|date:'MM/dd/yyyy'}}
+                                                 {{interview.scheduledHour|date:'h:mm a'}}</p-chip>
+                                               
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col md:items-end gap-8">
+                                        <div class="flex flex-row-reverse md:flex-row gap-2">
+                                            <!-- <p-button icon="pi pi-trash" severity="danger" (click)="deleteInterview(interview.interviewId)" styleClass="h-full" [outlined]="true"></p-button> -->
+                                            <p-button icon="pi pi-eye" severity="info"pTooltip="Consulter/Modifier" [outlined]="true" (click)="showDialog()"  styleClass="flex-auto md:flex-initial whitespace-nowrap"></p-button>
+                                       <!-- [disabled]="interview.status === 'CONFIRMED'" -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+          </p-fieldset>
+
+
+  <p-divider styleClass="my-3" type="solid"></p-divider>
+</div>
+<p-toast position="top-right"></p-toast>

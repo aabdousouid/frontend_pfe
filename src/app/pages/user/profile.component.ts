@@ -148,7 +148,7 @@ interface Skill {
               >
               
             </p-button> -->
-          <input *ngIf="editMode" type="file" (change)="onFileSelected($event)" />
+          
           </div>
         </div>
       </div>
@@ -772,21 +772,7 @@ export class ProfileComponent implements OnInit{
     });
   }
 
-  onFileSelected(event: any) {
-  const file: File = event.target.files[0];
-  if (file) {
-    this.userService.uploadCv(this.user.id, file).subscribe({
-      next: (res) => {
-        console.log(res);
-        alert("CV uploaded successfully!");
-      },
-      error: (err) => {
-        console.error(err);
-        alert("Error uploading CV");
-      }
-    });
-  }
-}
+  
 
   extractLinks() {
     this.linkedinLink = '';

@@ -1,0 +1,88 @@
+<div class="interview-details-container">
+  <div class="interview-header">
+    <h4><i class="pi pi-exclamation-triangle"></i> Envoyer une Réclamation</h4>
+  </div>
+  
+  <div class="interview-form">
+    <p-accordion [activeIndex]="0">
+      <p-accordion-panel header="Détails de la Réclamation">
+
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="complaintType">Titre <span class="required">*</span></label>
+            <input 
+              id="title"
+              [(ngModel)]="complaint.title"
+              pInputText
+              placeholder="Title"/>
+            
+          </div>
+        </div>
+
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="complaintType">Type de Réclamation <span class="required">*</span></label>
+            <p-dropdown 
+              id="complaintType"
+              [(ngModel)]="complaint.complaintType"
+              [options]="complaintTypes"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Sélectionner un type de réclamation">
+            </p-dropdown>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="description">Description <span class="required">*</span></label>
+            <textarea 
+              id="description"
+              pTextarea
+              [(ngModel)]="complaint.description"
+              placeholder="Décrivez le problème rencontré"
+              [rows]="4"
+              [autoResize]="true">
+            </textarea>
+          </div>
+        </div>
+
+       <!--  <div class="form-row">
+          <div class="form-group full-width">
+            <label for="status">Statut <span class="required">*</span></label>
+            <p-dropdown 
+              id="status"
+              [(ngModel)]="complaint.status"
+              [options]="complaintStatus"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Sélectionner le statut">
+            </p-dropdown>
+          </div>
+        </div> -->
+
+        <div class="form-actions">
+          <p-button 
+            label="Sauvegarder"
+            icon="pi pi-save"
+            (click)="saveComplaint()"
+            
+            [disabled]="!isComplaintFormValid()">
+          </p-button>
+
+          <p-button 
+            label="Annuler"
+            icon="pi pi-times"
+            severity="secondary"
+            [outlined]="true"
+            (click)="resetForm()">
+          </p-button>
+        </div>
+      </p-accordion-panel>
+    </p-accordion>
+  </div>
+</div>
+
+<p-toast position="top-right"></p-toast>

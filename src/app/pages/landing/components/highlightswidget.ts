@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
+import { AnimateOnScroll } from 'primeng/animateonscroll';
 import { Avatar, AvatarModule } from 'primeng/avatar';
 import { CardModule } from 'primeng/card';
 
 @Component({
     selector: 'highlights-widget',
-    imports: [AvatarModule,CardModule],
+    imports: [AvatarModule,CardModule,AnimateOnScroll],
     template: `
        <!--  <div id="highlights" class="py-6 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
             <div class="text-center">
@@ -45,7 +46,9 @@ import { CardModule } from 'primeng/card';
             </div>
         </div> -->
     <!-- How It Works Section -->
-       <section id="how-it-works" class="py-20 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20">
+       <section id="how-it-works" class="py-20 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20" pAnimateOnScroll
+            enterClass="animate-enter fade-in-10 slide-in-from-l-8 animate-duration-1000"
+            leaveClass="animate-leave fade-out-0">
                 <div class="max-w-6xl mx-auto">
                     <div class="text-center mb-16">
                         <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">

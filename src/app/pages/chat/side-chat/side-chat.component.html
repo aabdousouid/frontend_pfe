@@ -1,33 +1,4 @@
-<!-- 
-<div class="chat-toggle" (click)="toggleChat()">
-  <i class="pi pi-comments"></i> Besoin d'aide ?
-</div>
 
-<div class="chat-box" *ngIf="visible">
-  <div class="chat-header">
-    <span>🤖 Virtual Assistant</span>
-    <button class="close-btn" (click)="toggleChat()">✖</button>
-  </div>
-
-  <div class="chat-body">
-    <div class="message bot">Bonjour ! Je suis votre assistant virtuel. Comment puis-je vous aider aujourd'hui ?</div>
-    <div class="quick-replies">
-      <button *ngFor="let q of quickReplies" (click)="sendMessage(q)">{{ q }}</button>
-    </div>
-
-    <div class="messages">
-      <div *ngFor="let msg of messages" [ngClass]="msg.from">
-        {{ msg.text }}
-      </div>
-    </div>
-  </div>
-
-  <div class="chat-input">
-    <input [(ngModel)]="userInput" (keydown.enter)="sendMessage(userInput)" placeholder="Tapez votre message ici..." />
-    <button (click)="sendMessage(userInput)"><i class="pi pi-send"></i></button>
-  </div>
-</div>
- -->
 
 
 <!-- Floating Help Button -->

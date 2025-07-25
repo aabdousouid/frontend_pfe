@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
+import { AnimateOnScroll } from 'primeng/animateonscroll';
 
 @Component({
     selector: 'features-widget',
     standalone: true,
-    imports: [CommonModule,CardModule],
+    imports: [CommonModule,CardModule,AnimateOnScroll],
     template: ` <!-- <div id="features" class="py-6 px-6 lg:px-20 mt-8 mx-0 lg:mx-20">
         <div class="grid grid-cols-12 gap-4 justify-center">
             <div class="col-span-12 text-center mt-20 mb-6">
@@ -137,7 +138,10 @@ import { CardModule } from 'primeng/card';
         </div>
     </div> -->
     
-    <section id="features" class="py-20 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+    <section id="features" class="py-20 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 bg-white dark:bg-gray-800 rounded-lg shadow-lg" 
+            pAnimateOnScroll
+            enterClass="animate-enter fade-in-10 slide-in-from-l-8 animate-duration-1000"
+            leaveClass="animate-leave fade-out-0">
                 <div class="max-w-6xl mx-auto">
                     <div class="text-center mb-16">
                         <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">

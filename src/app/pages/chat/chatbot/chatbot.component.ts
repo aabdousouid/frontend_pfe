@@ -13,6 +13,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ToastModule } from 'primeng/toast';
 import { ChatbotService } from '../../../shared/services/chatbot.service';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 interface ChatMessage {
   id: string;
@@ -57,6 +58,7 @@ interface CVAnalysis {
     ChipModule,
     ProgressBarModule,
     ScrollPanelModule,
+    RadioButtonModule,
     ToastModule],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.scss',
@@ -74,7 +76,12 @@ export class ChatbotComponent implements OnInit {
   isAnalyzing = false;
   analysisProgress = 0;
   cvAnalysis: CVAnalysis | null = null;
-
+  quizQuestions: any[] = [];
+  quizAnswers: number[] = [];
+  quizInProgress = false;
+  quizCompleted = false;
+  quizResult: any = null;
+  selectedJob: any = null;
   constructor(private messageService: MessageService,private chatbotService:ChatbotService) {}
 
   ngOnInit() {
@@ -105,54 +112,222 @@ export class ChatbotComponent implements OnInit {
   }
 
   handleCVUpload(file: File) {
-    // Add file upload message
-    const fileMessage: ChatMessage = {
-      id: this.generateId(),
-      content: file.name,
-      sender: 'user',
-      timestamp: new Date(),
-      type: 'file'
-    };
-    this.messages.push(fileMessage);
+  this.isAnalyzing = true;
+  this.analysisProgress = 0;
+  this.scrollToBottom();
 
-    // Start analysis
-    this.isAnalyzing = true;
-    this.analysisProgress = 0;
-    this.scrollToBottom();
+  this.chatbotService.parseCV(file).subscribe({
+    next: (parsedCV) => {
+      // Add file to messages
+      this.messages.push({
+        id: this.generateId(),
+        content: file.name,
+        sender: 'user',
+        timestamp: new Date(),
+        type: 'file'
+      });
 
-    // Simulate CV analysis progress
-    this.chatbotService.uploadCV(file).subscribe({
-    next: (res) => {
-      const cvText = res.text;
+      // For now, mock job list — later, fetch from backend DB
+      const mockJobs = [
+       {
+    id: 'JD005',
+    title: 'DevOps Engineer',
+    type: 'CDI',
+    company: 'CloudOps',
+    location: 'Sousse',
+    description: 'Manage CI/CD pipelines and cloud infrastructure.',
+    requirements: 'Strong knowledge of Docker, Jenkins, and Kubernetes.',
+    skills: 'Docker Jenkins Kubernetes AWS Terraform Git'
+  },
+  {
+    id: 'JD006',
+    title: 'Java Backend Developer',
+    type: 'CDI',
+    company: 'BankSoft',
+    location: 'Tunis',
+    description: 'Develop RESTful APIs using Java Spring Boot.',
+    requirements: 'Good knowledge of Spring Boot and PostgreSQL.',
+    skills: 'Java SpringBoot Hibernate PostgreSQL REST Git'
+  },
+  {
+    id: 'JD007',
+    title: 'React Developer Intern',
+    type: 'STAGE_PFE',
+    company: 'InnovateX',
+    location: 'Remote',
+    description: 'Build UI components for SaaS dashboard.',
+    requirements: 'Basic knowledge of React and state management.',
+    skills: 'React JavaScript HTML CSS Redux'
+  },
+  {
+    id: 'JD008',
+    title: 'Cybersecurity Intern',
+    type: 'STAGE_ETE',
+    company: 'SecureIT',
+    location: 'Tunis',
+    description: 'Assist in penetration testing and security audits.',
+    requirements: 'Familiarity with OWASP and ethical hacking tools.',
+    skills: 'KaliLinux BurpSuite OWASP Nmap Linux'
+  },
+  {
+    id: 'JD009',
+    title: 'Mobile Developer',
+    type: 'CDI',
+    company: 'AppMakers',
+    location: 'Sfax',
+    description: 'Develop cross-platform apps using Flutter.',
+    requirements: 'Experience with Dart and Firebase.',
+    skills: 'Flutter Dart Firebase REST Git'
+  },
+  {
+    id: 'JD010',
+    title: 'BI Developer',
+    type: 'CDI',
+    company: 'InsightBI',
+    location: 'Tunis',
+    description: 'Create dashboards and reports using Power BI.',
+    requirements: 'Knowledge of SQL, DAX, and Power BI.',
+    skills: 'PowerBI SQL DAX Excel ETL'
+  },
+  {
+    id: 'JD011',
+    title: 'Machine Learning Engineer',
+    type: 'CDI',
+    company: 'DeepAnalytics',
+    location: 'Tunis',
+    description: 'Build ML pipelines and deploy models.',
+    requirements: 'Strong skills in Python, scikit-learn, and TensorFlow.',
+    skills: 'Python TensorFlow Scikit-learn Pandas NumPy MLflow'
+  },
+  {
+    id: 'JD012',
+    title: 'Fullstack JS Developer',
+    type: 'CDI',
+    company: 'CodeBase',
+    location: 'Ariana',
+    description: 'Develop and maintain web applications.',
+    requirements: 'Experience with Node.js and Angular.',
+    skills: 'Node.js Angular MongoDB ExpressJS TypeScript'
+  },
+  {
+    id: 'JD013',
+    title: 'Embedded Software Engineer',
+    type: 'CDI',
+    company: 'AutoTech',
+    location: 'Sousse',
+    description: 'Work on firmware and real-time systems.',
+    requirements: 'Experience with C/C++ and RTOS.',
+    skills: 'C C++ RTOS CAN Microcontrollers'
+  },
+  {
+    id: 'JD014',
+    title: 'QA Tester Intern',
+    type: 'STAGE_PFE',
+    company: 'TestLab',
+    location: 'Tunis',
+    description: 'Write and execute test cases.',
+    requirements: 'Knowledge of Selenium and testing frameworks.',
+    skills: 'Selenium Java JUnit TestNG'
+  },
+  {
+    id: 'JD015',
+    title: 'Web Developer Intern',
+    type: 'STAGE_ETE',
+    company: 'WebFlow',
+    location: 'Nabeul',
+    description: 'Build responsive websites.',
+    requirements: 'HTML, CSS, and JavaScript knowledge.',
+    skills: 'HTML CSS JavaScript Bootstrap'
+  },
+  {
+    id: 'JD016',
+    title: 'Data Analyst',
+    type: 'CDI',
+    company: 'SmartData',
+    location: 'Tunis',
+    description: 'Analyze data and create business reports.',
+    requirements: 'Good Excel and SQL skills.',
+    skills: 'Excel SQL Tableau PowerBI Statistics'
+  },
+  {
+    id: 'JD017',
+    title: 'AI Research Intern',
+    type: 'STAGE_ETE',
+    company: 'AI Lab',
+    location: 'Remote',
+    description: 'Experiment with NLP and LLMs.',
+    requirements: 'Basic experience with Transformers and Python.',
+    skills: 'Python Transformers HuggingFace NLP PyTorch'
+  },
+  {
+    id: 'JD018',
+    title: 'Cloud Engineer',
+    type: 'CDI',
+    company: 'CloudWare',
+    location: 'Tunis',
+    description: 'Manage cloud deployments and serverless apps.',
+    requirements: 'Experience with AWS or GCP.',
+    skills: 'AWS GCP Lambda Terraform CI/CD Docker'
+  },
+  {
+    id: 'JD019',
+    title: 'Support Technician Intern',
+    type: 'STAGE_ETE',
+    company: 'TechHelp',
+    location: 'Tunis',
+    description: 'Handle level-1 support tickets and configurations.',
+    requirements: 'Basic hardware/software troubleshooting.',
+    skills: 'Windows Networking ITSupport Hardware'
+  },
+  {
+    id: 'JD020',
+    title: 'DevSecOps Engineer',
+    type: 'CDI',
+    company: 'SecurePipeline',
+    location: 'Remote',
+    description: 'Integrate security in CI/CD pipelines.',
+    requirements: 'Security automation knowledge.',
+    skills: 'DevOps Jenkins OWASP Docker GitLabCI'
+  }
+      ];
 
-      this.chatbotService.recommendJobs(cvText).subscribe({
-        next: (recommendations:any) => {
-          const botMessage: ChatMessage = {
+      this.chatbotService.matchJobs(parsedCV, mockJobs).subscribe({
+        next: (matchedJobs: any[]) => {
+          console.log(matchedJobs);
+          this.messages.push({
             id: this.generateId(),
             content: "Based on your CV, here are tailored job recommendations:",
             sender: 'bot',
             timestamp: new Date(),
             type: 'suggestions',
-            suggestions: recommendations
-          };
+            suggestions: matchedJobs.map(job => ({
+              title: job.job_title,
+              matchPercentage: Math.round(job.overall_score * 100),
+              requiredSkills: job.job_description.skills?.split(' ') || [],
+              experienceLevel: job.job_description.requirements || '',
+              salaryRange: 'N/A',
+              description: job.job_description.description,
+              fullJob: job.job_description
+            }))
+          });
 
-          this.messages.push(botMessage);
-          this.isAnalyzing = false;
           this.cvUploaded = true;
+          this.isAnalyzing = false;
           this.scrollToBottom();
         },
         error: (err) => {
           this.isAnalyzing = false;
-          this.messageService.add({ severity: 'error', summary: 'Recommendation Error', detail: err.message });
+          this.messageService.add({ severity: 'error', summary: 'Matching Error', detail: err.message });
         }
       });
     },
     error: (err) => {
       this.isAnalyzing = false;
-      this.messageService.add({ severity: 'error', summary: 'Upload Error', detail: err.message });
+      this.messageService.add({ severity: 'error', summary: 'CV Parsing Error', detail: err.message });
     }
   });
 }
+
   completeAnalysis() {
     this.isAnalyzing = false;
     this.cvUploaded = true;
@@ -301,4 +476,66 @@ export class ChatbotComponent implements OnInit {
   generateId(): string {
     return Math.random().toString(36).substr(2, 9);
   }
+
+
+  onSelectJob(job: any) {
+  const candidateName = 'Test User'; // You can prompt for this
+
+  this.isTyping = true;
+  this.chatbotService.startQuiz(job, candidateName).subscribe({
+    next: (quizResponse) => {
+      const questions = quizResponse.questions;
+      this.messages.push({
+        id: this.generateId(),
+        content: "Let's test your knowledge! Please answer the following quiz:",
+        sender: 'bot',
+        timestamp: new Date(),
+        type: 'text'
+      });
+
+      // You now render these questions with radio buttons or dropdowns
+      console.log('Quiz Questions:', questions);
+      this.quizQuestions = quizResponse.questions;
+      this.quizAnswers = new Array(this.quizQuestions.length).fill(-1);
+      this.quizInProgress = true;
+      this.selectedJob = job;
+
+      this.scrollToBottom();
+      this.isTyping = false;
+
+      // Store `questions` for use in submitQuiz()
+    },
+    error: (err) => {
+      this.messageService.add({ severity: 'error', summary: 'Quiz Generation Error', detail: err.message });
+      this.isTyping = false;
+    }
+  });
+}
+submitQuiz() {
+  const candidateName = 'Test User';
+
+  this.chatbotService.submitQuiz(this.quizAnswers, candidateName).subscribe({
+    next: (result) => {
+      this.quizResult = result;
+      this.quizInProgress = false;
+      this.quizCompleted = true;
+
+      this.messages.push({
+        id: this.generateId(),
+        content: `Quiz completed! You scored ${result.score.toFixed(1)}%. Status: ${result.status}`,
+        sender: 'bot',
+        timestamp: new Date(),
+        type: 'text'
+      });
+
+      this.scrollToBottom();
+    },
+    error: (err) => {
+      this.messageService.add({ severity: 'error', summary: 'Quiz Submission Error', detail: err.message });
+    }
+  });
+}
+categoryScoreKeys(): string[] {
+  return this.quizResult ? Object.keys(this.quizResult.category_scores) : [];
+}
 }

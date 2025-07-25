@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, NgModule } from '@angular/core';
+import { Component, Input, NgModule } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -19,7 +19,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
   styleUrl: './side-chat.component.scss'
 })
 export class SideChatComponent {
-  visible = false;
+  @Input() visible :boolean= false;
   userInput = '';
   messages: { from: 'user' | 'bot', text: string }[] = [];
 

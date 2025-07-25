@@ -1,0 +1,290 @@
+<div class="interview-details-container">
+      <!-- Header Card -->
+      <p-card styleClass="header-card mb-4">
+        <div class="flex justify-content-between align-items-start">
+          <div class="flex align-items-start gap-3">
+            <p-avatar 
+              [label]="getInitials(user?.firstname + ' ' + user?.lastname)" 
+              styleClass="candidate-avatar"
+              size="large">
+            </p-avatar>
+            <div>
+              <h1 class="candidate-name m-0">{{ user?.firstname }} {{user?.lastname}}</h1>
+              <p class="position-title text-600 mt-1 mb-2">{{ job?.title }}</p>
+              <p-tag 
+                [value]="interview.status" 
+                [severity]="getStatusSeverity(interview.status)"
+                icon="pi pi-check-circle"
+                styleClass="status-tag">
+              </p-tag>
+            </div>
+          </div> 
+          <div class="flex gap-2">
+        
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Tabs Content -->
+      <p-tabView styleClass="interview-tabs">
+        <!-- Interview Details Tab -->
+        <p-tabPanel header="Détails de l'entretien" leftIcon="pi pi-calendar">
+          <div class="grid">
+            <!-- Main Content -->
+            <div class="col-12 lg:col-8">
+              <!-- Interview Schedule -->
+              <p-card header="Horaire de l'entretien" styleClass="mb-4 schedule-card">
+                <ng-template pTemplate="header">
+                  <div class="flex align-items-center gap-2">
+                    <i class="pi pi-calendar text-primary"></i>
+                    <span>Planning de l'entretien</span>
+                  </div>
+                </ng-template>
+
+                <div class="grid">
+                  <div class="col-12 md:col-6">
+                    <div class="schedule-item mb-3">
+                      <div class="flex align-items-center gap-3">
+                        <i class="pi pi-calendar schedule-icon"></i>
+                        <div>
+                          <label class="schedule-label">Date</label>
+                          <p class="schedule-value">{{ interview.scheduledDate|date:'dd-MM-yyyy' }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="schedule-item">
+                      <div class="flex align-items-center gap-3">
+                        <i class="pi pi-clock schedule-icon"></i>
+                        <div>
+                          <label class="schedule-label">Heure</label>
+                          <p class="schedule-value">{{ interview.scheduledHour|date:'HH:mm' }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 md:col-6">
+                    <div class="schedule-item mb-3">
+                      <div class="flex align-items-center gap-3">
+                        <i class="pi pi-stopwatch schedule-icon"></i>
+                        <div>
+                          <label class="schedule-label">Durée de l'entretien</label>
+                          <p class="schedule-value">{{ interview.duration }} minutes</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="schedule-item" *ngIf="interview.interviewType === 'ONSITE'">
+                      <div class="flex align-items-center gap-3">
+                        <i class="pi pi-map-marker schedule-icon"></i>
+                        <div>
+                          <label class="schedule-label">Localisation</label>
+                          <p class="schedule-value">{{ interview.location }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Meeting Link -->
+                <div class="meeting-link-container mt-4" *ngIf="interview.interviewType === 'REMOTE'">
+                  <div class="meeting-link-header">
+                    <div class="flex align-items-center gap-2">
+                      <i class="pi pi-video meeting-link-icon"></i>
+                      <span class="meeting-link-title">Lien de la réunion</span>
+                    </div>
+                    <p-button 
+                      label="Copier le Lien" 
+                      icon="pi pi-copy"
+                      size="small" 
+                      severity="secondary"
+                      [outlined]="true"
+                      styleClass="copy-link-btn"
+                      (onClick)="copyToClipboard(interviewData.meetingLink)">
+                    </p-button>
+                  </div>
+                  <div class="meeting-link-content">
+                    <div class="meeting-link-url">{{ interviewData.meetingLink }}</div>
+                  </div>
+                </div>
+              </p-card>
+
+              <!-- Requirements -->
+              <p-card header="Interview Requirements" styleClass="requirements-card" *ngIf="interview.interviewTest==='TECHNIQUE'">
+                <ng-template pTemplate="header">
+                  <div class="flex align-items-center gap-2">
+                    <i class="pi pi-info-circle text-orange-500"></i>
+                    <span>Exigences de l'entretien technique</span>
+                  </div>
+                </ng-template>
+
+                <div class="requirements-list">
+                  <div 
+                    *ngFor="let requirement of interviewData.requirements" 
+                    class="requirement-item flex align-items-start gap-3 mb-3">
+                    <i class="pi pi-check-circle text-green-500 mt-1"></i>
+                    <span>{{ requirement }}</span>
+                  </div>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-12 lg:col-4">
+              <!-- Interviewer Info -->
+              <p-card header="Responsable de l'entretien" styleClass="mb-4 interviewer-card">
+                <div class="flex align-items-start gap-3">
+                  <p-avatar 
+                    [label]="getInitials(interview.interviewerName)" 
+                    styleClass="interviewer-avatar">
+                  </p-avatar>
+                  <div class="flex-1">
+                    <p class="interviewer-name font-semibold m-0">{{ interview.interviewerName }}</p>
+                    
+                    <div class="flex gap-2">
+                      <p-button 
+                        icon="pi pi-envelope" 
+                        severity="secondary"
+                        [outlined]="true" 
+                        size="small"
+                        [pTooltip]="'Envoyer un email : ' +interview.interviewerEmail">
+                      </p-button>
+
+                    </div>
+                  </div>
+                </div>
+              </p-card>
+
+              <!-- Quick Actions -->
+              <p-card header="Actions rapides" styleClass="mb-4 actions-card">
+                <div class="quick-actions-container">
+                  <p-button
+                    *ngIf="interview.interviewType === 'REMOTE'"
+                    label="Rejoindre la réunion" 
+                    icon="pi pi-video" 
+                    styleClass="quick-action-btn join-meeting-btn"
+                    severity="success"
+                    size="small">
+                  </p-button>
+                  <p-button 
+                    label="Reporter l'entretien" 
+                    icon="pi pi-calendar" 
+                    styleClass="quick-action-btn"
+                    severity="secondary"
+                    [outlined]="true"
+                    size="small">
+                  </p-button>
+                  <p-button 
+                    label="Send Message" 
+                    icon="pi pi-comment" 
+                    styleClass="quick-action-btn"
+                    severity="secondary"
+                    [outlined]="true"
+                    size="small">
+                  </p-button>
+                  <div class="action-divider"></div>
+                  <p-button 
+                    label="Annulé L'entretien"
+                    icon="pi pi-times" 
+                    styleClass="quick-action-btn cancel-btn"
+                    severity="danger"
+                    [outlined]="true"
+                    size="small">
+                  </p-button>
+                </div>
+              </p-card>
+
+              <!-- Interview Progress -->
+              <p-card header="Progression de l'entretien" styleClass="progress-card">
+                <div class="progress-steps">
+                  <div class="progress-step completed">
+                    <div class="step-indicator">
+                      <i class="pi pi-check"></i>
+                    </div>
+                    <span class="step-label">Candidature reçue</span>
+                  </div>
+                  <div class="progress-step completed">
+                    <div class="step-indicator">
+                      <i class="pi pi-check"></i>
+                    </div>
+                    <span class="step-label">Entretien RH</span>
+                  </div>
+                  <div class="progress-step active">
+                    <div class="step-indicator">
+                      <i class="pi pi-circle-fill"></i>
+                    </div>
+                    <span class="step-label">Entretien Technique</span>
+                  </div>
+
+                  <div class="progress-step">
+                    <div class="step-indicator">
+                      <i class="pi pi-circle"></i>
+                    </div>
+                    <span class="step-label">Décision</span>
+                  </div>
+                </div>
+              </p-card>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Candidate Info Tab -->
+        <p-tabPanel header="Candidate Info" leftIcon="pi pi-user">
+          <p-card header="Informations sur les candidats" styleClass="candidate-info-card">
+            <div class="candidate-details">
+              <div class="detail-item mb-4">
+                <div class="flex align-items-center gap-3">
+                  <i class="pi pi-user detail-icon"></i>
+                  <div>
+                    <label class="detail-label">Nom complet</label>
+                    <p class="detail-value">{{ interviewData.candidateName }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="detail-item mb-4">
+                <div class="flex align-items-center gap-3">
+                  <i class="pi pi-envelope detail-icon"></i>
+                  <div>
+                    <label class="detail-label">Email</label>
+                    <p class="detail-value">{{ interviewData.email }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="detail-item mb-4">
+                <div class="flex align-items-center gap-3">
+                  <i class="pi pi-briefcase detail-icon"></i>
+                  <div>
+                    <label class="detail-label">Position de candidature</label>
+                    <p class="detail-value">{{ interviewData.position }}</p>
+                  </div>
+                </div>
+              </div>
+              <p-divider></p-divider>
+              <p-button 
+                label="Télécharger CV" 
+                icon="pi pi-download" 
+                styleClass="download-cv-btn"
+                severity="secondary"
+                [outlined]="true">
+              </p-button>
+            </div>
+          </p-card>
+        </p-tabPanel>
+
+        <!-- Notes & Feedback Tab -->
+        <p-tabPanel header="Notes & Feedback" leftIcon="pi pi-comment">
+          <p-card header="Interview Notes" styleClass="notes-card">
+            <div class="notes-section">
+              <div class="mb-4">
+                <label class="notes-label">Notes préalables à l'entretien</label>
+                <p-message 
+                  severity="info" 
+                  
+                  styleClass="pre-notes-message">
+                  {{ interview.notes }}
+                </p-message>
+              </div>
+            
+            </div>
+          </p-card>
+        </p-tabPanel>
+      </p-tabView>
+    </div>

@@ -28,13 +28,17 @@ export class JobsService {
     return this.http.post(API + 'addJob', job, httpOptions);
   }
 
+  deleteJob(jobId:number):Observable<any>{
+    return this.http.delete(API + `deleteJob/${jobId}`,httpOptions);
+  }
+
 
   getJobById(jobId: number |null): Observable<Job> {
     return this.http.get<Job>(`${API}getJob/${jobId}`, httpOptions);
   }
 
+  applyToJob(jobId: number, userId: number, formData: FormData): Observable<any> {
+  return this.http.post(`http://localhost:8080/api/application/apply/${jobId}/${userId}`, formData);
+}
 
-  applyToJob(jobId:number,user:any):Observable<any>{
-    return this.http.post(`${API}apply/${jobId}`,httpOptions);
-  }
 }

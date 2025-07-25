@@ -22,6 +22,7 @@ import { first } from 'rxjs';
             <div class="flex flex-col items-center justify-center">
                 <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                     <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+                         <p-button variant="text" icon="pi pi-arrow-left" severity="success" (click)="navigateToLanding()" />
                         <div class="text-center mb-8">
                             <img alt="logo" style="width: 40%;height:30%;" class="image-center" src="./../../../assets/images/logo-actia.jpg"/>
                             
@@ -47,7 +48,7 @@ import { first } from 'rxjs';
 
 
 
-                                <label for="firstname" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
+                                <label for="firstname" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">First name</label>
                                 <input pInputText id="firstname" name="firstname" type="text" placeholder="First Name" 
                                        class="w-full md:w-[30rem] mb-4" [(ngModel)]="form.firstname" required #firstname="ngModel" />
                                 @if (firstname.errors && f.submitted) {
@@ -56,8 +57,8 @@ import { first } from 'rxjs';
 
 
 
-                                <label for="lastname" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
-                                <input pInputText id="lastname" name="lastname" type="text" placeholder="First Name" 
+                                <label for="lastname" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Last name</label>
+                                <input pInputText id="lastname" name="lastname" type="text" placeholder="Last Name" 
                                        class="w-full md:w-[30rem] mb-4" [(ngModel)]="form.lastname" required #lastname="ngModel" />
                                 @if (lastname.errors && f.submitted) {
                                     <p-message severity="error" class="mb-4">lastname is required</p-message>
@@ -260,6 +261,8 @@ export class Register implements OnInit {
             return;
         }
 
+        
+
         // Call the register service (you'll need to implement this in your AuthService)
         console.log(this.form)
         this.authService.register(username, firstname,lastname,email, password).subscribe({
@@ -285,8 +288,13 @@ export class Register implements OnInit {
     }
 
     navigateToLogin(): void {
-        this.router.navigate(['/login']);
+        this.router.navigate(['/auth/login']);
     }
+
+    navigateToLanding(): void {
+    // Get return URL from route parameters or default to dashboard
+    this.router.navigate(['/']);
+}
 
     resendverificationEmail(): void {
         this.authService.resendVerificationEmail(this.form.email).subscribe({

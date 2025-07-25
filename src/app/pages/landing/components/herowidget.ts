@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
@@ -7,11 +7,13 @@ import { DialogModule } from 'primeng/dialog';
 import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
 import { Access } from "../../auth/access";
+import { SideChatComponent } from '../../chat/side-chat/side-chat.component';
 
 @Component({
     selector: 'hero-widget',
-    imports: [ButtonModule, RippleModule, RouterModule, DialogModule, CardModule, MessageModule],
+    imports: [ButtonModule, RippleModule, RouterModule, DialogModule, CardModule, MessageModule,SideChatComponent],
     template: `
+        
         <!-- <div
             id="hero"
             class="flex flex-col pt-6 px-6 lg:px-20 overflow-hidden"
@@ -26,7 +28,7 @@ import { Access } from "../../auth/access";
                 <img src="https://primefaces.org/cdn/templates/sakai/landing/screen-1.png" alt="Hero Image" class="w-9/12 md:w-auto" />
             </div>
         </div> -->
-        
+                 <app-side-chat [visible]="visible"></app-side-chat>
                 
                 <p-dialog [(visible)]="display" [breakpoints]="{ '960px': '75vw' }" [style]="{ width: '50%' }" [modal]="true">
                    
@@ -82,7 +84,8 @@ import { Access } from "../../auth/access";
                             variant="outlined"
                             severity="secondary"
                             size="small"
-                            class="px-8 py-3" />
+                            class="px-8 py-3" 
+                            (click)="navigateToProfile()"/>
 
                         <p-button 
                             
@@ -91,7 +94,9 @@ import { Access } from "../../auth/access";
                             severity="help"
                             variant="outlined"
                             size="small"
-                            class="px-8 py-3" />
+                            class="px-8 py-3"
+                            (click)="toggleVisible()"
+                             />
                     <!-- @if(isAdmin) {
                         <p-button 
                             label="Post a Job" 
@@ -104,16 +109,16 @@ import { Access } from "../../auth/access";
                     <!-- Stats -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-green-600 dark:text-green-400">50K+</div>
-                            <div class="text-gray-600 dark:text-gray-300">Active Job Seekers</div>
+                            <div class="text-3xl font-bold text-green-600 dark:text-green-400">4000+</div>
+                            <div class="text-gray-600 dark:text-gray-300">Collaborateurs actifs à l'échelle mondiale</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-green-600 dark:text-green-400">2K+</div>
-                            <div class="text-gray-600 dark:text-gray-300">Partner Companies</div>
+                            <div class="text-3xl font-bold text-green-600 dark:text-green-400">20+</div>
+                            <div class="text-gray-600 dark:text-gray-300">Entreprises</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-green-600 dark:text-green-400">95%</div>
-                            <div class="text-gray-600 dark:text-gray-300">Success Rate</div>
+                            <div class="text-3xl font-bold text-green-600 dark:text-green-400">1986</div>
+                            <div class="text-gray-600 dark:text-gray-300">Année de fondation</div>
                         </div>
                     </div>
                 </div>
@@ -127,6 +132,7 @@ import { Access } from "../../auth/access";
     `
 })
 export class HeroWidget implements OnInit {
+    @Output() visible:boolean = false;
     display: boolean = false;
     isLoggedIn:Boolean = false;
     isAdmin:Boolean = false;
@@ -135,6 +141,11 @@ export class HeroWidget implements OnInit {
     constructor(private Router: Router,private storageService: StorageService) { 
         // Initialization logic if needed
     }
+
+    toggleVisible(){
+        this.visible = !this.visible;
+    }
+
     ngOnInit(): void {
         this.isLoggedIn = this.storageService.isLoggedIn();
         this.user = this.storageService.getUser();
@@ -154,6 +165,16 @@ export class HeroWidget implements OnInit {
             this.Router.navigate(['/auth/access']);
             /* this.Router.navigate(['/login'], { queryParams: { returnUrl: '/app/jobs' } }); */
         }
+    }
+
+    navigateToProfile(){
+        /* if (this.isLoggedIn) {
+            this.Router.navigate(['/app/profile']);
+        } else {
+            
+            this.Router.navigate(['/auth/access']);
+        } */
+       this.Router.navigate(['/app/profile']);
     }
 
     open() {

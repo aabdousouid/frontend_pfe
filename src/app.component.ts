@@ -20,12 +20,13 @@ import { SideChatComponent } from "./app/pages/chat/side-chat/side-chat.componen
     
     <ng-template #elseBlock> <router-outlet></router-outlet></ng-template> -->
    <app-side-chat></app-side-chat>
-    <router-outlet></router-outlet>
+    <router-outlet></router-outlet >
 
 
     `
 })
 export class AppComponent implements OnInit{
+    
     isLoggedIn = false;
     eventBusSub?: Subscription;
     constructor(private router:Router,private storageService:StorageService,private authService:AuthService,private eventBusService: EventBusService){

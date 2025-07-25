@@ -25,21 +25,43 @@ export class AppMenu {
     model: MenuItem[] = [];
     isLoggedIn!:Boolean;
 
+    isAdmin:boolean=false;
+    roles:string[];
+    userType:string='';
     constructor(private storageService: StorageService,private messageService:MessageService,private router:Router){
+        this.roles = this.storageService.getUser().roles || [];
+    }
+
+    checkRoles():boolean{
+        if(this.roles.includes('ROLE_ADMIN')) {
+        return this.isAdmin=true;}
+            else return this.isAdmin;
 
     }
 
-
-
     ngOnInit() {
+        //check userType
+        if(this.roles.includes('ROLE_ADMIN')) {
+            this.userType = 'admin';}
+            else this.userType = 'user';
+
+
+
+        const candidatureLabel = this.userType === 'admin' ? 'Les Candidatures' : 'Mes Candidatures';
+        const routePath = this.userType === 'admin' ? '/app/applications' : '/app/userApplications/' + this.storageService.getUser().id;
         this.model = [
             {
-                label: 'Home',
+                label: 'Accueil',
                 items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/app/'] }]
             },
             {
-                label: 'UI Components',
+                label: 'Gestion',
                 items: [
+                    { label: candidatureLabel, icon: 'pi pi-fw pi-id-card', routerLink: [routePath]},
+                    { label: 'Offres d\'emploi', icon: 'pi pi-fw pi-briefcase', routerLink: ['/app/jobs'] },
+                    { label: 'Recommandations', icon: 'pi pi-fw pi-comments', routerLink: ['/app/chatbot'] },
+                    { label: 'Reclamations', icon: 'pi pi-fw pi-flag-fill', routerLink: ['/app/complaints-admin'],visible:this.checkRoles()==true },
+                    { label: 'Mes Reclamations', icon: 'pi pi-fw pi-flag-fill', routerLink: ['/app/complaints-user'],visible:this.checkRoles()==false },
                     { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/app/uikit/formlayout'] },
                     { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/app/uikit/input'] },
                     { label: 'Button', icon: 'pi pi-fw pi-mobile', class: 'rotated-icon', routerLink: ['/app/uikit/button'] },
@@ -91,7 +113,7 @@ export class AppMenu {
                     {
                         label: 'Crud',
                         icon: 'pi pi-fw pi-pencil',
-                        routerLink: ['/pages/crud']
+                        routerLink: ['/app/pages/crud']
                     },
                     {
                         label: 'Not Found',
@@ -101,7 +123,7 @@ export class AppMenu {
                     {
                         label: 'Empty',
                         icon: 'pi pi-fw pi-circle-off',
-                        routerLink: ['/pages/empty']
+                        routerLink: ['/app/pages/empty']
                     }
                 ]
             },

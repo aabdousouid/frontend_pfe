@@ -1,0 +1,224 @@
+.applications-management-container {
+      padding: 1.5rem;
+      background-color: var(--surface-ground);
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      
+      h2 {
+        margin: 0;
+        color: var(--text-color);
+        font-size: 1.8rem;
+        font-weight: 600;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .total-label {
+          color: var(--text-color-secondary);
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    .filters-card {
+      margin-bottom: 1.5rem;
+    }
+
+    .filters-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      .filter-group, .sort-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        label {
+          font-weight: 600;
+          color: var(--text-color);
+          font-size: 0.9rem;
+        }
+      }
+
+      .status-filters {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        .filter-btn {
+          transition: all 0.2s ease;
+        }
+      }
+    }
+
+    .table-card {
+      padding: 1.5rem;
+      .candidate-info {
+        display: flex;
+        flex-direction: column;
+        
+        strong {
+          color: var(--text-color);
+          font-size: 0.95rem;
+        }
+      }
+
+      .email-text {
+        color: var(--text-color-secondary);
+        font-size: 0.9rem;
+      }
+
+      .job-chip {
+        background-color: var(--primary-color);
+        color: var(--primary-color-text);
+        width: fit-content;
+       
+        font-size: 0.9rem;
+        
+      }
+
+      .date-text {
+        color: var(--text-color-secondary);
+        font-size: 0.9rem;
+      }
+
+      .no-cv-text {
+        color: var(--text-color-secondary);
+        font-style: italic;
+        font-size: 0.9rem;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+      }
+
+      .empty-state {
+        padding: 3rem;
+        text-align: center;
+        color: var(--text-color-secondary);
+
+        h3 {
+          color: var(--text-color);
+          margin: 1rem 0 0.5rem 0;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--surface-border);
+      color: var(--text-color-secondary);
+      font-size: 0.9rem;
+
+      .footer-left {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .footer-right {
+        font-weight: 600;
+      }
+    }
+
+    // Responsive design
+    @media (max-width: 768px) {
+      .applications-management-container {
+        padding: 1rem;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .filters-section {
+        .status-filters {
+          justify-content: center;
+        }
+      }
+
+      .footer {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+    }
+
+    // PrimeNG Table Customization
+    ::ng-deep .p-datatable {
+      .p-datatable-thead th {
+        background-color: var(--surface-section);
+        border-bottom: 1px solid var(--surface-border);
+        font-weight: 600;
+        color: var(--text-color);
+        padding: 1rem 0.75rem;
+      }
+
+      .p-datatable-tbody tr {
+        transition: background-color 0.2s ease;
+        
+        &:hover {
+          background-color: var(--surface-hover);
+        }
+
+        td {
+          padding: 1rem 0.75rem;
+          border-bottom: 1px solid var(--surface-border);
+        }
+      }
+    }
+
+    // PrimeNG Dropdown in table
+    ::ng-deep .p-dropdown {
+      .p-dropdown-label {
+        padding: 0.5rem;
+      }
+    }
+
+    // Status dropdown panel styling
+    ::ng-deep .status-dropdown-panel {
+      z-index: 1100 !important;
+      max-height: 200px;
+      overflow-y: auto;
+      
+      .p-dropdown-items {
+        max-height: 180px;
+        overflow-y: auto;
+      }
+      
+      .p-dropdown-item {
+        padding: 0.5rem 0.75rem;
+        
+        &:hover {
+          background-color: var(--surface-hover);
+        }
+      }
+    }
+
+    // Ensure dropdown panels appear above table content
+    ::ng-deep .p-dropdown-panel {
+      z-index: 1100 !important;
+    }

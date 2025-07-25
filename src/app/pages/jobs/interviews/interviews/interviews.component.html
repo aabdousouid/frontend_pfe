@@ -1,0 +1,45 @@
+
+
+<div *ngIf="!application.interviews || application.interviews.length === 0">
+          <p>Aucun entretien programmé.</p>
+        </div>
+        
+        <div *ngFor="let interview of application.interviews">
+          
+          <p-fieldset [legend]="setLegend(interview.interviewTest)" [toggleable]="true">
+            
+             <div class="flex flex-col sm:flex-row sm:items-center p-6 gap-4">
+                                <div class="md:w-40 relative">
+                                    <div class="absolute bg-black/70 rounded-border" [style]="{ left: '4px', top: '4px' }">
+                                        <p-tag [value]="interview.status" [severity]="getInterviewStatusSeverity(interview.status)"></p-tag>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
+                                    <div class="flex flex-row md:flex-col justify-between items-start gap-2">
+                                        <div>
+                                            
+                                            <div class="text-lg font-medium mt-2">Nom de la personne chargée de l'entretien</div>
+                                            <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">{{interview.interviewerName}}</span>
+                                        </div>
+                                        
+                                        <div class="p-1" >
+                                            <p-chip> <span class="font-medium text-sm">Date et Temps : </span>
+                                                {{interview.scheduledDate|date:'MM/dd/yyyy'}}
+                                                 {{interview.scheduledDate|date:'h:mm a'}}</p-chip>
+                                               
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col md:items-end gap-8">
+                                        <div class="flex flex-row-reverse md:flex-row gap-2">
+                                            <p-button icon="pi pi-trash" severity="danger" (click)="deleteInterview(interview.interviewId)" styleClass="h-full" [outlined]="true"></p-button>
+                                            <p-button icon="pi pi-eye" severity="info"pTooltip="Consulter/Modifier" [outlined]="true" (click)="sendBooleanToParent(interview)" [disabled]="interview.status === 'CONFIRMED'" styleClass="flex-auto md:flex-initial whitespace-nowrap"></p-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+          </p-fieldset>
+
+
+  <p-divider styleClass="my-3" type="solid"></p-divider>
+</div>
+<p-toast position="top-right"></p-toast>

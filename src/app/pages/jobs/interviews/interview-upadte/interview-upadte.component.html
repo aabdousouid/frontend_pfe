@@ -1,0 +1,225 @@
+<!-- <div class="flex flex-col gap-6">
+                     <div>
+                        <label for="name" class="block font-bold mb-3">Name</label>
+                        <input type="text" pInputText id="name" [(ngModel)]="interview!.interviewerName" required autofocus fluid />
+                   </div>
+                    <div>
+                        <label for="description" class="block font-bold mb-3">Description</label>
+                        <textarea id="description" pTextarea [(ngModel)]="interview!.interviewerEmail" required rows="3" cols="20" fluid></textarea>
+                    </div>
+
+                    <div>
+                        <label for="inventoryStatus" class="block font-bold mb-3">Inventory Status</label>
+                        <p-select [(ngModel)]="interview!.interviewType" inputId="inventoryStatus" [options]="interviewTypes" optionLabel="label" optionValue="label" placeholder="Select a Status" fluid />
+                    </div>
+
+                    <div>
+                        <span class="block font-bold mb-4">Category</span>
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="flex items-center gap-2 col-span-6">
+                                <p-radiobutton id="category1" name="category" value="Accessories" [(ngModel)]="interview!.interviewTest" />
+                                <label for="category1">RH</label>
+                            </div>
+                            <div class="flex items-center gap-2 col-span-6">
+                                <p-radiobutton id="category2" name="category" value="Clothing" [(ngModel)]="interview!.interviewTest" />
+                                <label for="category2">Technique</label>
+                            </div>
+                            
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-6">
+                            <label for="price" class="block font-bold mb-3">Price</label>
+                            <p-inputnumber id="price" [(ngModel)]="interview!.scheduledDate.getDate" mode="currency" currency="USD" locale="en-US" fluid />
+                        </div>
+                        <div class="col-span-6">
+                            <label for="quantity" class="block font-bold mb-3">Quantity</label>
+                            <p-inputnumber id="quantity" [(ngModel)]="interview!.scheduledDate.getTime" fluid />
+                        </div>
+                    </div>
+                 -->
+                    
+
+
+<div  class="interview-details-container" >
+                  <div class="interview-header">
+                    <h4><i class="pi pi-calendar"></i> Modifier/Consulter les Détails de l'entretien</h4>
+                  </div>
+                  
+                  <div class="interview-form" >
+                    <p-accordion value="0">
+                      <p-accordion-panel value="0">
+                        <p-accordion-header>Les dates<i class="pi pi-calendar"></i></p-accordion-header>
+                        <p-accordion-content>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="interviewDate">Date de l'entretien <span class="required">*</span></label>
+                        <p-calendar 
+                          id="interviewDate"
+                          [(ngModel)]="interview!.scheduledDate"
+                          [showIcon]="true"
+                          [iconDisplay]="'input'"
+                          [showButtonBar]="true"
+                          [panelStyleClass]="'status-dropdown-panel'"
+                          [appendTo]="'body'"
+                          dateFormat="dd/mm/yy"
+                          placeholder="Sélectionner une date">
+                        </p-calendar>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="interviewTime">Heure <span class="required">*</span></label>
+                        <p-calendar 
+                          id="interviewTime"
+                          [(ngModel)]="interview!.scheduledHour"
+                          [timeOnly]="true"
+                          [showIcon]="true"
+                          [iconDisplay]="'input'"
+                          placeholder="Heure">
+                        </p-calendar>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="duration">Durée (minutes) <span class="required">*</span></label>
+                        <p-inputNumber 
+                          id="duration"
+                          [(ngModel)]="interview!.duration"
+                          [min]="15"
+                          [max]="300"
+                          [step]="15"
+                          suffix=" min"
+                          [showButtons]="true"
+                          [buttonLayout]="'horizontal'">
+                        </p-inputNumber>
+                      </div>
+                       
+                    </div>
+                    </p-accordion-content>
+
+                    </p-accordion-panel>
+                    
+                   <!--here-->
+                   <p-accordion-panel value="1">
+                    <p-accordion-header>Les détailles<i class="pi pi-info"></i></p-accordion-header>
+                    <p-accordion-content>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="interviewType">Type d'entretien <span class="required">*</span></label>
+                        <p-dropdown 
+                          id="interviewType"
+                          [(ngModel)]="interview!.interviewType"
+                          [options]="interviewTypes"
+                          optionLabel="label"
+                          optionValue="value"
+                          placeholder="Sélectionner le type">
+                        </p-dropdown>
+
+                        <p-dropdown 
+                          id="interviewType"
+                          [(ngModel)]="interview!.interviewTest"
+                          [options]="interviewTests"
+                          optionLabel="label"
+                          optionValue="value"
+                          placeholder="Sélectionner le entretien">
+                        </p-dropdown>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="interviewerName">Nom de l'interviewer <span class="required">*</span></label>
+                        <input 
+                          id="interviewerName"
+                          type="text" 
+                          pInputText 
+                          [(ngModel)]="interview!.interviewerName"
+                          placeholder="Nom complet de l'interviewer">
+
+                          <p-dropdown 
+                          id="status"
+                          [(ngModel)]="interview!.status"
+                          [options]="interviewStatus"
+                          optionLabel="label"
+                          optionValue="value"
+                          [appendTo]="'body'"
+                          placeholder="Sélectionner le Statut de l\'entretien">
+                        </p-dropdown>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="interviewerEmail">Email de l'interviewer <span class="required">*</span></label>
+                        <input 
+                          id="interviewerEmail"
+                          type="email" 
+                          pInputText 
+                          [(ngModel)]="interview!.interviewerEmail"
+                          placeholder="email@exemple.com">
+                      </div>
+                    </div>
+                    </p-accordion-content>
+                    </p-accordion-panel>
+
+                    <p-accordion-panel value="2">
+                      <p-accordion-header>Localisation<i class="pi pi-map"></i></p-accordion-header>
+                      <p-accordion-content>
+                    <div class="form-row">
+                      <div class="form-group full-width" *ngIf="interview!.interviewType === 'ONSITE'">
+                        <label for="interviewLocation">Lieu de l'entretien <span class="required">*</span></label>
+                        <input 
+                          id="interviewLocation"
+                          type="text" 
+                          pInputText 
+                          [(ngModel)]="interview!.location"
+                          placeholder="Adresse complète du lieu de l'entretien">
+                      </div>
+                      
+                      <div class="form-group full-width" *ngIf="interview!.interviewType === 'REMOTE'">
+                        <label for="meetingLink">Lien de la réunion <span class="required">*</span></label>
+                        <input 
+                          id="meetingLink"
+                          type="url" 
+                          pInputText 
+                          [(ngModel)]="interview!.meetingLink"
+                          placeholder="https://zoom.us/j/... ou lien Teams">
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group full-width">
+                        <label for="notes">Notes supplémentaires</label>
+                        <textarea 
+                          id="notes"
+                          pTextarea 
+                          [(ngModel)]="interview!.notes"
+                          placeholder="Ajoutez des notes ou instructions particulières pour l'entretien..."
+                          [rows]="3"
+                          [autoResize]="true">
+                        </textarea>
+                      </div>
+                    </div>
+
+                    <div class="form-actions">
+                      <p-button 
+                        label="Sauvegarder les détails"
+                        icon="pi pi-save"
+                        (click)="saveInterviewDetails()"
+                        [loading]="savingInterview"
+                        >
+                      </p-button>
+                      
+                      <p-button 
+                        label="Annuler"
+                        icon="pi pi-times"
+                        severity="secondary"
+                        [outlined]="true"
+                        (click)="cancelInterviewDetails()">
+                      </p-button>
+                    </div>
+                    </p-accordion-content>
+                    </p-accordion-panel>
+                    </p-accordion>
+                  </div>
+                </div>
+                
+                
+                 <p-toast position="top-right"></p-toast>

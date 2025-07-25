@@ -7,10 +7,12 @@ import { RippleModule } from 'primeng/ripple';
 import { TagModule } from 'primeng/tag';
 import { JobsService } from '../../../shared/services/jobs.service';
 import { CommonModule } from '@angular/common';
+import { AnimateOnScroll } from 'primeng/animateonscroll';
+import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'pricing-widget',
-    imports: [DividerModule, ButtonModule, RippleModule,TagModule,CarouselModule,CardModule,CommonModule],
+    imports: [DividerModule, ButtonModule, RippleModule,TagModule,CarouselModule,CardModule,CommonModule,AnimateOnScroll,RouterLink],
     template: `
         <!-- <div id="pricing" class="py-6 px-6 lg:px-20 my-2 md:my-6">
             <div class="text-center mb-6">
@@ -122,14 +124,16 @@ import { CommonModule } from '@angular/common';
 
 
 
-<section id="jobs" class="py-20 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20">
+<section id="jobs" class="py-20 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20" pAnimateOnScroll
+            enterClass="animate-enter fade-in-10 slide-in-from-l-8 animate-duration-1000"
+            leaveClass="animate-leave fade-out-0">
                 <div class="max-w-6xl mx-auto">
                     <div class="text-center mb-16">
                         <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                            Featured Job Opportunities
+                            Offres d'emploi
                         </h2>
                         <p class="text-xl text-gray-600 dark:text-gray-300">
-                            Discover amazing career opportunities from top companies
+                            Découvrez les opportunités de carrière au sein du groupe ACTIA, ACTIA ES, ACTIA AFRICA, CIPI ACTIA et plus encore.
                         </p>
                     </div>
 
@@ -168,10 +172,10 @@ import { CommonModule } from '@angular/common';
                                             <span class="text-gray-600">{{job.type}}</span>
                                         </div>
 
-                                        <div class="flex items-center gap-2 mb-4">
+                                        <!-- <div class="flex items-center gap-2 mb-4">
                                             <i class="pi pi-dollar text-green-600"></i>
                                             <span class="text-gray-600">{{job.salary}}</span>
-                                        </div>
+                                        </div> -->
 
                                         <p class="text-gray-700 dark:text-gray-300 mb-6">
                                             {{job.description}}
@@ -189,11 +193,11 @@ import { CommonModule } from '@angular/common';
 
                                         <div class="flex justify-between items-center">
                                             <span class="text-sm text-gray-500">{{job.posted}}</span>
-                                            <p-button 
+                                           <!--  <p-button 
                                                 label="Apply Now" 
                                                 icon="pi pi-send"
                                                 size="small"
-                                                class="bg-green-600 border-green-600 hover:bg-green-700" />
+                                                class=" border-green-600 hover:green-700" /> -->
                                         </div>
                                     </div>
                                 </p-card>
@@ -203,9 +207,10 @@ import { CommonModule } from '@angular/common';
 
                     <div class="text-center mt-12">
                         <p-button 
-                            label="View All Jobs" 
+                            label="Voir toutes les offres" 
                             icon="pi pi-arrow-right" 
                             size="large"
+                            routerLink="/app/jobs"
                             [outlined]="true"
                             class="border-green-600 text-green-600 px-8 py-3" />
                     </div>
@@ -221,72 +226,72 @@ export class PricingWidget implements OnInit {
     jobsList:any=[];
 
     ngOnInit(): void {
-       this.jobService.getAllJobs().subscribe({
+       /* this.jobService.getAllJobs().subscribe({
             next: (data) => {
-                this.jobsList = data;
+                //this.jobsList = data;
                 console.log(this.jobsList);
             }
-        });
-    }
+        }); */
+    } 
 
 
 jobs = [
         {
             title: 'Senior Software Engineer',
-            company: 'TechCorp Inc.',
-            location: 'San Francisco, CA',
+            company: 'ACTIA ES',
+            location: 'Arianna',
             type: 'Full-time',
-            salary: '$120,000 - $150,000',
-            description: 'Join our innovative team to build cutting-edge web applications using modern technologies.',
+           /*  salary: '$120,000 - $150,000', */
+            description: 'Rejoignez notre équipe innovante pour créer des applications web de pointe en utilisant des technologies modernes.',
             skills: ['Angular', 'TypeScript', 'Node.js', 'MongoDB'],
             posted: '2 days ago',
             icon: 'pi pi-code'
         },
         {
             title: 'UX/UI Designer',
-            company: 'Design Studio',
-            location: 'New York, NY',
+            company: 'ACTIA ES',
+            location: 'Arianna',
             type: 'Full-time',
-            salary: '$80,000 - $100,000',
-            description: 'Create beautiful and intuitive user experiences for our digital products and platforms.',
+            /* salary: '$80,000 - $100,000', */
+            description: 'Créer des UX raffinées et intuitives pour nos produits et plateformes numériques.',
             skills: ['Figma', 'Adobe XD', 'Prototyping', 'User Research'],
             posted: '1 day ago',
             icon: 'pi pi-palette'
         },
         {
             title: 'Product Manager',
-            company: 'StartupXYZ',
-            location: 'Austin, TX',
+            company: 'ACTIA ES',
+            location: 'Charguia',
             type: 'Full-time',
-            salary: '$110,000 - $130,000',
-            description: 'Lead product strategy and work with cross-functional teams to deliver exceptional products.',
+            /* salary: '$110,000 - $130,000', */
+            description: 'Diriger la stratégie produit et travailler avec des équipes interfonctionnelles pour fournir des produits exceptionnels.',
             skills: ['Strategy', 'Analytics', 'Agile', 'Leadership'],
             posted: '3 days ago',
             icon: 'pi pi-briefcase'
         },
         {
             title: 'Data Scientist',
-            company: 'DataTech Solutions',
-            location: 'Seattle, WA',
+            company: 'ACTIA ES',
+            location: 'Arianna',
             type: 'Full-time',
-            salary: '$130,000 - $160,000',
-            description: 'Analyze complex datasets and build machine learning models to drive business insights.',
+           /*  salary: '$130,000 - $160,000', */
+            description: 'Analyser des ensembles de données complexes et construire des modèles d"apprentissage automatique afin d"obtenir des informations commerciales.',
             skills: ['Python', 'Machine Learning', 'SQL', 'TensorFlow'],
             posted: '1 week ago',
             icon: 'pi pi-chart-bar'
         },
         {
             title: 'DevOps Engineer',
-            company: 'CloudFirst',
+            company: 'ACTIA ES.',
             location: 'Remote',
             type: 'Full-time',
-            salary: '$100,000 - $125,000',
-            description: 'Manage cloud infrastructure and implement CI/CD pipelines for scalable applications.',
+           /*  salary: '$100,000 - $125,000', */
+            description: 'Gérer l"infrastructure cloud et mettre en œuvre des pipelines CI/CD pour des applications évolutives.',
             skills: ['AWS', 'Docker', 'Kubernetes', 'Jenkins'],
             posted: '4 days ago',
             icon: 'pi pi-cloud'
         },
-        {
+        /* {
             title: 'Marketing Manager',
             company: 'GrowthCo',
             location: 'Chicago, IL',
@@ -296,7 +301,7 @@ jobs = [
             skills: ['Digital Marketing', 'SEO', 'Content Strategy', 'Analytics'],
             posted: '5 days ago',
             icon: 'pi pi-megaphone'
-        }
+        } */
     ];
 
     responsiveOptions = [

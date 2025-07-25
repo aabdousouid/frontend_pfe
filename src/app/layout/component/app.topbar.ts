@@ -7,11 +7,12 @@ import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
 import { Menu } from 'primeng/menu';
 import { StorageService } from '../../shared/services/storage.service';
+import { BadgeModule } from 'primeng/badge';
 
 @Component({
     selector: 'app-topbar',
     standalone: true,
-    imports: [RouterModule, CommonModule, StyleClassModule, AppConfigurator,Menu],
+    imports: [RouterModule, CommonModule, StyleClassModule, AppConfigurator,Menu,BadgeModule],
     template: ` <div class="layout-topbar">
         <div class="layout-topbar-logo-container">
             <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
@@ -34,16 +35,23 @@ import { StorageService } from '../../shared/services/storage.service';
                             fill="var(--primary-color)"
                         />
                     </g>
-                </svg> --><img alt="logo" style="width: 40%;height:30%;" src="./../../../assets/images/logo-actia.jpg"/>
+                </svg> --><img alt="logo" style="width: 40%;height:10%;" src="./../../../assets/images/thumbnail_image001.png"/>
 <!--                 <span>SAKAI</span>
  -->            </a>
         </div>
 
         <div class="layout-topbar-actions">
             <div class="layout-config-menu">
-                <!-- <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
+
+                <div  [style]="{'margin': '5%'}">
+                @if(this.role.includes('ROLE_ADMIN')){
+                <p-badge value="Administrateur"  badgeSize="large" severity="success" />
+                }@else {
+                <p-badge value="Utilisateur" badgeSize="large" severity="info" />}
+                </div>
+                <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
                     <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
-                </button> -->
+                </button>
                 <div class="relative">
                     <!-- <button
                         class="layout-topbar-action layout-topbar-action-highlight"
@@ -87,8 +95,15 @@ import { StorageService } from '../../shared/services/storage.service';
 export class AppTopbar implements OnInit {
    // items!: MenuItem[];
     items: MenuItem[] | undefined;
-    constructor(public layoutService: LayoutService,private storageService: StorageService,private router:Router) {}
+    isLoggedIn!:Boolean;
+    role:string[];
+    constructor(public layoutService: LayoutService,private storageService: StorageService,private router:Router) {
+        this.role= this.storageService.getUser().roles;
+    }
+    
     ngOnInit(): void {
+        
+        
          this.items = [
             {
                 label: '',
@@ -116,7 +131,10 @@ export class AppTopbar implements OnInit {
 
     logout(){
        this.storageService.clean();
-       window.location.reload();
-         this.router.navigate(['/']);
+       /* window.location.reload(); */
+       
+       this.isLoggedIn = false;     // Update the component's auth state
+       this.router.navigate(['/auth/login']); // Redirect to login
+         
     }
 }

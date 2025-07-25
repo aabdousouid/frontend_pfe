@@ -61,7 +61,7 @@
       *ngFor="let suggestion of message.suggestions" 
       class="col-12 md:col-6 lg:col-4 mb-3">
       
-      <p-card [header]="suggestion.title" subheader="{{suggestion.matchPercentage}}% Match">
+      <p-card [header]="suggestion.title" subheader="{{suggestion.matchPercentage}}% Match" (click)="onSelectJob(suggestion.fullJob)">
         <ng-template pTemplate="content">
           <p class="mb-2"><strong>Description:</strong> {{suggestion.description}}</p>
           <p class="mb-2"><strong>Experience Level:</strong> {{suggestion.experienceLevel}}</p>
@@ -100,6 +100,59 @@
               </div>
             </p-scrollPanel>
           </div>
+
+
+          <!-- === Quiz Section === -->
+            <div *ngIf="quizInProgress && quizQuestions.length > 0" class="quiz-section mt-4">
+              <h4 class="mb-3">Job Knowledge Quiz</h4>
+
+              <p-card *ngFor="let q of quizQuestions; let i = index" class="mb-3">
+              <ng-template pTemplate="content">
+                <p class="font-bold">{{i + 1}}. {{q.question}}</p>
+
+                <div class="flex flex-column gap-2 mt-2">
+                  <div *ngFor="let opt of q.options; let j = index" class="flex align-items-center gap-2">
+                    <p-radiobutton 
+                      [inputId]="'q' + i + '_opt' + j" 
+                      name="'q' + i" 
+                      [value]="j" 
+                      [(ngModel)]="quizAnswers[i]">
+                    </p-radiobutton>
+                    <label [for]="'q' + i + '_opt' + j">{{ opt }}</label>
+                  </div>
+                </div>
+
+                <small class="text-muted">Category: {{q.category}} • Difficulty: {{q.difficulty}}</small>
+              </ng-template>
+            </p-card>
+
+
+              <p-button 
+                label="Submit Quiz" 
+                icon="pi pi-check"
+                class="mt-3"
+                (onClick)="submitQuiz()"
+                [disabled]="quizAnswers.includes(-1)">
+              </p-button>
+            </div>
+          <div *ngIf="quizCompleted && quizResult" class="quiz-result mt-4">
+          <p-card header="Quiz Results" subheader="Evaluation Summary">
+            <ng-template pTemplate="content">
+              <p><strong>Score:</strong> {{quizResult.score.toFixed(1)}}%</p>
+              <p><strong>Status:</strong> {{quizResult.status}}</p>
+              <p><strong>Correct Answers:</strong> {{quizResult.correct_answers}} / {{quizResult.total_questions}}</p>
+
+              <h5 class="mt-3">Category Breakdown:</h5>
+              <ul>
+                <li *ngFor="let c of categoryScoreKeys()">
+                  {{c}}: {{quizResult.category_scores[c].toFixed(1)}}%
+                </li>
+              </ul>
+            </ng-template>
+          </p-card>
+        </div>
+
+
 
           <!-- File Upload Section -->
           <div class="upload-section" *ngIf="!cvUploaded">

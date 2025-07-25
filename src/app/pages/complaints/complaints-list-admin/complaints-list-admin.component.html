@@ -1,0 +1,238 @@
+ <div class="applications-management-container">
+      <div class="header">
+        <h2>Gestion des Réclamations</h2>
+        <div class="header-actions">
+          <p-badge [value]="filteredComplaints.length" severity="info"></p-badge>
+          <span class="total-label">Total</span>
+        </div>
+      </div>
+
+      <p-card class="filters-card">
+        <div class="filters-section">
+          <div class="filter-group">
+            <label>Filtrer par statut</label>
+            <div class="status-filters">
+              <p-button 
+                *ngFor="let status of statusOptions" 
+                [label]="status.label"
+                [severity]="getFilterButtonSeverity(status.value)"
+                [outlined]="selectedStatus !== status.value"
+                (click)="onStatusFilter(status.value)"
+                size="small"
+                class="filter-btn">
+              </p-button>
+            </div>
+          </div>
+
+          <div class="sort-group">
+            <label>Trier par</label>
+            <p-dropdown 
+              [options]="sortOptions" 
+              [(ngModel)]="selectedSort"
+              optionLabel="label" 
+              optionValue="value"
+              (onChange)="onSortChange($event.value)"
+              placeholder="Sélectionner un tri"
+              [style]="{'width': '200px'}">
+            </p-dropdown>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card class="table-card">
+        <p-table 
+          [value]="filteredComplaints" 
+          [loading]="loading"
+          [paginator]="true" 
+          dataKey="applicationId"
+          
+          [rows]="10"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Affichage {first} à {last} sur {totalRecords} candidatures"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          styleClass="p-datatable-striped p-datatable-gridlines">
+          
+          <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3rem">#</th>
+      <th pSortableColumn="user.username">
+        Utilisateur
+        <p-sortIcon field="user.username"></p-sortIcon>
+      </th>
+      <th pSortableColumn="title">
+        Titre de la réclamation
+        <p-sortIcon field="title"></p-sortIcon>
+      </th>
+      <!-- <th pSortableColumn="description">
+        Description
+        <p-sortIcon field="description"></p-sortIcon>
+      </th> -->
+      <th pSortableColumn="createdAt">
+        Date
+        <p-sortIcon field="createdAt"></p-sortIcon>
+      </th>
+      <th pSortableColumn="complaintStatus">
+        Statut
+        <p-sortIcon field="complaintStatus"></p-sortIcon>
+      </th>
+      <th>Actions</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-complaint let-rowIndex="rowIndex">
+    <tr>
+      <td>{{ rowIndex + 1 }}</td>
+
+      <td>
+        <strong>{{ complaint.user?.username || 'N/A' }}</strong><br />
+        <small>{{ complaint.user?.email || 'N/A' }}</small>
+      </td>
+
+      <td>
+        {{ complaint.title }}
+      </td>
+
+      <!-- <td>
+        {{ complaint.description }}
+      </td> -->
+
+      <td>
+        {{ formatDate(complaint.createdAt) }}
+      </td>
+
+      <td>
+        <p-dropdown
+                  [options]="statusOptionsForDropdown" 
+                  [(ngModel)]="complaint.complaintStatus"
+                  optionLabel="label" 
+                  optionValue="value"
+                  (onChange)="updateApplicationStatus(complaint.complaintId, $event.value)"
+                  [style]="{'width': '140px'}"
+                  [appendTo]="'body'"
+                  [virtualScroll]="false"
+                  [scrollHeight]="'200px'"
+                  [panelStyleClass]="'status-dropdown-panel'">
+                  <ng-template pTemplate="selectedItem" let-selectedOption>
+                    <p-tag 
+                      [value]="getStatusLabel(selectedOption.value)" 
+                      [severity]="getStatusSeverity(selectedOption.value)">
+                    </p-tag>
+                  </ng-template>
+                  <ng-template pTemplate="item" let-option>
+                    <p-tag 
+                      [value]="option.label" 
+                      [severity]="getStatusSeverity(option.value)">
+                    </p-tag>
+                  </ng-template>
+                </p-dropdown>
+                <ng-template #elseBlock>
+                    <p-tag 
+                      [value]="complaint.complaintStatus" 
+                      [severity]="getStatusSeverity(complaint.complaintStatus)">
+                    </p-tag>
+                </ng-template>
+      </td>
+
+      <td>
+        <div class="action-buttons">
+          <p-button 
+            icon="pi pi-eye" 
+            severity="info"
+            size="small"
+            pTooltip="Voir les détails"
+            (click)="viewComplaint(complaint)"
+            [text]="true">
+          </p-button>
+
+          <!-- <p-button 
+            icon="pi pi-pencil" 
+            severity="warn"
+            size="small"
+            pTooltip="Modifier la réclamation"
+            [text]="true">
+          </p-button> -->
+
+          <p-button 
+            icon="pi pi-trash" 
+            severity="danger"
+            size="small"
+            pTooltip="Supprimer"
+            (click)="deleteComplaint(complaint.complaintId)"
+            [text]="true">
+          </p-button>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7" class="text-center">
+        <div class="empty-state">
+          <i class="pi pi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+          <h3>Aucune réclamation trouvée</h3>
+          <p>Il n'y a pas de réclamations correspondant à vos critères de recherche.</p>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+      </p-card>
+
+      <div class="footer">
+        <div class="footer-left">
+          <span>Système de Recrutement</span>
+          <span>© 2025 Tous droits réservés.</span>
+        </div>
+        <div class="footer-right">
+          <span>Développé par Actia Engnineering Services</span>
+        </div>
+      </div>
+      <p-dialog 
+        [(visible)]="viewDialogVisible" 
+        [modal]="true" 
+        [style]="{width: '50vw'}"
+        header="Détails de la Réclamation"
+        styleClass="complaint-dialog">
+        
+        <div class="dialog-content" *ngIf="selectedComplaint">
+          <div class="complaint-info">
+            <div class="info-row">
+              <span class="info-label">Utilisateur:</span>
+              <span class="info-value">{{selectedComplaint.user.username}}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email:</span>
+              <span class="info-value">{{selectedComplaint.user.email}}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Type:</span>
+              <p-tag 
+                [value]="getTypeLabel(selectedComplaint.complaintType)"
+                [severity]="getTypeSeverity(selectedComplaint.complaintType)">
+              </p-tag>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Statut:</span>
+              <p-tag 
+                [value]="getStatusLabel(selectedComplaint.complaintStatus)"
+                [severity]="getStatusSeverity(selectedComplaint.complaintStatus)">
+              </p-tag>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Titre:</span>
+              <span class="info-value">{{selectedComplaint.title}}</span>
+            </div>
+            <div class="info-row description-row">
+              <span class="info-label">Description:</span>
+              <div class="info-value description-text">{{selectedComplaint.description}}</div>
+            </div>
+          </div>
+        </div>
+      </p-dialog>
+    </div>
+
+    <p-toast position="top-right"></p-toast>
+
+    <p-confirmDialog></p-confirmDialog>
+    <p-toast></p-toast>

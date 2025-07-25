@@ -1,0 +1,262 @@
+ <div class="applications-management-container">
+      <div class="header">
+        <h2>Gestion des Candidatures</h2>
+        <div class="header-actions">
+          <p-badge [value]="filteredApplications.length" severity="info"></p-badge>
+          <span class="total-label">Total</span>
+        </div>
+      </div>
+
+      <p-card class="filters-card">
+        <div class="filters-section">
+          <div class="filter-group">
+            <label>Filtrer par statut</label>
+            <div class="status-filters">
+              <p-button 
+                *ngFor="let status of statusOptions" 
+                [label]="status.label"
+                [severity]="getFilterButtonSeverity(status.value)"
+                [outlined]="selectedStatus !== status.value"
+                (click)="onStatusFilter(status.value)"
+                size="small"
+                class="filter-btn">
+              </p-button>
+            </div>
+          </div>
+
+          <div class="sort-group">
+            <label>Trier par</label>
+            <p-dropdown 
+              [options]="sortOptions" 
+              [(ngModel)]="selectedSort"
+              optionLabel="label" 
+              optionValue="value"
+              (onChange)="onSortChange($event.value)"
+              placeholder="Sélectionner un tri"
+              [style]="{'width': '200px'}">
+            </p-dropdown>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card class="table-card">
+        <p-table 
+          [value]="filteredApplications" 
+          [loading]="loading"
+          [paginator]="true" 
+          dataKey="applicationId"
+          
+          [rows]="10"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Affichage {first} à {last} sur {totalRecords} candidatures"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          styleClass="p-datatable-striped p-datatable-gridlines">
+          
+          <ng-template pTemplate="header" #header>
+            <tr>
+              <th style="width: 3rem"></th>
+              <th pSortableColumn="user.username">
+                Candidat
+                <p-sortIcon field="user.username"></p-sortIcon>
+              </th>
+              <th pSortableColumn="user.email">
+                Email
+                <p-sortIcon field="user.email"></p-sortIcon>
+              </th>
+              <th pSortableColumn="job.title">
+                Poste
+                <p-sortIcon field="job.title"></p-sortIcon>
+              </th>
+              <th pSortableColumn="appliedDate">
+                Date de candidature
+                <p-sortIcon field="appliedDate"></p-sortIcon>
+              </th>
+              <th pSortableColumn="Score">
+                Score de matching
+                <p-sortIcon field="Score"></p-sortIcon>
+              </th>
+              <th pSortableColumn="status">
+                Statut
+                <p-sortIcon field="status"></p-sortIcon>
+              </th>
+              <th>CV</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-application let-rowIndex="rowIndex" #groupheader let-expanded="expanded">
+            <tr>
+              <td>
+                
+               <p-button
+                  type="button"
+                  [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                  [pRowToggler]="application"
+                  pRipple
+                  pButton
+                  [disabled]="application.status !== 'INTERVIEW'"
+                  [pTooltip]="application.status === 'INTERVIEW' ? 'Voir/Modifier les détails de l entretien' : 'Disponible uniquement pour les candidatures en entretien'"
+                  [text]="true">
+                </p-button>
+              </td>
+              <td>
+                <div class="candidate-info">
+                  <strong>{{ application.user?.username || 'N/A' }}</strong>
+                </div>
+              </td>
+              <td>
+                <span class="email-text">{{ application.user?.email || 'N/A' }}</span>
+              </td>
+              <td>
+                <p-chip 
+                  [label]="application.job?.title || 'N/A'" 
+                  styleClass="job-chip">
+                </p-chip>
+              </td>
+              <td>
+                <span class="date-text">{{ formatDate(application.appliedDate) }}</span>
+              </td>
+              <td>
+               <p-progressbar [value]="application.matchingScore" [color]="getMatchingColor(application.matchingScore)" [style]="{'width':'80%','height':'1rem'}" />
+              </td>
+              <td>
+                <p-dropdown *ngIf="application.status!=='HIRED' && application.status!=='REJECTED'; else elseBlock"
+                  [options]="statusOptionsForDropdown" 
+                  [(ngModel)]="application.status"
+                  optionLabel="label" 
+                  optionValue="value"
+                  (onChange)="updateApplicationStatus(application.applicationId, $event.value)"
+                  [style]="{'width': '140px'}"
+                  [appendTo]="'body'"
+                  [virtualScroll]="false"
+                  [scrollHeight]="'200px'"
+                  [panelStyleClass]="'status-dropdown-panel'">
+                  <ng-template pTemplate="selectedItem" let-selectedOption>
+                    <p-tag 
+                      [value]="getStatusLabel(selectedOption.value)" 
+                      [severity]="getStatusSeverity(selectedOption.value)">
+                    </p-tag>
+                  </ng-template>
+                  <ng-template pTemplate="item" let-option>
+                    <p-tag 
+                      [value]="option.label" 
+                      [severity]="getStatusSeverity(option.value)">
+                    </p-tag>
+                  </ng-template>
+                </p-dropdown>
+                <ng-template #elseBlock>
+                    <p-tag 
+                      [value]="application.status" 
+                      [severity]="getStatusSeverity(application.status)">
+                    </p-tag>
+                </ng-template>
+              </td>
+              <td>
+                <p-button 
+                  *ngIf="application.cvFileName"
+                  icon="pi pi-file-pdf" 
+                  [label]="'CV'"
+                  severity="secondary"
+                  size="small"
+                  (click)="downloadcv(application.applicationId)"
+                  pTooltip="Télécharger le CV">
+                </p-button>
+                <span *ngIf="!application.cvFileName" class="no-cv-text">Aucun CV</span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <p-button 
+                    icon="pi pi-eye" 
+                    severity="info"
+                    size="small"
+                    (click)="viewApplication(application.applicationId)"
+                    pTooltip="Voir les détails"
+                    [text]="true">
+                  </p-button>
+                  <p-button 
+                    icon="pi pi-pencil" 
+                    severity="warn"
+                    size="small"
+                    (click)="editApplication(application.applicationId)"
+                    pTooltip="Modifier"
+                    [text]="true">
+                  </p-button>
+                  <p-button 
+                    *ngIf="application.status === 'APPROVED'"
+                    icon="pi pi-calendar" 
+                    severity="success"
+                    size="small"
+                    (click)="scheduleInterview(application.applicationId)"
+                    pTooltip="Programmer un entretien"
+                    [text]="true">
+                  </p-button>
+                  <p-button 
+                    icon="pi pi-trash" 
+                    severity="danger"
+                    size="small"
+                    (click)="deleteApplication(application.applicationId)"
+                    pTooltip="Supprimer"
+                    [text]="true">
+                  </p-button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+         
+          <ng-template pTemplate="rowexpansion" #expandedrow let-application>
+           
+            <tr >
+                <td colspan="6">
+
+           <app-interviews
+              (booleanValueChanged)="onBooleanChanged($event)"  
+              (sendInterview)="onInterviewSent($event)"
+              (interviewDeleted)="onInterviewDeleted($event, application)"
+              [application]="application"
+              [interviewTypes]="interviewTypes">
+              </app-interviews>
+                </td>
+              <td colspan="9">
+               
+                <app-interview-details *ngIf="receivedBoolean==false"
+                [application]="application"
+                [interviewTypes]="interviewTypes"
+                (interviewSaved)="onInterviewSaved($event, application)"
+                >
+                </app-interview-details>
+
+                <app-interview-upadte *ngIf="receivedBoolean==true"
+                [interview]="receivedInterview"
+                ></app-interview-upadte>
+               
+              </td>
+            </tr>
+        
+
+            </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7" class="text-center">
+                <div class="empty-state">
+                  <i class="pi pi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+                  <h3>Aucune candidature trouvée</h3>
+                  <p>Il n'y a pas de candidatures correspondant à vos critères de recherche.</p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+
+      <div class="footer">
+        <div class="footer-left">
+          <span>Système de Recrutement</span>
+          <span>© 2025 Tous droits réservés.</span>
+        </div>
+        <div class="footer-right">
+          <span>Développé par Actia Engnineering Services</span>
+        </div>
+      </div>
+    </div>
+
+    <p-toast position="top-right"></p-toast>

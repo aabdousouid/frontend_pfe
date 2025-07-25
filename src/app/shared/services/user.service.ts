@@ -39,19 +39,7 @@ export class UserService {
 
 
 
-  uploadCv(userId: number, file: File): Observable<any> {
-  const formData = new FormData();
-  formData.append("file", file);
-
-  return this.http.post(`${API}profiles/${userId}/upload-cv`, formData, {
-    responseType: 'text'
-  });
-}
-
-downloadCv(userId: number): Observable<Blob> {
-  return this.http.get(`${API}/profiles/${userId}/download-cv`, {
-    responseType: 'blob'
-  });
+  
 }
   /** tests
   getPublicContent(): Observable<any> {
@@ -72,4 +60,3 @@ downloadCv(userId: number): Observable<Blob> {
   
    */
 
-}

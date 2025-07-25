@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StyleClassModule } from 'primeng/styleclass';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
+import { StorageService } from '../../../shared/services/storage.service';
 
 @Component({
     selector: 'topbar-widget',
@@ -68,10 +69,14 @@ import { ButtonModule } from 'primeng/button';
                     <img alt="logo" class="h-24 w-auto object-contain" src="./../../../assets/images/aactia.png"/>
                 </div>
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="#features" class="text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors">Features</a>
-                    <a href="#how-it-works" class="text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors">How It Works</a>
-                    <a href="#jobs" class="text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors">Featured Jobs</a>
-                    <p-button label="Get Started" class="ml-4" [outlined]="true" (onClick)="navigateToLogin()"/>
+                   <!--  <a href="#features" class="text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors">Features</a>
+                    <a [routerLink]="['/']" href="#how-it-works" class="text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors">How It Works</a>
+                    <a [routerLink]="['/']" href="#jobs" class="text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors">Featured Jobs</a> -->
+                    @if(!isLoggedIn) {
+                    <p-button label="Se Connecter" icon="pi pi-sign-in" class="ml-4" [outlined]="true" (onClick)="navigateToLogin()"/>
+                    } @else {
+                    <p-button label="Déconnexion" icon="pi pi-sign-out" class="ml-4" [outlined]="true" (onClick)="logout()"/>
+                    }
                 </div>
                 <p-button icon="pi pi-bars" class="md:hidden" [text]="true" />
             </nav>
@@ -81,11 +86,24 @@ import { ButtonModule } from 'primeng/button';
         
         `
 })
-export class TopbarWidget {
-    constructor(public router: Router) {}
+export class TopbarWidget implements OnInit {
+    isLoggedIn:boolean=false;
+    constructor(public router: Router,private storageService:StorageService) {
+        this.isLoggedIn = this.storageService.isLoggedIn();
+    }
+    ngOnInit(): void {
+       console.log(this.isLoggedIn);
+    }
 
 
     navigateToLogin(): void {
         this.router.navigate(['/auth/login']);
+    }
+
+    logout(): void {
+        this.storageService.clean();
+        this.isLoggedIn = false;
+        this.router.navigate(['/auth/login']);
+        console.log('User logged out');
     }
 }
