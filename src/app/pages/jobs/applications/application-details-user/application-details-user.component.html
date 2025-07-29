@@ -1,0 +1,231 @@
+<div class="application-details-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+  </div>
+
+  <!-- Application Details -->
+  <div *ngIf="!loading" class="application-content">
+    
+    <!-- Header Section -->
+    <div class="header-section">
+      <p-breadcrumb 
+        [model]="[
+          {label: 'Dashboard', routerLink: '/app/dashboard'},
+          {label: 'Ma candidature pour ' + (application.job?.title || 'N/A')}
+        ]"
+        class="custom-breadcrumb">
+      </p-breadcrumb>
+      
+      <div class="page-title">
+        <h1>Ma candidature</h1>
+        <p>Suivez l'évolution de votre candidature</p>
+      </div>
+    </div>
+
+    <!-- Status Timeline Card -->
+    <div class="timeline-card-container">
+      <p-card class="status-timeline-card">
+        <ng-template pTemplate="header">
+          <div class="card-header">
+            <i class="pi pi-clock"></i>
+            <span>Suivi de candidature</span>
+          </div>
+        </ng-template>
+        
+        <div class="timeline-container">
+          <div class="timeline-item" 
+               *ngFor="let step of timelineSteps" 
+               [class.completed]="step.completed"
+               [class.current]="step.current">
+            
+            <div class="timeline-marker" 
+                 [class.completed]="step.completed"
+                 [class.current]="step.current"
+                 [class.pending]="!step.completed && !step.current">
+              <i [class]="step.icon" *ngIf="step.completed || step.current"></i>
+              <span *ngIf="!step.completed && !step.current">{{step.number}}</span>
+            </div>
+            
+            <div class="timeline-content">
+              <h4 class="timeline-title">{{step.title}}</h4>
+              <p class="timeline-description">{{step.description}}</p>
+              <span class="timeline-date" *ngIf="step.date">{{step.date | date:'dd/MM/yyyy à HH:mm'}}</span>
+            </div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Main Layout - Card Based -->
+    <div class="cards-container">
+      
+      <!-- Basic Information Card -->
+      <p-card class="info-card basic-info-card">
+        <ng-template pTemplate="header">
+          <div class="card-header">
+            <i class="pi pi-info-circle"></i>
+            <span>Informations de la candidature</span>
+          </div>
+        </ng-template>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <i class="pi pi-briefcase info-icon"></i>
+            <div class="info-content">
+              <span class="label">Poste</span>
+              <span class="value">{{ application.job?.title || 'N/A' }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <i class="pi pi-calendar info-icon"></i>
+            <div class="info-content">
+              <span class="label">Date de candidature</span>
+              <span class="value">{{ application.appliedDate | date:'dd/MM/yyyy à HH:mm' }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <i class="pi pi-flag info-icon"></i>
+            <div class="info-content">
+              <span class="label">Statut actuel</span>
+              <p-tag 
+                [value]="getStatusLabel(application.status)" 
+                [severity]="getStatusSeverity(application.status)"
+                styleClass="custom-status-tag">
+              </p-tag>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <i class="pi pi-file-pdf info-icon"></i>
+            <div class="info-content">
+              <span class="label">CV soumis</span>
+              <p-button 
+                label="Télécharger" 
+                icon="pi pi-download" 
+                size="small"
+                severity="secondary"
+                [text]="true"
+                (click)="downloadCV()"
+                [disabled]="!application.cvFileName">
+              </p-button>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- CV Analysis Card -->
+      <p-card class="cv-analysis-card">
+        <ng-template pTemplate="header">
+          <div class="cv-header">
+            <div class="header-content">
+              <i class="pi pi-file-pdf header-icon"></i>
+              <div>
+                <h3>Analyse de votre CV</h3>
+                <p>Informations extraites automatiquement</p>
+              </div>
+            </div>
+            <p-chip 
+              label="IA" 
+              icon="pi pi-sparkles" 
+              styleClass="ai-chip">
+            </p-chip>
+          </div>
+        </ng-template>
+        
+        <p-accordion>
+          <p-accordionTab header="Résumé professionnel" [selected]="true">
+            <div class="resume-content">
+              <p-message severity="info" text="Résumé généré automatiquement"></p-message>
+              <div class="resume-text">
+                {{ application.cvSummary || "Voici un résumé professionnel impactant basé sur les informations fournies : **Je suis Maryem Jlassi, Ingénieure en Intelligence Artificielle avec une passion pour l'apprentissage continu et la création de solutions innovantes.** Avec plus de 2 ans d'expérience dans le domaine de l'intelligence artificielle, je possède des compétences techniques solides en Python, TensorFlow, PyTorch, Django et Node.js. J'ai également développé une expertise en Natural Language Processing (NLP) et en Deep Learning, avec des certifications de la part d'organisations comme NVIDIA." }}
+              </div>
+            </div>
+          </p-accordionTab>
+
+          <p-accordionTab header="Compétences identifiées">
+            <div class="skills-content">
+              <div class="skills-grid">
+                <p-chip 
+                  *ngFor="let skill of application.extractedSkills" 
+                  [label]="skill"
+                  styleClass="skill-chip">
+                </p-chip>
+              </div>
+              
+              <p-divider align="left">
+                <span class="p-tag">Langues</span>
+              </p-divider>
+              
+              <div class="languages-grid">
+                <p-chip label="Français" icon="pi pi-flag"></p-chip>
+                <p-chip label="Anglais" icon="pi pi-flag"></p-chip>
+                <p-chip label="Arabe" icon="pi pi-flag"></p-chip>
+              </div>
+            </div>
+          </p-accordionTab>
+        </p-accordion>
+      </p-card>
+    </div>
+
+    <!-- Comments Section (Read-only) -->
+    <div class="comments-section">
+      <p-card class="comments-card" *ngIf="application.adminComments?.length">
+        <ng-template pTemplate="header">
+          <div class="card-header">
+            <i class="pi pi-comments"></i>
+            <span>Commentaires RH</span>
+          </div>
+        </ng-template>
+        
+        <div class="comments-list">
+          <p-timeline [value]="getCommentsTimeline()" layout="vertical">
+            <ng-template pTemplate="content" let-comment>
+              <p-card styleClass="comment-card">
+                <div class="comment-content">
+                  <p>{{ comment.text }}</p>
+                  <small class="comment-date">{{ comment.date | date:'dd/MM/yyyy à HH:mm' }}</small>
+                </div>
+              </p-card>
+            </ng-template>
+            <ng-template pTemplate="marker" let-comment>
+              <div class="comment-marker">
+                <i class="pi pi-comment"></i>
+              </div>
+            </ng-template>
+          </p-timeline>
+        </div>
+      </p-card>
+      
+      <!-- No comments message -->
+      <p-card class="no-comments-card" *ngIf="!application.adminComments?.length">
+        <ng-template pTemplate="header">
+          <div class="card-header">
+            <i class="pi pi-comments"></i>
+            <span>Commentaires RH</span>
+          </div>
+        </ng-template>
+        
+        <div class="no-comments-content">
+          <i class="pi pi-inbox no-comments-icon"></i>
+          <p>Aucun commentaire pour le moment</p>
+          <small>Les commentaires de l'équipe RH apparaîtront ici</small>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Back Button -->
+    <div class="back-section">
+      <p-button 
+        label="Retour au dashboard" 
+        icon="pi pi-arrow-left" 
+        styleClass="p-button-outlined p-button-secondary"
+        (click)="goBack()">
+      </p-button>
+    </div>
+  </div>
+</div>
+
+<p-toast></p-toast>

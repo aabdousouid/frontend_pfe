@@ -23,7 +23,7 @@ export class ApplicationService {
   }
 
   downloadCv(userId:number){
-    return this.http.get(AUTH_API + `download-cv/${userId}`,httpOptions);
+    return this.http.get('http://localhost:8080/api/profile/profiles/'+`${userId}/download-cv`,httpOptions);
   }
 
   delelteApplication(applicationId:number){
@@ -40,6 +40,10 @@ export class ApplicationService {
 
   addComments(applicationId:number,comment:string[]){
     return this.http.put(AUTH_API + `addComments/${applicationId}`, comment, httpOptions);
+  }
+
+  findByUserAndJob(userId:number,jobId:number){
+    return this.http.get(AUTH_API + `findByUserAndJob/${userId}/${jobId}`, httpOptions);
   }
 
 }

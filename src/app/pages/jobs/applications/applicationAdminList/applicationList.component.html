@@ -158,7 +158,7 @@
                   [label]="'CV'"
                   severity="secondary"
                   size="small"
-                  (click)="downloadcv(application.applicationId)"
+                  (click)="downloadcv(application.cvFileName)"
                   pTooltip="Télécharger le CV">
                 </p-button>
                 <span *ngIf="!application.cvFileName" class="no-cv-text">Aucun CV</span>

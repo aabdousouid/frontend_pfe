@@ -9,8 +9,8 @@
                 [style]="{'background-color': '#10b981', 'color': '#ffffff'}">
               </p-avatar>
               <div>
-                <h3 class="m-0">CV Career Assistant</h3>
-                <small class="text-500">Upload your CV and get personalized job recommendations</small>
+                <h3 class="m-0">ACTIA-RecrutBot</h3>
+                <small class="text-500">Assistant intelligent de recrutement</small>
               </div>
             </div>
             <p-badge 
@@ -26,7 +26,7 @@
             <p-scrollPanel [style]="{width: '100%', height: '400px'}">
               <div class="messages-container">
                 <div 
-                  *ngFor="let message of messages; trackBy: trackByMessageId"
+                  *ngFor="let message of messages;"
                   class="message-wrapper"
                   [ngClass]="{'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot'}">
                   
@@ -51,36 +51,85 @@
                     </p-avatar>
                     <div class="message-content">
                       <p *ngIf="message.type === 'text'">{{message.content}}</p>
+                      <div *ngIf="message.context === 'jobTypeSelection' && message.suggestions!.length > 0" class="job-type-selection mt-3">
+                      <p class="mb-2">Choisissez votre type de recherche : </p>
+                      <div class="flex flex-wrap gap-2">
+                        <div *ngIf="message.context === 'jobTypeSelection'" class="job-type-buttons">
+                          <div class="flex flex-wrap gap-2">
+                            <p-button 
+                              *ngFor="let option of message.suggestions" 
+                              [label]="option.label" 
+                              (onClick)="onSelectJobType(option)" 
+                              class="p-button-outlined">
+                            </p-button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+
                       
                       <!-- Job Suggestions -->
                       <!-- inside *ngIf="message.type === 'suggestions'" -->
-<div *ngIf="message.suggestions?.length > 0" class="job-suggestions">
-  <h4 class="mb-3">Recommended Job Opportunities</h4>
-  <div class="grid">
-    <div 
-      *ngFor="let suggestion of message.suggestions" 
-      class="col-12 md:col-6 lg:col-4 mb-3">
-      
-      <p-card [header]="suggestion.title" subheader="{{suggestion.matchPercentage}}% Match" (click)="onSelectJob(suggestion.fullJob)">
-        <ng-template pTemplate="content">
-          <p class="mb-2"><strong>Description:</strong> {{suggestion.description}}</p>
-          <p class="mb-2"><strong>Experience Level:</strong> {{suggestion.experienceLevel}}</p>
-          <p class="mb-2"><strong>Salary Range:</strong> {{suggestion.salaryRange}}</p>
-          <p class="mb-2"><strong>Required Skills:</strong></p>
-          <div class="flex flex-wrap gap-2">
-            <p-chip *ngFor="let skill of suggestion.requiredSkills" [label]="skill"></p-chip>
-          </div>
-          <p class="mt-2 text-sm italic text-gray-500"><strong>Why:</strong> {{suggestion.justification}}</p>
-        </ng-template>
-      </p-card>
-    </div>
-  </div>
-</div>
+                    <div *ngIf="message.context === 'jobs' && message.suggestions!.length > 0" class="job-suggestions">
+                      <h4 class="mb-3">Recommended Job Opportunities</h4>
+                      <div class="grid">
+                        <div 
+                          *ngFor="let suggestion of message.suggestions" 
+                          class="col-12 md:col-6 lg:col-4 mb-3">
+                          
+                          <p-card [header]="suggestion.title" subheader="{{suggestion.matchPercentage}}% Match" (click)="onSelectJob(suggestion.fullJob)">
+                            <ng-template pTemplate="content">
+                              <p class="mb-2"><strong>Description:</strong> {{suggestion.description}}</p>
+                              <p class="mb-2"><strong>Experience Level:</strong> {{suggestion.experienceLevel}}</p>
+                              <p class="mb-2"><strong>Contract :</strong> {{suggestion.type}}</p>
+                              <p class="mb-2"><strong>Required Skills:</strong></p>
+                              <div class="flex flex-wrap gap-2">
+                                <p-chip *ngFor="let skill of suggestion.requiredSkills" [label]="skill"></p-chip>
+                              </div>
+                              <p class="mt-2 text-sm italic text-gray-500"><strong>Why:</strong> {{suggestion.justification}}</p>
+                            </ng-template>
+                          </p-card>
+                        </div>
+                      </div>
+                    </div>
 
                     </div>
                     <small class="timestamp">{{message.timestamp | date:'short'}}</small>
                   </div>
                 </div>
+
+
+                <div *ngIf="quizCompleted && quizResult" class="quiz-result mt-4">
+          <p-card header="Quiz Results" subheader="Evaluation Summary">
+            <ng-template pTemplate="content">
+              <p><strong>Score:</strong> {{quizResult.score.toFixed(1)}}%</p>
+              <p><strong>Status:</strong> {{quizResult.status}}</p>
+              <p><strong>Correct Answers:</strong> {{quizResult.correct_answers}} / {{quizResult.total_questions}}</p>
+
+              <h5 class="mt-3">Category Breakdown:</h5>
+              <ul>
+                <li *ngFor="let c of categoryScoreKeys()">
+                  {{c}}: {{quizResult.category_scores[c].toFixed(1)}}%
+                </li>
+              </ul>
+              <p-button 
+              *ngIf="quizResult?.status === 'RETRY'" 
+              label="Retry Quiz" 
+              icon="pi pi-refresh" 
+              class="mt-2" 
+              (onClick)="retryQuiz()">
+            </p-button>
+            <p-button 
+              *ngIf="quizResult?.status === 'PASS'" 
+              label="Postuler maintenant" 
+              icon="pi pi-refresh" 
+              class="mt-2" 
+              (onClick)="apply()">
+            </p-button>
+            </ng-template>
+          </p-card>
+        </div>
 
                 <!-- Typing Indicator -->
                 <div *ngIf="isTyping" class="message bot typing-indicator">
@@ -135,24 +184,9 @@
                 [disabled]="quizAnswers.includes(-1)">
               </p-button>
             </div>
-          <div *ngIf="quizCompleted && quizResult" class="quiz-result mt-4">
-          <p-card header="Quiz Results" subheader="Evaluation Summary">
-            <ng-template pTemplate="content">
-              <p><strong>Score:</strong> {{quizResult.score.toFixed(1)}}%</p>
-              <p><strong>Status:</strong> {{quizResult.status}}</p>
-              <p><strong>Correct Answers:</strong> {{quizResult.correct_answers}} / {{quizResult.total_questions}}</p>
+          
 
-              <h5 class="mt-3">Category Breakdown:</h5>
-              <ul>
-                <li *ngFor="let c of categoryScoreKeys()">
-                  {{c}}: {{quizResult.category_scores[c].toFixed(1)}}%
-                </li>
-              </ul>
-            </ng-template>
-          </p-card>
-        </div>
-
-
+            
 
           <!-- File Upload Section -->
           <div class="upload-section" *ngIf="!cvUploaded">

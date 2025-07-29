@@ -37,6 +37,7 @@ import { InterviewService } from '../../../../shared/services/interview.service'
 import { InterviewDetailsComponent } from "../../interviews/interview-details/interview-details.component";
 import { InterviewsComponent } from '../../interviews/interviews/interviews.component';
 import { InterviewUpadteComponent } from '../../interviews/interview-upadte/interview-upadte.component';
+import { JobsService } from '../../../../shared/services/jobs.service';
 
 
 @Component({
@@ -136,6 +137,7 @@ receivedInterview: Interview | undefined | null = null;
     private messageService: MessageService,
     private interviewService: InterviewService,
     private applicationService: ApplicationService,
+    private jobService:JobsService,
     private router: Router
   ) {}
 
@@ -201,31 +203,15 @@ getInterviewStatusSeverity(status: string): string {
         });
       }
     });
-  }
-   downloadcv(applicationId:number){
-    this.applicationService.downloadCv(applicationId).subscribe({
-      next:(response=>{
-        console.log('CV downloaded successfully');
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Succès',
-          detail: 'CV téléchargé avec succès'
-        })
-        
-      })
-      ,
-      error:(error=>{
-        console.error('Error downloading CV:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: 'Impossible de télécharger le CV'
-        });
-      
-    })
-  })
     
   }
+
+
+  downloadcv(filename:string){
+    this.jobService.downloadCv(filename);
+  }
+
+   
   applyFilters() {
     // Filter by status
     this.filteredApplications = this.applications.filter(app => {

@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UserProfile } from '../models/user-profile';
 
-const API_URL = 'http://localhost:8080/api/test/';
+//const API_URL = 'http://localhost:8080/api/test/';
 const API = 'http://localhost:8080/api/profile/';
 
 const httpOptions = {
@@ -37,9 +37,34 @@ export class UserService {
     return this.http.get(API + `getProfileByUser/${userId}`,httpOptions)
   }
 
-
+ 
+  addProfileWithCV(profile: UserProfile, cvFile: File): Observable<UserProfile> {
+    const formData = new FormData();
+    formData.append('profile', JSON.stringify(profile));
+    if (cvFile) {
+      formData.append('cv', cvFile);
+    }
+    
+    return this.http.post<UserProfile>(`${API}add-with-cv`, formData);
+  }
 
   
+  updateProfileWithCV(profileId: number, profile: UserProfile, cvFile?: File): Observable<UserProfile> {
+    const formData = new FormData();
+    formData.append('profile', JSON.stringify(profile));
+    if (cvFile) {
+      formData.append('cv', cvFile);
+    }
+    
+    return this.http.put<UserProfile>(`${API}${profileId}/update-with-cv`, formData);
+  }
+
+  downloadCV(profileId: number): Observable<Blob> {
+      return this.http.get(`${API}${profileId}/download-cv`, {
+        responseType: 'blob'
+      });
+    }
+
 }
   /** tests
   getPublicContent(): Observable<any> {

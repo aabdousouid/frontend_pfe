@@ -34,6 +34,7 @@ import { Application } from '../../../../shared/models/application';
 import { Interview } from '../../../../shared/models/interview';
 import { InterviewService } from '../../../../shared/services/interview.service';
 import { UserInterviewsComponent } from '../../interviews/user-interviews/user-interviews.component';
+import { JobsService } from '../../../../shared/services/jobs.service';
 
 @Component({
   selector: 'app-application-list',
@@ -108,6 +109,7 @@ export class ApplicationUserListComponent implements OnInit {
     private storageService: StorageService,
     private applicationService: ApplicationService,
     private interviewService:InterviewService,
+    private jobService:JobsService,
     private router: Router
   ) {}
 
@@ -156,30 +158,7 @@ export class ApplicationUserListComponent implements OnInit {
       }
     });
   }
-   downloadcv(applicationId:number){
-    this.applicationService.downloadCv(applicationId).subscribe({
-      next:(response=>{
-        console.log('CV downloaded successfully');
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Succès',
-          detail: 'CV téléchargé avec succès'
-        })
-        
-      })
-      ,
-      error:(error=>{
-        console.error('Error downloading CV:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: 'Impossible de télécharger le CV'
-        });
-      
-    })
-  })
-    
-  }
+
   applyFilters() {
     // Filter by status
     this.filteredApplications = this.applications.filter(app => {
@@ -244,7 +223,7 @@ export class ApplicationUserListComponent implements OnInit {
   
 
   viewApplication(applicationId: number) {
-    this.router.navigate(['/app/applications/', applicationId]);
+    this.router.navigate(['/app/applicationUserDetails/', applicationId]);
   }
 
   editApplication(applicationId: number) {
@@ -290,16 +269,21 @@ export class ApplicationUserListComponent implements OnInit {
     }
   }
 
-  downloadCV(cvFileName: string) {
-    if (cvFileName) {
-      // Implement CV download logic
-      this.messageService.add({
-        severity: 'info',
-        summary: 'Téléchargement',
-        detail: `Téléchargement du CV: ${cvFileName}`
-      });
+
+
+
+  downloadcv(vvFilePath: string) {
+    if (vvFilePath) {
+        const cvFileName = vvFilePath.split('/').pop() || vvFilePath;
+        
+        this.jobService.downloadCv(cvFileName);  // Pass just the filename
+        this.messageService.add({
+            severity: 'info',
+            summary: 'Téléchargement',
+            detail: `Téléchargement du CV: ${cvFileName}`
+        });
     }
-  }
+}
 
   getFilterButtonSeverity(status: string): "secondary" | "success" | "info" | "warn" | "help" | "danger" | "contrast" | undefined {
     switch (status) {

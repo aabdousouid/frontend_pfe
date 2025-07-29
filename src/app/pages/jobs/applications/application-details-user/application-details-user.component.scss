@@ -1,0 +1,757 @@
+/* Application Details - Candidate View - Properly Scoped */
+
+// Wrap all ::ng-deep styles within the component selector
+:host {
+  
+  .application-details-container {
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+  }
+
+  .application-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Header Section */
+  .header-section {
+    margin-bottom: 32px;
+  }
+
+  .page-title {
+    margin-top: 16px;
+    
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+    }
+    
+    p {
+      font-size: 16px;
+      margin: 0;
+      opacity: 0.7;
+    }
+  }
+
+  /* Timeline Card */
+  .timeline-card-container {
+    margin-bottom: 32px;
+  }
+
+  /* Timeline Styling */
+  .timeline-container {
+    padding: 20px 0;
+  }
+
+  .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    position: relative;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    // Connecting line
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 32px;
+      width: 2px;
+      height: calc(100% + 16px);
+      background: #e2e8f0;
+      z-index: 0;
+    }
+    
+    &.completed:not(:last-child)::after {
+      background: #10b981;
+    }
+    
+    &.current:not(:last-child)::after {
+      background: linear-gradient(to bottom, #10b981 0%, #e2e8f0 50%);
+    }
+  }
+
+  .timeline-marker {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 1;
+    position: relative;
+    flex-shrink: 0;
+    
+    &.completed {
+      background: #10b981;
+      color: white;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+    }
+    
+    &.current {
+      background: #0ea5e9;
+      color: white;
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+    }
+    
+    &.pending {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 2px solid #e2e8f0;
+    }
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(14, 165, 233, 0.1);
+    }
+    100% {
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+    }
+  }
+
+  .timeline-content {
+    flex: 1;
+    padding-top: 2px;
+  }
+
+  .timeline-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #1e293b;
+  }
+
+  .timeline-description {
+    font-size: 14px;
+    margin: 0 0 8px 0;
+    opacity: 0.8;
+    line-height: 1.5;
+  }
+
+  .timeline-date {
+    font-size: 12px;
+    opacity: 0.6;
+    font-weight: 500;
+  }
+
+  /* Cards Container */
+  .cards-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  /* Card Header */
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: white;
+    
+    i {
+      font-size: 16px;
+    }
+  }
+
+  /* Basic Information Card */
+  .basic-info-card {
+    .info-grid {
+      .info-item {
+        display: flex;
+        align-items: center;
+        padding: 16px 0;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background: #f8fafc;
+          margin: 0 -12px;
+          padding: 16px 12px;
+          border-radius: 8px;
+        }
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        .info-icon {
+          color: #059669;
+          font-size: 16px;
+          margin-right: 12px;
+          width: 20px;
+          text-align: center;
+        }
+        
+        .info-content {
+          flex: 1;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          
+          .label {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.8;
+          }
+          
+          .value {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: right;
+          }
+        }
+      }
+    }
+  }
+
+  /* CV Analysis Card */
+  .cv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      
+      .header-icon {
+        font-size: 20px;
+        color: white;
+      }
+      
+      h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      
+      p {
+        margin: 0;
+        font-size: 12px;
+        opacity: 0.9;
+      }
+    }
+  }
+
+  .resume-content {
+    .resume-text {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      line-height: 1.7;
+      color: #374151;
+      font-size: 14px;
+      text-align: justify;
+      margin-top: 16px;
+      border-left: 4px solid #059669;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  .skills-content {
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .languages-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+  }
+
+  /* Comments Section */
+  .comments-section {
+    grid-column: 1 / -1;
+    margin-bottom: 32px;
+  }
+
+  .comments-list {
+    margin-top: 16px;
+  }
+
+  .comment-marker {
+    background: #059669;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  /* No Comments Card */
+  .no-comments-content {
+    text-align: center;
+    padding: 40px 20px;
+    
+    .no-comments-icon {
+      font-size: 48px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    
+    p {
+      font-size: 16px;
+      color: #64748b;
+      margin: 0 0 8px 0;
+      font-weight: 500;
+    }
+    
+    small {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+  }
+
+  /* Back Section */
+  .back-section {
+    text-align: left;
+    padding-top: 24px;
+    border-top: 2px solid #f1f5f9;
+    margin-top: 32px;
+  }
+
+  /* Smooth Animations */
+  .timeline-card-container,
+  .cards-container > *,
+  .comments-section {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // Scoped ::ng-deep styles - these will only affect this component
+  ::ng-deep {
+    
+    /* Breadcrumb Styling */
+    .custom-breadcrumb .p-breadcrumb {
+      background: transparent;
+      border: none;
+      padding: 0;
+      font-size: 14px;
+    }
+
+    .custom-breadcrumb .p-breadcrumb-list {
+      background: transparent;
+      padding: 0;
+    }
+
+    .custom-breadcrumb .p-breadcrumb-item {
+      color: #059669;
+      font-weight: 500;
+    }
+
+    .custom-breadcrumb .p-breadcrumb-item:last-child {
+      color: #374151;
+      font-weight: 600;
+    }
+
+    /* PrimeNG Card Overrides */
+    .p-card {
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+      }
+
+      .p-card-header {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        color: white;
+        padding: 20px 24px;
+        border-bottom: none;
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      .p-card-content {
+        padding: 24px;
+      }
+    }
+
+    /* Custom Status Tag */
+    .custom-status-tag {
+      font-size: 12px !important;
+      padding: 6px 12px !important;
+      border-radius: 16px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* AI Chip */
+    .ai-chip {
+      background: rgba(255, 255, 255, 0.2) !important;
+      color: white !important;
+      font-size: 11px !important;
+      padding: 4px 8px !important;
+      border-radius: 12px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Accordion Styling */
+    .p-accordion .p-accordion-header .p-accordion-header-link {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #374151;
+      font-weight: 600;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: #f1f5f9;
+        border-color: #059669;
+      }
+    }
+
+    .p-accordion .p-accordion-header.p-accordion-header-active .p-accordion-header-link {
+      background: #059669;
+      border-color: #059669;
+      color: white;
+    }
+
+    .p-accordion .p-accordion-content {
+      border: none;
+      border-radius: 8px;
+      background: #fafafa;
+      margin-bottom: 8px;
+    }
+
+    /* Chip Styling */
+    .skill-chip {
+      background: #e2e8f0 !important;
+      color: #475569 !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      border-radius: 16px !important;
+      padding: 6px 12px !important;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: #059669 !important;
+        color: white !important;
+      }
+    }
+
+    /* Comments Timeline */
+    .comment-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      
+      .p-card-content {
+        padding: 16px;
+        
+        .comment-content {
+          p {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            line-height: 1.5;
+          }
+          
+          .comment-date {
+            color: #64748b;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .p-timeline .p-timeline-event-marker {
+      background: #059669;
+      border-color: #059669;
+      width: 24px;
+      height: 24px;
+    }
+
+    .p-timeline .p-timeline-event-connector {
+      background: #d1fae5;
+    }
+
+    /* Button Styling */
+    .p-button {
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      
+      &.p-button-success {
+        background: #059669;
+        border-color: #059669;
+        
+        &:hover {
+          background: #047857;
+          border-color: #047857;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+      }
+      
+      &.p-button-info {
+        background: #0ea5e9;
+        border-color: #0ea5e9;
+        
+        &:hover {
+          background: #0284c7;
+          border-color: #0284c7;
+        }
+      }
+      
+      &.p-button-secondary {
+        background: #64748b;
+        border-color: #64748b;
+        color: white;
+        
+        &:hover {
+          background: #475569;
+          border-color: #475569;
+        }
+        
+        &.p-button-outlined {
+          background: transparent;
+          color: #64748b;
+          
+          &:hover {
+            background: #64748b;
+            color: white;
+          }
+        }
+      }
+      
+      &.p-button-text {
+        background: transparent;
+        border: none;
+        padding: 4px 8px;
+        
+        &:hover {
+          background: rgba(5, 150, 105, 0.1);
+        }
+      }
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+      }
+    }
+
+    /* Accordion Focus */
+    .p-accordion-header-link:focus {
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+    }
+
+    /* Divider Styling */
+    .p-divider {
+      margin: 20px 0;
+      
+      &.p-divider-horizontal:before {
+        border-top-color: #e2e8f0;
+      }
+      
+      .p-divider-content {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    /* Message Component */
+    .p-message {
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 12px;
+      
+      &.p-message-info {
+        background: #dbeafe;
+        border: 1px solid #93c5fd;
+        color: #1e40af;
+        
+        .p-message-icon {
+          color: #3b82f6;
+        }
+      }
+    }
+
+    /* Loading Spinner */
+    .p-progress-spinner {
+      width: 50px;
+      height: 50px;
+
+      .p-progress-spinner-circle {
+        stroke: #059669;
+      }
+    }
+
+    /* Toast Notifications */
+    .p-toast {
+      z-index: 1050;
+
+      .p-toast-message {
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .cards-container {
+      gap: 20px;
+    }
+    
+    .application-details-container {
+      padding: 20px;
+    }
+    
+    .page-title h1 {
+      font-size: 24px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .cards-container {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    
+    .application-details-container {
+      padding: 16px;
+    }
+    
+    .page-title h1 {
+      font-size: 22px;
+    }
+    
+    .page-title p {
+      font-size: 14px;
+    }
+    
+    ::ng-deep {
+      .p-card .p-card-header {
+        padding: 16px 20px;
+        font-size: 15px;
+      }
+      
+      .p-card .p-card-content {
+        padding: 20px;
+      }
+    }
+    
+    .basic-info-card .info-item {
+      .info-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        
+        .value {
+          text-align: left;
+        }
+      }
+    }
+    
+    .timeline-item {
+      margin-bottom: 24px;
+    }
+    
+    .timeline-title {
+      font-size: 16px;
+    }
+    
+    .timeline-description {
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .application-details-container {
+      padding: 12px;
+    }
+    
+    .header-section {
+      margin-bottom: 24px;
+    }
+    
+    .page-title h1 {
+      font-size: 20px;
+    }
+    
+    ::ng-deep {
+      .p-card .p-card-header {
+        padding: 12px 16px;
+      }
+      
+      .p-card .p-card-content {
+        padding: 16px;
+      }
+      
+      .skill-chip {
+        font-size: 11px !important;
+        padding: 4px 8px !important;
+      }
+    }
+    
+    .cv-header .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+    
+    .skills-grid,
+    .languages-grid {
+      gap: 6px;
+    }
+    
+    .timeline-marker {
+      width: 28px;
+      height: 28px;
+      font-size: 12px;
+    }
+    
+    .timeline-item:not(:last-child)::after {
+      left: 13px;
+    }
+  }
+}

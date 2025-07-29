@@ -1,0 +1,150 @@
+<div class="job-details-container">
+      <p-card class="job-details-card">
+        <!-- Header Section -->
+        <div class="job-header">
+          <div class="company-info">
+            <p-avatar 
+              [image]="jobOffer?.companyLogo" 
+              [label]="!jobOffer?.companyLogo ? job?.company?.charAt(0) : ''"
+              size="large" 
+              shape="square"
+              styleClass="company-avatar">
+            </p-avatar>
+            <div class="job-title-section">
+              <h1 class="job-title">{{ job?.title }}</h1>
+              <div class="company-details">
+                <span class="company-name">{{ job?.company }}</span>
+                <span class="location">
+                  <i class="pi pi-map-marker"></i>
+                  {{ job?.location }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="job-actions">
+            <p-button 
+              label="Postuler" 
+              icon="pi pi-send"
+              styleClass="apply-button"
+              (click)="onApply()">
+            </p-button>
+            <p-button 
+              icon="pi pi-heart" 
+              [outlined]="!isFavorite"
+              severity="secondary"
+              styleClass="favorite-button"
+              pTooltip="Ajouter aux favoris"
+              (click)="toggleFavorite()">
+            </p-button>
+          </div>
+        </div>
+
+        <p-divider></p-divider>
+
+        <!-- Quick Info Tags -->
+        <div class="job-tags">
+          <p-tag [value]="job?.jobType" severity="info" icon="pi pi-briefcase"></p-tag>
+          <p-tag [value]="job?.experience" severity="success" icon="pi pi-star"></p-tag>
+          <!-- <p-tag [value]="jobOffer?.salary" severity="warning" icon="pi pi-euro"></p-tag> -->
+          <p-tag [value]="jobOffer?.department" severity="secondary" icon="pi pi-building"></p-tag>
+        </div>
+
+        <p-divider></p-divider>
+
+        <!-- Job Content -->
+        <div class="job-content">
+          <!-- Description Section -->
+          <div class="content-section">
+            <h3 class="section-title">
+              <i class="pi pi-file-text"></i>
+              Description du poste
+            </h3>
+            <p class="job-description">{{ job?.description }}</p>
+          </div>
+
+          <!-- Responsibilities Section -->
+          <div class="content-section" *ngIf="jobOffer?.responsibilities?.length">
+            <h3 class="section-title">
+              <i class="pi pi-check-circle"></i>
+              Responsabilités
+            </h3>
+            <ul class="responsibility-list">
+              <li *ngFor="let responsibility of jobOffer?.responsibilities">
+                {{ responsibility }}
+              </li>
+            </ul>
+          </div>
+
+          <!-- Requirements Section -->
+          <div class="content-section" *ngIf="job?.requirements?.length">
+            <h3 class="section-title">
+              <i class="pi pi-exclamation-triangle"></i>
+              Exigences
+            </h3>
+            <ul class="requirement-list">
+              <li *ngFor="let requirement of jobOffer?.requirements">
+                {{ requirement }}
+              </li>
+            </ul>
+          </div>
+
+          <!-- Skills Section -->
+          <div class="content-section" *ngIf="job?.skills?.length">
+            <h3 class="section-title">
+              <i class="pi pi-cog"></i>
+              Compétences requises
+            </h3>
+            <div class="skills-container">
+              <p-chip 
+                *ngFor="let skill of job?.skills" 
+                [label]="skill"
+                styleClass="skill-chip">
+              </p-chip>
+            </div>
+          </div>
+
+          <!-- Benefits Section -->
+          <div class="content-section" *ngIf="jobOffer?.benefits?.length">
+            <h3 class="section-title">
+              <i class="pi pi-gift"></i>
+              Avantages
+            </h3>
+            <ul class="benefits-list">
+              <li *ngFor="let benefit of jobOffer?.benefits">
+                <i class="pi pi-check text-green-500"></i>
+                {{ benefit }}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <p-divider></p-divider>
+
+        <!-- Footer Info -->
+        <div class="job-footer">
+          <div class="posting-info">
+            <div class="info-item">
+              <i class="pi pi-calendar"></i>
+              <span>Publié le: {{ job?.postedDate | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item" *ngIf="jobOffer?.applicationDeadline">
+              <i class="pi pi-clock"></i>
+              <span>Date limite: {{ jobOffer?.applicationDeadline | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item">
+              <i class="pi pi-envelope"></i>
+              <span>Contact: {{ jobOffer?.contactEmail }}</span>
+            </div>
+          </div>
+          
+          <div class="footer-actions">
+            <p-button 
+              label="Postuler maintenant" 
+              icon="pi pi-send"
+              styleClass="apply-button-large"
+              (click)="onApply()">
+            </p-button>
+          </div>
+        </div>
+      </p-card>
+    </div>

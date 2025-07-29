@@ -21,6 +21,8 @@ import { ComplaintService } from '../../../shared/services/complaint.service';
 import { Complaint, ComplaintType } from '../complaints-list-admin/complaints-list-admin.component';
 import { StorageService } from '../../../shared/services/storage.service';
 import { AddComplaintComponent } from '../add-complaint/add-complaint.component';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-complaints-list-user',
@@ -39,6 +41,9 @@ import { AddComplaintComponent } from '../add-complaint/add-complaint.component'
       TooltipModule,
       ChipModule,
       ProgressBarModule,
+      IconFieldModule,
+      InputIconModule,
+
       AddComplaintComponent,
       ToastModule],
   templateUrl: './complaints-list-user.component.html',
@@ -55,7 +60,7 @@ complaints: Complaint[] = [];
   viewDialogVisible = false;
   user:any;
   visible: boolean = false;
-
+  searchQuery: string = '';
  
    statusOptions = [
   { label: 'Tous', value: 'Tous' },
@@ -91,6 +96,10 @@ statusOptionsForDropdown = [
    ngOnInit() {
      this.loadUser();
      this.loadApplications();
+   }
+   
+   onSearchChange() {
+    this.applyFilters();
    }
  
   
@@ -177,15 +186,39 @@ statusOptionsForDropdown = [
    }
     
    applyFilters() {
+  // Start with all complaints
+  let filtered = [...this.complaints];
+
+  // Apply status filter
   if (this.selectedStatus && this.selectedStatus !== 'Tous') {
-    this.filteredComplaints = this.complaints.filter(c => c.complaintStatus === this.selectedStatus);
-  } else {
-    this.filteredComplaints = [...this.complaints];
+    filtered = filtered.filter(c => c.complaintStatus === this.selectedStatus);
   }
 
-  this.applySorting(); // apply current sorting if needed
+  // Apply search filter
+  if (this.searchQuery && this.searchQuery.trim() !== '') {
+    const query = this.searchQuery.toLowerCase();
+    filtered = filtered.filter(c =>
+      c.title?.toLowerCase().includes(query) ||
+      c.complaintStatus?.toLowerCase().includes(query) ||
+      c.user?.username?.toLowerCase().includes(query)
+    );
+  }
+
+  this.filteredComplaints = filtered;
+
+  // Finally, apply sorting
+  this.applySorting();
 }
 
+
+
+clearFilters() {
+    this.searchQuery = '';
+    this.selectedSort = 'appliedDate_desc';
+    this.selectedStatus = 'Tous';
+    this.applyFilters();
+  }
+   
  
    applySorting() {
      const [field, order] = this.selectedSort.split('_');

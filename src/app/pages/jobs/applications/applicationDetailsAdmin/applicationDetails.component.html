@@ -1,0 +1,284 @@
+<div class="application-details-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+  </div>
+
+  <!-- Application Details -->
+  <div *ngIf="!loading" class="application-content">
+    
+    <!-- Header Section -->
+    <div class="header-section">
+      <p-breadcrumb 
+        [model]="[
+          {label: 'Dashboard', routerLink: '/app/dashboard'},
+          {label: 'Candidature de ' + (application.user?.firstname || 'N/A') + ' ' + (application.user?.lastname || '')}
+        ]"
+        class="custom-breadcrumb">
+      </p-breadcrumb>
+      
+      <div class="page-title">
+        <h1>Détails de la candidatures</h1>
+        <p>Consultez et gérez les informations du candidat</p>
+      </div>
+    </div>
+
+    <!-- Main Layout - Card Based -->
+    <div class="cards-container">
+      
+      <!-- Basic Information Card -->
+      <p-card class="info-card basic-info-card" header="Informations de base">
+        <div class="info-grid">
+          <div class="info-item">
+            <i class="pi pi-user info-icon"></i>
+            <div class="info-content">
+              <span class="label">Nom complet</span>
+              <span class="value">{{ application.user?.firstname || 'N/A' }} {{ application.user?.lastname || '' }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <i class="pi pi-envelope info-icon"></i>
+            <div class="info-content">
+              <span class="label">Email</span>
+              <span class="value">{{ application.user?.email || 'N/A' }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <i class="pi pi-briefcase info-icon"></i>
+            <div class="info-content">
+              <span class="label">Poste</span>
+              <span class="value">{{ application.job?.title || 'N/A' }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <i class="pi pi-calendar info-icon"></i>
+            <div class="info-content">
+              <span class="label">Date de candidature</span>
+              <span class="value">{{ application.appliedDate | date:'dd/MM/yyyy à HH:mm' }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <i class="pi pi-flag info-icon"></i>
+            <div class="info-content">
+              <span class="label">Statut</span>
+              <p-tag 
+                [value]="getStatusLabel(application.status)" 
+                [severity]="getStatusSeverity(application.status)"
+                styleClass="custom-status-tag">
+              </p-tag>
+            </div>
+          </div>
+        </div>
+
+        <p-divider></p-divider>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <h4 class="section-subtitle">
+            <i class="pi pi-cog"></i>
+            Actions disponibles
+          </h4>
+          <div class="actions-buttons">
+
+            <p-button 
+              label="Entretien programmé" 
+              icon="pi pi-check-circle" 
+              severity="info"
+              [disabled]="true">
+            </p-button>
+
+            <p-button 
+              label="Télécharger le CV" 
+              icon="pi pi-download" 
+              
+              (click)="downloadCV()"
+              [disabled]="!application.cvFileName">
+            </p-button>
+            
+            <p-button 
+              label="Supprimer la candidature" 
+              icon="pi pi-trash" 
+              styleClass="p-button-danger p-button-outlined action-button"
+              (click)="deleteApplication()">
+            </p-button>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- CV Analysis Card -->
+      <p-card class="cv-analysis-card">
+        <ng-template pTemplate="header">
+          <div class="cv-header">
+            <div class="header-content">
+              <i class="pi pi-file-pdf header-icon"></i>
+              <div>
+                <h3>Analyse du CV</h3>
+                <p>Informations extraites automatiquement</p>
+              </div>
+            </div>
+            <p-chip 
+              label="IA" 
+              icon="pi pi-sparkles" 
+              styleClass="ai-chip">
+            </p-chip>
+          </div>
+        </ng-template>
+        
+        <p-accordion>
+          <p-accordionTab header="Résumé professionnel" [selected]="true">
+            <div class="resume-content">
+              <p-message severity="info" text="Résumé généré automatiquement"></p-message>
+              <div class="resume-text">
+                {{ application.cvSummary || "Voici un résumé professionnel impactant basé sur les informations fournies : **Je suis Maryem Jlassi, Ingénieure en Intelligence Artificielle avec une passion pour l'apprentissage continu et la création de solutions innovantes.** Avec plus de 2 ans d'expérience dans le domaine de l'intelligence artificielle, je possède des compétences techniques solides en Python, TensorFlow, PyTorch, Django et Node.js. J'ai également développé une expertise en Natural Language Processing (NLP) et en Deep Learning, avec des certifications de la part d'organisations comme NVIDIA." }}
+              </div>
+            </div>
+          </p-accordionTab>
+
+          <p-accordionTab header="Informations personnelles">
+            <div class="personal-info-grid">
+              <div class="info-row">
+                <i class="pi pi-user"></i>
+                <span class="label">Nom:</span>
+                <span class="value">{{ application.user?.firstname || 'N/A' }} {{ application.user?.lastname || '' }}</span>
+              </div>
+              <div class="info-row">
+                <i class="pi pi-envelope"></i>
+                <span class="label">Email:</span>
+                <span class="value">{{ application.user?.email || 'N/A' }}</span>
+              </div>
+              <div class="info-row">
+                <i class="pi pi-phone"></i>
+                <span class="label">Téléphone:</span>
+                <span class="value">{{ application.user?.profile?.phoneNumber || 'Non spécifié' }}</span>
+              </div>
+            </div>
+          </p-accordionTab>
+
+          <p-accordionTab header="Compétences techniques">
+            <div class="skills-content">
+              <div class="skills-grid">
+                <p-chip 
+                  *ngFor="let skill of application.extractedSkills" 
+                  [label]="skill"
+                  styleClass="skill-chip">
+                </p-chip>
+              </div>
+              
+              <p-divider align="left">
+                <span class="p-tag">Langues</span>
+              </p-divider>
+              
+              <div class="languages-grid">
+                <p-chip label="Français" icon="pi pi-flag"></p-chip>
+                <p-chip label="Anglais" icon="pi pi-flag"></p-chip>
+                <p-chip label="Arabe" icon="pi pi-flag"></p-chip>
+              </div>
+            </div>
+          </p-accordionTab>
+        </p-accordion>
+      </p-card>
+
+      <!-- Comments and Status Update Section -->
+      <div class="management-section">
+        <!-- Comments Section -->
+        <p-card class="comments-card" header="Commentaires RH">
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <i class="pi pi-comments"></i>
+              <span>Commentaires RH</span>
+            </div>
+          </ng-template>
+          
+          <!-- Display existing comments -->
+          <div class="comments-list" *ngIf="application.adminComments?.length">
+            <p-timeline [value]="application.adminComments" layout="vertical">
+              <ng-template pTemplate="content" let-comment>
+                <p-card styleClass="comment-card">
+                  <p>{{ comment }}</p>
+                </p-card>
+              </ng-template>
+            </p-timeline>
+          </div>
+          
+          <div class="add-comment">
+            <span class="p-float-label">
+              <textarea 
+                pInputTextarea 
+                id="comment"
+                [(ngModel)]="newComment" 
+                rows="3"
+                class="w-full">
+              </textarea>
+              <label for="comment">Ajoutez un commentaire...</label>
+            </span>
+            <div class="comment-actions mt-3">
+              <p-button 
+                label="Sauvegarder" 
+                icon="pi pi-check" 
+                (click)="addComment()"
+                styleClass="p-button-success">
+              </p-button>
+            </div>
+          </div>
+        </p-card>
+
+        <!-- Status Update Section -->
+        <p-card class="status-update-card" header="Gestion du statut">
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <i class="pi pi-cog"></i>
+              <span>Gestion du statut</span>
+            </div>
+          </ng-template>
+          
+          <div class="status-controls">
+            <span class="p-float-label">
+              <p-dropdown 
+                [options]="checkStatusforDropdown(application.status)" 
+                [(ngModel)]="application.status"
+                optionLabel="label" 
+                optionValue="value"
+                inputId="status"
+                [disabled]="application.status === 'HIRED' || application.status ==='REJECTED' "
+                styleClass="w-full">
+              </p-dropdown>
+              <label for="status">Statut de la candidature</label>
+            </span>
+            
+            <p-button 
+              label="Mettre à jour" 
+              icon="pi pi-refresh" 
+              styleClass="p-button-success w-full mt-3"
+              (click)="updateStatus(application.status)">
+            </p-button>
+          </div>
+
+          <p-divider></p-divider>
+
+          <div class="status-info">
+            <p-message 
+              severity="info" 
+              text="Le candidat sera automatiquement notifié du changement de statut par email.">
+            </p-message>
+          </div>
+        </p-card>
+      </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="back-section">
+      <p-button 
+        label="Retour aux candidatures" 
+        icon="pi pi-arrow-left" 
+        styleClass="p-button-outlined p-button-secondary"
+        (click)="goBack()">
+      </p-button>
+    </div>
+  </div>
+</div>
+
+<p-toast></p-toast>

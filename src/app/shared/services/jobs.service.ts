@@ -41,4 +41,11 @@ export class JobsService {
   return this.http.post(`http://localhost:8080/api/application/apply/${jobId}/${userId}`, formData);
 }
 
+downloadCv(cvFileName: string) {
+  const url = `http://localhost:8080/api/cv/cv/${cvFileName}`;
+  window.open(url, '_blank');
+}
+
+
+
 }

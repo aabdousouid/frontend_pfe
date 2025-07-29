@@ -15,10 +15,12 @@ import { InterviewService } from '../../../../shared/services/interview.service'
 import { ToastModule } from 'primeng/toast';
 import { MessagesModule } from 'primeng/messages';
 import { MessageService } from 'primeng/api';
+import { DropdownModule } from 'primeng/dropdown';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-interviews',
-  imports: [CommonModule,CardModule,ButtonModule,DividerModule,TagModule,ChipModule,FieldsetModule,TagModule,TooltipModule,DialogModule,ToastModule,MessagesModule/* InterviewUpadteComponent */],
+  imports: [CommonModule,CardModule,FormsModule,ButtonModule,DividerModule,TagModule,DropdownModule,ChipModule,FieldsetModule,TagModule,TooltipModule,DialogModule,ToastModule,MessagesModule/* InterviewUpadteComponent */],
   standalone: true,
   templateUrl: './interviews.component.html',
   styleUrl: './interviews.component.scss',
@@ -104,5 +106,70 @@ open() {
     });
   }
 }
+
+
+
+
+getStatusLabel(status: string): string {
+    switch (status) {
+      case 'SCHEDULED': return 'Entretien planifié';
+      case 'CONFIRMED': return 'Entretien confirmé';
+      default: return status;
+    }
+  }
+
+  getStatusSeverity(status: string): "secondary" | "success" | "info" | "warn" | "help" | "danger" | "contrast" | undefined {
+    switch (status) {
+      case 'SCHEDULED': return 'warn';
+      case 'CONFIRMED': return 'success';
+      case 'CANCELED' : return 'danger';
+      case 'COMPLETED' : return 'info';
+      default: return 'secondary';
+    }
+  }
+
+
+statusOptionsForDropdownScheduled = [
+    { label: 'Entretien Planifié', value: 'SCHEDULED' },
+    { label: 'Entretien Confirmée', value: 'CONFIRMED' }
+  ];
+
+
+statusOptionsForDropdownConfirmed = [
+    { label: 'Entretien Confirmée', value: 'CONFIRMED' },
+    { label: 'Entretien Annulé', value: 'CANCELED' },
+    { label: 'Entretien terminé', value: 'COMPLETED' }
+  ];
+updateInterviewStatus(interviewId: number, newStatus: string) {
+    const interview = this.interviews.find(interview => interview.interviewId === interviewId);
+    if (interview) {
+      interview.status = newStatus as any;
+     
+      
+      // Here you would typically call your API to update the status
+      // this.applicationService.updateStatus(applicationId, newStatus).subscribe(...)
+      this.interviewService.updateInterviewStatus(interviewId,newStatus).subscribe({
+        next: () => {
+          console.log(`Application ${interviewId} status updated to ${newStatus}`);
+          this.messageService.add({
+        severity: 'success',
+        summary: 'Succès',
+        detail: 'Statut mis à jour avec succès'
+      });
+        },
+        error: (error) => {
+          console.error('Error updating application status:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Impossible de mettre à jour le statut de la candidature'
+          });
+        }
+      })
+      
+      
+      
+    }
+  }
 
 }

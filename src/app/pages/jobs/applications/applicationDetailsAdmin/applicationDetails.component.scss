@@ -1,0 +1,720 @@
+/* Application Details - Modern Green Theme */
+.application-details-container {
+ 
+  min-height: 100vh;
+  padding: 24px;
+  /* font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; */
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+}
+
+.application-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.header-section {
+  margin-bottom: 32px;
+}
+
+.page-title {
+  margin-top: 16px;
+  
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+   /*  color: #1a365d; */
+    margin: 0 0 8px 0;
+  }
+  
+  p {
+    /* color: #64748b; */
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+/* Breadcrumb Styling */
+::ng-deep .custom-breadcrumb .p-breadcrumb {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+}
+
+::ng-deep .custom-breadcrumb .p-breadcrumb-list {
+  background: transparent;
+  padding: 0;
+}
+
+::ng-deep .custom-breadcrumb .p-breadcrumb-item {
+  color: #059669;
+  font-weight: 500;
+}
+
+::ng-deep .custom-breadcrumb .p-breadcrumb-item:last-child {
+  color: #374151;
+  font-weight: 600;
+}
+
+/* Cards Container */
+.cards-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* PrimeNG Card Overrides */
+::ng-deep .p-card {
+  border-radius: 16px;
+  /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); */
+ /*  border: 1px solid #e2e8f0; */
+  overflow: hidden;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+}
+
+::ng-deep .p-card .p-card-header {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  padding: 20px 24px;
+  border-bottom: none;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+::ng-deep .p-card .p-card-content {
+  padding: 24px;
+}
+
+/* Basic Information Card */
+.basic-info-card {
+  .info-grid {
+    margin-bottom: 24px;
+    
+    .info-item {
+      display: flex;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid #f1f5f9;
+      transition: all 0.2s ease;
+      
+      &:hover {
+       
+        margin: 0 -12px;
+        padding: 16px 12px;
+        
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .info-icon {
+        color: #059669;
+        font-size: 16px;
+        margin-right: 12px;
+        width: 20px;
+        text-align: center;
+      }
+      
+      .info-content {
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        .label {
+          font-size: 14px;
+          /* color: #64748b; */
+          font-weight: 500;
+        }
+        
+        .value {
+          font-size: 14px;
+          /* color: #1e293b; */
+          font-weight: 600;
+          text-align: right;
+        }
+      }
+    }
+  }
+
+  .actions-section {
+    .section-subtitle {
+      font-size: 16px;
+      font-weight: 600;
+      /* color: #1e293b; */
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      i {
+        color: #059669;
+      }
+    }
+
+    .actions-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+}
+
+/* Custom Status Tag */
+::ng-deep .custom-status-tag {
+  font-size: 12px !important;
+  padding: 6px 12px !important;
+  border-radius: 16px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* CV Analysis Card */
+.cv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .header-icon {
+      font-size: 20px;
+      color: white;
+    }
+    
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+  }
+}
+
+::ng-deep .ai-chip {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-size: 11px !important;
+  padding: 4px 8px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Accordion Styling */
+::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #374151;
+  font-weight: 600;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #f1f5f9;
+    border-color: #059669;
+  }
+}
+
+::ng-deep .p-accordion .p-accordion-header.p-accordion-header-active .p-accordion-header-link {
+  background: #059669;
+  border-color: #059669;
+  color: white;
+}
+
+::ng-deep .p-accordion .p-accordion-content {
+  border: none;
+  border-radius: 8px;
+  background: #fafafa;
+  margin-bottom: 8px;
+}
+
+.resume-content {
+  .resume-text {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    line-height: 1.7;
+    color: #374151;
+    font-size: 14px;
+    text-align: justify;
+    margin-top: 16px;
+    border-left: 4px solid #059669;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.personal-info-grid {
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    i {
+      color: #059669;
+      width: 16px;
+      text-align: center;
+    }
+    
+    .label {
+      font-size: 14px;
+      /* color: #64748b; */
+      font-weight: 500;
+      min-width: 80px;
+    }
+    
+    .value {
+      font-size: 14px;
+      color: #1e293b;
+      font-weight: 500;
+      flex: 1;
+    }
+  }
+}
+
+.skills-content {
+  .skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .languages-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* Chip Styling */
+::ng-deep .skill-chip {
+  background: #e2e8f0 !important;
+  color: #475569 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border-radius: 16px !important;
+  padding: 6px 12px !important;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #059669 !important;
+    color: white !important;
+  }
+}
+
+/* Management Section */
+.management-section {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  
+  i {
+    font-size: 16px;
+  }
+}
+
+/* Comments Section */
+.comments-list {
+  margin-bottom: 20px;
+}
+
+::ng-deep .comment-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  
+  .p-card-content {
+    padding: 12px 16px;
+    
+    p {
+      margin: 0;
+      font-size: 14px;
+      /* color: #374151; */
+      line-height: 1.5;
+    }
+  }
+}
+
+::ng-deep .p-timeline .p-timeline-event-marker {
+  background: #059669;
+  border-color: #059669;
+}
+
+::ng-deep .p-timeline .p-timeline-event-connector {
+  background: #d1fae5;
+}
+
+.add-comment {
+  .comment-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+/* Status Update Section */
+.status-controls {
+  margin-bottom: 20px;
+}
+
+.status-info {
+  ::ng-deep .p-message {
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+  }
+}
+
+/* Button Styling */
+::ng-deep .p-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  
+  &.p-button-success {
+    background: #059669;
+    border-color: #059669;
+    
+    &:hover {
+      background: #047857;
+      border-color: #047857;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+    }
+  }
+  
+  &.p-button-info {
+    background: #0ea5e9;
+    border-color: #0ea5e9;
+    
+    &:hover {
+      background: #0284c7;
+      border-color: #0284c7;
+    }
+  }
+  
+  &.p-button-danger {
+    background: #ef4444;
+    border-color: #ef4444;
+    
+    &:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+    }
+    
+    &.p-button-outlined {
+      background: transparent;
+      color: #ef4444;
+      
+      &:hover {
+        background: #ef4444;
+        color: white;
+      }
+    }
+  }
+  
+  &.p-button-outlined.p-button-secondary {
+    border-color: #64748b;
+    color: #64748b;
+    
+   /*  &:hover {
+      background: #64748b;
+      color: white;
+    } */
+  }
+}
+
+.action-button {
+  width: 100%;
+  font-size: 14px;
+  padding: 12px 16px;
+}
+
+/* Floating Labels */
+::ng-deep .p-float-label {
+  margin-bottom: 16px;
+  
+  label {
+    font-weight: 500;
+  }
+  
+  input:focus ~ label,
+  input.p-filled ~ label,
+  textarea:focus ~ label,
+  textarea.p-filled ~ label,
+  .p-dropdown:focus ~ label,
+  .p-dropdown.p-filled ~ label {
+    color: #059669;
+  }
+}
+
+/* Form Controls */
+::ng-deep .p-inputtextarea,
+::ng-deep .p-dropdown {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  
+  &:focus {
+    border-color: #059669;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+  }
+}
+
+::ng-deep .p-inputtextarea {
+  padding: 12px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+}
+
+::ng-deep .p-dropdown {
+  &:hover {
+    border-color: #cbd5e1;
+  }
+}
+
+/* Divider Styling */
+::ng-deep .p-divider {
+  margin: 20px 0;
+  
+  &.p-divider-horizontal:before {
+    border-top-color: #e2e8f0;
+  }
+  
+  .p-divider-content {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* Message Component */
+::ng-deep .p-message {
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 12px;
+  
+  &.p-message-info {
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+    color: #1e40af;
+    
+    .p-message-icon {
+      color: #3b82f6;
+    }
+  }
+}
+
+/* Back Section */
+.back-section {
+  text-align: left;
+  padding-top: 24px;
+  border-top: 2px solid #f1f5f9;
+  margin-top: 32px;
+}
+
+/* Utility Classes */
+.w-full {
+  width: 100% !important;
+}
+
+.mt-3 {
+  margin-top: 12px !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .cards-container {
+    gap: 20px;
+  }
+  
+  .application-details-container {
+    padding: 20px;
+  }
+  
+  .page-title h1 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .management-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .application-details-container {
+    padding: 16px;
+  }
+  
+  .page-title h1 {
+    font-size: 22px;
+  }
+  
+  .page-title p {
+    font-size: 14px;
+  }
+  
+  ::ng-deep .p-card .p-card-header {
+    padding: 16px 20px;
+    font-size: 15px;
+  }
+  
+  ::ng-deep .p-card .p-card-content {
+    padding: 20px;
+  }
+  
+  .basic-info-card .info-item {
+    .info-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      
+      .value {
+        text-align: left;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .application-details-container {
+    padding: 12px;
+  }
+  
+  .header-section {
+    margin-bottom: 24px;
+  }
+  
+  .page-title h1 {
+    font-size: 20px;
+  }
+  
+  ::ng-deep .p-card .p-card-header {
+    padding: 12px 16px;
+  }
+  
+  ::ng-deep .p-card .p-card-content {
+    padding: 16px;
+  }
+  
+  .cv-header .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .skills-grid,
+  .languages-grid {
+    gap: 6px;
+  }
+  
+  ::ng-deep .skill-chip{
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+  }
+}
+
+/* Loading Spinner */
+::ng-deep .p-progress-spinner {
+  width: 50px;
+  height: 50px;
+}
+
+::ng-deep .p-progress-spinner .p-progress-spinner-circle {
+  stroke: #059669;
+}
+
+/* Toast Notifications */
+::ng-deep .p-toast {
+  z-index: 1050;
+}
+
+::ng-deep .p-toast .p-toast-message {
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Smooth Animations */
+.cards-container > * {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus States for Accessibility */
+::ng-deep .p-button:focus {
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+}
+
+::ng-deep .p-accordion-header-link:focus {
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+}
+
+/* Dark Mode Support (Optional) */
+/* @media (prefers-color-scheme: dark) {
+  .application-details-container {
+    
+  }
+  
+  ::ng-deep .p-card {
+
+    
+  }
+  
+} */

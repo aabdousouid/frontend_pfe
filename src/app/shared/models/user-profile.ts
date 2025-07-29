@@ -1,4 +1,5 @@
 export class UserProfile {
+    profileId!:number;
     userId!:number;
     title!:string | null;
     phoneNumber!:string;

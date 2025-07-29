@@ -13,13 +13,15 @@ import { AddProfileComponent } from './app/pages/user/addProfile.component';
 import { ApplicationListComponent } from './app/pages/jobs/applications/applicationAdminList/applicationsList.component';
 import { FeaturesWidget } from './app/pages/landing/components/featureswidget';
 import { AdminGuard } from './app/shared/guards/admin.guard';
-import { ApplicationDetailsComponent } from './app/pages/jobs/applications/applicationDetails.component';
+import { ApplicationDetailsComponent } from './app/pages/jobs/applications/applicationDetailsAdmin/applicationDetails.component';
 import { ApplicationUserListComponent } from './app/pages/jobs/applications/applicationUserList/appilcationsUserList.component';
 import { TableExpandableRowGroupDemo } from './app/pages/jobs/applications/test.component';
 import { UserInterviewDetailsComponent } from './app/pages/jobs/interviews/user-interview-details/user-interview-details.component';
 import { AdminDashboardComponent } from './app/pages/dashboard/admin-dashboard/admin-dashboard.component';
 import { ComplaintsListAdminComponent } from './app/pages/complaints/complaints-list-admin/complaints-list-admin.component';
 import { ComplaintsListUserComponent } from './app/pages/complaints/complaints-list-user/complaints-list-user.component';
+import { JobDetailsComponent } from './app/pages/jobs/job-details/job-details.component';
+import { ApplicationDetailsUserComponent } from './app/pages/jobs/applications/application-details-user/application-details-user.component';
 
 export const appRoutes: Routes = [
     
@@ -58,11 +60,12 @@ export const appRoutes: Routes = [
             {path:'jobapplication/:id',component:JobApplicationComponent},
             {path: 'applications/:id', component: ApplicationDetailsComponent },
             {path: 'userApplications/:id', component: ApplicationUserListComponent },
-            {path: 'test', component: TableExpandableRowGroupDemo },
             {path:'applications',component:ApplicationListComponent,canActivate: [AdminGuard] },
             {path:'admindashboard',component:AdminDashboardComponent },
             {path:'complaints-admin',component:ComplaintsListAdminComponent,canActivate:[AdminGuard]},
             {path:'complaints-user',component:ComplaintsListUserComponent},
+            {path:'job-details/:id',component:JobDetailsComponent},
+            {path: 'applicationUserDetails/:id', component: ApplicationDetailsUserComponent },
             
         ]
     },

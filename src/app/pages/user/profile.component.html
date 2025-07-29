@@ -1,0 +1,284 @@
+<p-toast></p-toast>
+
+<div class="profile-container" *ngIf="profile">
+  <!-- Header Section -->
+  <div class="profile-header">
+    <div class="header-content">
+      <div class="profile-avatar-section">
+        <p-avatar 
+          icon="pi pi-user" 
+          size="xlarge" 
+          shape="circle"
+          [style]="{'width': '120px', 'height': '120px'}"
+          class="profile-avatar">
+        </p-avatar>
+        <div class="upload-overlay">
+          <i class="pi pi-camera"></i>
+        </div>
+      </div>
+      
+      <div class="profile-info">
+        <h1 class="profile-name" *ngIf="!editMode">{{user.firstname}} {{user.lastname}}</h1>
+        <input *ngIf="editMode" pInputText [(ngModel)]="user.firstname" placeholder="First Name" [style]="{'margin': '1%'}">
+        <input *ngIf="editMode" pInputText [(ngModel)]="user.lastname" placeholder="Last Name">
+
+        <p class="profile-title" *ngIf="!editMode">{{profile.title}}</p>
+        <input *ngIf="editMode" pInputText [(ngModel)]="profile.title" class="w-full" placeholder="Current Position" [style]="{'margin': '1%'}">
+        
+        <div class="profile-location" [style]="{'marginTop': '3%'}">
+          <i *ngIf="!editMode" class="pi pi-map-marker"></i>
+          <span *ngIf="!editMode">{{profile.address}}</span>
+          <p-iconfield *ngIf="editMode" class="w-full">
+            <p-inputicon class="pi pi-map-marker" />
+            <input pInputText type="text" [(ngModel)]="profile.address" placeholder="Location" />
+          </p-iconfield>
+        </div>
+        
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-number" *ngIf="!editMode">{{profile.experienceYears}}</span>
+            <p-inputnumber *ngIf="editMode" [(ngModel)]="profile.experienceYears" showButtons mode="decimal"></p-inputnumber>
+            <span class="stat-label">Années d'expérience</span>
+          </div>
+         
+          <div class="stat-item">
+            <span class="stat-number" *ngIf="!editMode">{{profile.skills.length || 0}}</span>
+            <span class="stat-label">Skills</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="profile-actions">
+        <p-button 
+          label="Edit Profile" 
+          icon="pi pi-pencil" 
+          class="edit-btn"
+          *ngIf="!editMode"
+          (onClick)="toggleEditMode()">
+        </p-button>
+        
+        <p-button *ngIf="!editMode && profile.cvFilePath"
+          label="Download CV" 
+          icon="pi pi-download" 
+          severity="secondary"
+          outlined="true"
+          (click)="downloadCV()"
+         >
+        </p-button>
+        
+        <p-button *ngIf="editMode"
+          label="Upload CV" 
+          icon="pi pi-upload" 
+          severity="primary"
+          outlined="true"
+          (onClick)="triggerFileUpload()">
+        </p-button>
+        
+        <!-- Hidden file input -->
+        <input 
+          #fileInput 
+          type="file" 
+          accept=".pdf,.doc,.docx" 
+          style="display: none;"
+          (change)="onFileSelected($event)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="profile-content">
+    <p-tabView>
+      <!-- Overview Tab -->
+      <p-tabPanel header="Overview" leftIcon="pi pi-user">
+        <div class="tab-content">
+          <!-- About Section -->
+          <p-card header="About" class="section-card" [style]="{'marginBottom': '1.5rem'}">
+            <div *ngIf="!editMode" class="about-content">
+              <p>{{profile.summary}}</p>
+            </div>
+            <div *ngIf="editMode" class="edit-about">
+              <textarea 
+                pInputTextarea 
+                [(ngModel)]="profile.summary"
+                rows="4" 
+                class="w-full">
+              </textarea>
+            </div>
+          </p-card>
+
+          <!-- Contact Information -->
+          <p-card header="Contact Information" class="section-card">
+            <div class="contact-grid">
+              <div class="contact-item">
+                <i class="pi pi-envelope contact-icon"></i>
+                <div>
+                  <label>Email</label>
+                  <p *ngIf="!editMode">{{user.email}}</p>
+                  <input *ngIf="editMode" pInputText [(ngModel)]="user.email" class="w-full">
+                </div>
+              </div>
+              <div class="contact-item">
+                <i class="pi pi-phone contact-icon"></i>
+                <div>
+                  <label>Phone</label>
+                  <p *ngIf="!editMode">{{profile.phoneNumber}}</p>
+                  <input *ngIf="editMode" pInputText [(ngModel)]="profile.phoneNumber" class="w-full">
+                </div>
+              </div>
+              <div class="contact-item">
+                <i class="pi pi-linkedin contact-icon"></i>
+                <div>
+                  <label>LinkedIn</label>
+                  <p *ngIf="!editMode">{{linkedinLink}}</p>
+                  <input *ngIf="editMode" pInputText [(ngModel)]="linkedinLink" class="w-full">
+                </div>
+              </div>
+              <div class="contact-item">
+                <i class="pi pi-github contact-icon"></i>
+                <div>
+                  <label>GitHub</label>
+                  <p *ngIf="!editMode">{{githubLink}}</p>
+                  <input *ngIf="editMode" pInputText [(ngModel)]="githubLink" class="w-full">
+                </div>
+              </div>
+            </div>
+          </p-card>
+        </div>
+      </p-tabPanel>
+
+      <!-- Experience Tab -->
+      <p-tabPanel header="Experience" leftIcon="pi pi-briefcase">
+        <div class="tab-content">
+          <div class="section-header">
+            <h3>Work Experience</h3>
+            <p-button 
+              *ngIf="editMode"
+              icon="pi pi-plus" 
+              label="Add Experience"
+              size="small"
+              (onClick)="addExperience()">
+            </p-button>
+          </div>
+          
+          <div class="experience-list">
+            <p-card *ngFor="let exp of profile.workHistory; let i = index" class="experience-card">
+              <div class="experience-header">
+                <div class="experience-info" *ngIf="!editMode">
+                  <h4>{{exp.title}}</h4>
+                  <h5>{{exp.company}}</h5>
+                  <p class="duration">{{exp.duration}}</p>
+                </div>
+
+                <div class="experience-info" *ngIf="editMode">
+                  <input *ngIf="editMode" pInputText [(ngModel)]="exp.title" class="w-full contact-item" style="margin-bottom: 1rem;" placeholder="Position">
+                  <input *ngIf="editMode" pInputText [(ngModel)]="exp.company" class="w-full contact-item" style="margin-bottom: 1rem;" placeholder="Company">
+                  <input *ngIf="editMode" pInputText [(ngModel)]="exp.duration" class="w-full contact-item" style="margin-bottom: 1rem;" placeholder="Duration">
+                </div>
+                
+                <p-button 
+                  *ngIf="editMode"
+                  icon="pi pi-times" 
+                  severity="danger"
+                  text="true"
+                  size="small"
+                  (onClick)="removeExperience(i)">
+                </p-button>
+              </div>
+              <p-divider></p-divider>
+
+              <p *ngIf="!editMode">{{exp.description}}</p>
+
+              <div *ngIf="editMode" class="edit-about">
+                <textarea 
+                  pInputTextarea 
+                  [(ngModel)]="exp.description"
+                  placeholder="Describe your experience"
+                  rows="4" 
+                  class="w-full">
+                </textarea>
+              </div>
+            </p-card>
+          </div>
+        </div>
+      </p-tabPanel>
+
+      <!-- Education Tab -->
+      <p-tabPanel header="Education" leftIcon="pi pi-book">
+        <div class="tab-content">
+          <div class="section-header">
+            <h3>Education</h3>
+            <p-button 
+              *ngIf="editMode"
+              icon="pi pi-plus" 
+              label="Add Education"
+              size="small"
+              (onClick)="addEducation()">
+            </p-button>
+          </div>
+
+          <div class="education-list">
+            <p-card *ngFor="let edu of profile.education; let i = index" class="education-card">
+              <div class="education-header">
+                <div class="education-info" *ngIf="!editMode">
+                  <h4>{{edu.degree}}</h4>
+                  <h5>{{edu.school}}</h5>
+                  <p class="year">{{edu.duration}}</p>
+                </div>
+
+                <div class="education-info" *ngIf="editMode">
+                  <input *ngIf="editMode" pInputText [(ngModel)]="edu.degree" class="w-full contact-item" style="margin-bottom: 1rem;" placeholder="Degree">
+                  <input *ngIf="editMode" pInputText [(ngModel)]="edu.school" class="w-full contact-item" style="margin-bottom: 1rem;" placeholder="Institution">
+                  <input *ngIf="editMode" pInputText [(ngModel)]="edu.duration" class="w-full contact-item" style="margin-bottom: 1rem;" placeholder="Duration">
+                </div>
+
+                <p-button 
+                  *ngIf="editMode"
+                  icon="pi pi-times" 
+                  severity="danger"
+                  text="true"
+                  size="small"
+                  (onClick)="removeEducation(i)">
+                </p-button>
+              </div>
+            </p-card>
+          </div>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+
+  <!-- Save/Cancel Actions for Edit Mode -->
+  <div *ngIf="editMode" class="edit-actions">
+    <p-button 
+      label="Save Changes" 
+      icon="pi pi-check"
+      [loading]="uploading"
+      (onClick)="saveChanges()">
+    </p-button>
+    <p-button 
+      label="Cancel" 
+      icon="pi pi-times"
+      severity="secondary"
+      outlined="true"
+      [disabled]="uploading"
+      (onClick)="cancelEdit()">
+    </p-button>
+  </div>
+
+  <!-- CV Upload Status -->
+  <div *ngIf="selectedCVFile && editMode" class="cv-upload-status">
+    <p-card>
+      <div class="upload-info">
+        <i class="pi pi-file-pdf"></i>
+        <span>Selected: {{selectedCVFile.name}}</span>
+        <p-button 
+          icon="pi pi-times" 
+          severity="danger"
+          text="true"
+          size="small"
+          (onClick)="selectedCVFile = null; fileInput.value= ''">
+        </p-button>
+      </div>
+    </p-card>
+  </div>
+</div>

@@ -14,6 +14,10 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ToastModule } from 'primeng/toast';
 import { ChatbotService } from '../../../shared/services/chatbot.service';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { JobsService } from '../../../shared/services/jobs.service';
+import { Route, Router } from '@angular/router';
+import { DropdownModule } from 'primeng/dropdown';
+import { Job } from '../../../shared/models/job';
 
 interface ChatMessage {
   id: string;
@@ -22,6 +26,7 @@ interface ChatMessage {
   timestamp: Date;
   type: 'text' | 'file' | 'suggestions';
   suggestions?: any[];
+  context?: 'jobTypeSelection' | 'jobs'; // ✅ new context field
 }
 
 /* interface JobSuggestion {
@@ -59,6 +64,7 @@ interface CVAnalysis {
     ProgressBarModule,
     ScrollPanelModule,
     RadioButtonModule,
+    DropdownModule,
     ToastModule],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.scss',
@@ -82,22 +88,56 @@ export class ChatbotComponent implements OnInit {
   quizCompleted = false;
   quizResult: any = null;
   selectedJob: any = null;
-  constructor(private messageService: MessageService,private chatbotService:ChatbotService) {}
+  jobs:any[]=[];
+  selectedJobType: string = '';
+  constructor(private messageService: MessageService,private chatbotService:ChatbotService,private jobsService:JobsService,private router:Router) {}
 
   ngOnInit() {
     this.initializeChat();
+
+    this.jobsService.getAllJobs().subscribe({
+      next:(data=>{
+        this.jobs = data;
+      })
+    })
   }
 
+
+
+  jobTypeOptions = [
+  { label: 'CDI (Poste Permanente)', value: 'CDI' },
+  { label: 'PFE (Projet de fin d\'étude)', value: 'STAGE_PFE' },
+  { label: 'Stage d\'Été', value: 'STAGE_ETE' },
+  { label: 'Alternance', value: 'ALTERNANCE' }
+];
+
+
+
   initializeChat() {
-    const welcomeMessage: ChatMessage = {
-      id: this.generateId(),
-      content: "Hello! I'm your CV Career Assistant. Please upload your CV and I'll analyze it to suggest the best job opportunities for you based on your skills and experience.",
-      sender: 'bot',
-      timestamp: new Date(),
-      type: 'text'
-    };
-    this.messages.push(welcomeMessage);
-  }
+  const welcomeMessage: ChatMessage = {
+    id: this.generateId(),
+    content: "Bonjour ! Je suis votre assistant de recrutement ACTIA.\n Avant de commencer, pouvez-vous me dire quel type d'opportunité vous recherchez?",
+    sender: 'bot',
+    timestamp: new Date(),
+    type: 'text'
+  };
+
+  const jobTypeSelectionMessage: ChatMessage = {
+    id: this.generateId(),
+    content: "Please select your preferred job type:",
+    sender: 'bot',
+    timestamp: new Date(),
+    type: 'suggestions',
+    context: 'jobTypeSelection', // ✅ avoids triggering job cards
+    suggestions: this.jobTypeOptions.map(opt => ({
+      label: opt.label,
+      value: opt.value
+    }))
+  };
+
+  this.messages.push(welcomeMessage);
+  this.messages.push(jobTypeSelectionMessage);
+}
 
   onFileSelect(event: any) {
     const file = event.files[0];
@@ -127,6 +167,7 @@ export class ChatbotComponent implements OnInit {
         type: 'file'
       });
 
+      
       // For now, mock job list — later, fetch from backend DB
       const mockJobs = [
        {
@@ -139,159 +180,12 @@ export class ChatbotComponent implements OnInit {
     requirements: 'Strong knowledge of Docker, Jenkins, and Kubernetes.',
     skills: 'Docker Jenkins Kubernetes AWS Terraform Git'
   },
-  {
-    id: 'JD006',
-    title: 'Java Backend Developer',
-    type: 'CDI',
-    company: 'BankSoft',
-    location: 'Tunis',
-    description: 'Develop RESTful APIs using Java Spring Boot.',
-    requirements: 'Good knowledge of Spring Boot and PostgreSQL.',
-    skills: 'Java SpringBoot Hibernate PostgreSQL REST Git'
-  },
-  {
-    id: 'JD007',
-    title: 'React Developer Intern',
-    type: 'STAGE_PFE',
-    company: 'InnovateX',
-    location: 'Remote',
-    description: 'Build UI components for SaaS dashboard.',
-    requirements: 'Basic knowledge of React and state management.',
-    skills: 'React JavaScript HTML CSS Redux'
-  },
-  {
-    id: 'JD008',
-    title: 'Cybersecurity Intern',
-    type: 'STAGE_ETE',
-    company: 'SecureIT',
-    location: 'Tunis',
-    description: 'Assist in penetration testing and security audits.',
-    requirements: 'Familiarity with OWASP and ethical hacking tools.',
-    skills: 'KaliLinux BurpSuite OWASP Nmap Linux'
-  },
-  {
-    id: 'JD009',
-    title: 'Mobile Developer',
-    type: 'CDI',
-    company: 'AppMakers',
-    location: 'Sfax',
-    description: 'Develop cross-platform apps using Flutter.',
-    requirements: 'Experience with Dart and Firebase.',
-    skills: 'Flutter Dart Firebase REST Git'
-  },
-  {
-    id: 'JD010',
-    title: 'BI Developer',
-    type: 'CDI',
-    company: 'InsightBI',
-    location: 'Tunis',
-    description: 'Create dashboards and reports using Power BI.',
-    requirements: 'Knowledge of SQL, DAX, and Power BI.',
-    skills: 'PowerBI SQL DAX Excel ETL'
-  },
-  {
-    id: 'JD011',
-    title: 'Machine Learning Engineer',
-    type: 'CDI',
-    company: 'DeepAnalytics',
-    location: 'Tunis',
-    description: 'Build ML pipelines and deploy models.',
-    requirements: 'Strong skills in Python, scikit-learn, and TensorFlow.',
-    skills: 'Python TensorFlow Scikit-learn Pandas NumPy MLflow'
-  },
-  {
-    id: 'JD012',
-    title: 'Fullstack JS Developer',
-    type: 'CDI',
-    company: 'CodeBase',
-    location: 'Ariana',
-    description: 'Develop and maintain web applications.',
-    requirements: 'Experience with Node.js and Angular.',
-    skills: 'Node.js Angular MongoDB ExpressJS TypeScript'
-  },
-  {
-    id: 'JD013',
-    title: 'Embedded Software Engineer',
-    type: 'CDI',
-    company: 'AutoTech',
-    location: 'Sousse',
-    description: 'Work on firmware and real-time systems.',
-    requirements: 'Experience with C/C++ and RTOS.',
-    skills: 'C C++ RTOS CAN Microcontrollers'
-  },
-  {
-    id: 'JD014',
-    title: 'QA Tester Intern',
-    type: 'STAGE_PFE',
-    company: 'TestLab',
-    location: 'Tunis',
-    description: 'Write and execute test cases.',
-    requirements: 'Knowledge of Selenium and testing frameworks.',
-    skills: 'Selenium Java JUnit TestNG'
-  },
-  {
-    id: 'JD015',
-    title: 'Web Developer Intern',
-    type: 'STAGE_ETE',
-    company: 'WebFlow',
-    location: 'Nabeul',
-    description: 'Build responsive websites.',
-    requirements: 'HTML, CSS, and JavaScript knowledge.',
-    skills: 'HTML CSS JavaScript Bootstrap'
-  },
-  {
-    id: 'JD016',
-    title: 'Data Analyst',
-    type: 'CDI',
-    company: 'SmartData',
-    location: 'Tunis',
-    description: 'Analyze data and create business reports.',
-    requirements: 'Good Excel and SQL skills.',
-    skills: 'Excel SQL Tableau PowerBI Statistics'
-  },
-  {
-    id: 'JD017',
-    title: 'AI Research Intern',
-    type: 'STAGE_ETE',
-    company: 'AI Lab',
-    location: 'Remote',
-    description: 'Experiment with NLP and LLMs.',
-    requirements: 'Basic experience with Transformers and Python.',
-    skills: 'Python Transformers HuggingFace NLP PyTorch'
-  },
-  {
-    id: 'JD018',
-    title: 'Cloud Engineer',
-    type: 'CDI',
-    company: 'CloudWare',
-    location: 'Tunis',
-    description: 'Manage cloud deployments and serverless apps.',
-    requirements: 'Experience with AWS or GCP.',
-    skills: 'AWS GCP Lambda Terraform CI/CD Docker'
-  },
-  {
-    id: 'JD019',
-    title: 'Support Technician Intern',
-    type: 'STAGE_ETE',
-    company: 'TechHelp',
-    location: 'Tunis',
-    description: 'Handle level-1 support tickets and configurations.',
-    requirements: 'Basic hardware/software troubleshooting.',
-    skills: 'Windows Networking ITSupport Hardware'
-  },
-  {
-    id: 'JD020',
-    title: 'DevSecOps Engineer',
-    type: 'CDI',
-    company: 'SecurePipeline',
-    location: 'Remote',
-    description: 'Integrate security in CI/CD pipelines.',
-    requirements: 'Security automation knowledge.',
-    skills: 'DevOps Jenkins OWASP Docker GitLabCI'
-  }
+  
       ];
 
-      this.chatbotService.matchJobs(parsedCV, mockJobs).subscribe({
+      const filteredJobs :any[] = this.jobs.filter(job => job.jobType === this.selectedJobType);
+
+      this.chatbotService.matchJobs(parsedCV, filteredJobs).subscribe({
         next: (matchedJobs: any[]) => {
           console.log(matchedJobs);
           this.messages.push({
@@ -300,12 +194,13 @@ export class ChatbotComponent implements OnInit {
             sender: 'bot',
             timestamp: new Date(),
             type: 'suggestions',
+            context: 'jobs',
             suggestions: matchedJobs.map(job => ({
               title: job.job_title,
               matchPercentage: Math.round(job.overall_score * 100),
-              requiredSkills: job.job_description.skills?.split(' ') || [],
+              requiredSkills: job.job_description.skills || [],
               experienceLevel: job.job_description.requirements || '',
-              salaryRange: 'N/A',
+              type: job.job_description.type,
               description: job.job_description.description,
               fullJob: job.job_description
             }))
@@ -528,6 +423,17 @@ submitQuiz() {
         type: 'text'
       });
 
+      // If RETRY, allow retry option
+      if (result.status === 'RETRY') {
+        this.messages.push({
+          id: this.generateId(),
+          content: "You can retry the quiz to improve your score.",
+          sender: 'bot',
+          timestamp: new Date(),
+          type: 'text'
+        });
+      }
+
       this.scrollToBottom();
     },
     error: (err) => {
@@ -535,7 +441,73 @@ submitQuiz() {
     }
   });
 }
+
 categoryScoreKeys(): string[] {
   return this.quizResult ? Object.keys(this.quizResult.category_scores) : [];
 }
+
+retryQuiz() {
+  if (!this.selectedJob) return;
+
+  const candidateName = 'Test User'; // Or use a real user name if available
+  this.isTyping = true;
+
+  this.chatbotService.startQuiz(this.selectedJob, candidateName).subscribe({
+    next: (quizResponse) => {
+      this.quizQuestions = quizResponse.questions;
+      this.quizAnswers = new Array(this.quizQuestions.length).fill(-1);
+      this.quizInProgress = true;
+      this.quizCompleted = false;
+      this.quizResult = null;
+
+      this.messages.push({
+        id: this.generateId(),
+        content: "Here’s a fresh retry of your quiz. Good luck!",
+        sender: 'bot',
+        timestamp: new Date(),
+        type: 'text'
+      });
+
+      this.scrollToBottom();
+      this.isTyping = false;
+    },
+    error: (err) => {
+      this.messageService.add({ severity: 'error', summary: 'Retry Error', detail: err.message });
+      this.isTyping = false;
+    }
+  });
+}
+
+apply() {
+ 
+    this.router.navigate(['/app/jobapplication/', this.selectedJob.jobId]);
+  
+}
+
+onSelectJobType(option: { label: string, value: string }) {
+  this.selectedJobType = option.value;
+
+  // Push user response
+  this.messages.push({
+    id: this.generateId(),
+    content: `Je recherche : ${option.label}`,
+    sender: 'user',
+    timestamp: new Date(),
+    type: 'text'
+  });
+
+  // Bot acknowledgment
+  this.messages.push({
+    id: this.generateId(),
+    content: `Excellent ! Vous recherchez un ${option.label}. Veuillez maintenant télécharger votre CV afin que je puisse analyser votre profil et vous proposer les meilleures opportunités correspondant à vos compétences.`,
+    sender: 'bot',
+    timestamp: new Date(),
+    type: 'text'
+  });
+
+  this.scrollToBottom();
+}
+
+
+
 }

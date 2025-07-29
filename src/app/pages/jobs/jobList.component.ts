@@ -582,8 +582,10 @@ deleteJob(job: Job) {
     // this.router.navigate(['/jobs', job.id]);
   }
 
-  viewJobDetails(job: Job) {
-    console.log('Viewing job details for:', job.title);
+  viewJobDetails(jobId: any) {
+
+     this.router.navigate(['/app/job-details', jobId]);
+   
     
     // Implement navigation to job details page
     // this.router.navigate(['/jobs', job.id]);

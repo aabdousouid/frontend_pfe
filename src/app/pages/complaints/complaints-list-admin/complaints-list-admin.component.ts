@@ -18,6 +18,8 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { ComplaintService } from '../../../shared/services/complaint.service';
 import { Router } from '@angular/router';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 export interface Complaint {
   complaintId: number;
@@ -64,6 +66,8 @@ export enum ComplaintType {
     TooltipModule,
     ChipModule,
     ProgressBarModule,
+    IconFieldModule,
+    InputIconModule,
     ToastModule],
   templateUrl: './complaints-list-admin.component.html',
   styleUrl: './complaints-list-admin.component.scss',
@@ -77,7 +81,7 @@ export class ComplaintsListAdminComponent implements OnInit{
    loading: boolean = false;
   selectedComplaint: Complaint | null = null;
   viewDialogVisible = false;
- 
+  searchQuery: string = '';
    statusOptions = [
   { label: 'Tous', value: 'Tous' },
   { label: 'Résolu', value: 'RESOLVED' },
@@ -115,7 +119,9 @@ statusOptionsForDropdown = [
  
   
  
- 
+  onSearchChange() {
+    this.applyFilters();
+   }
  
 
  
@@ -180,7 +186,12 @@ statusOptionsForDropdown = [
     
    applyFilters() {
   this.filteredComplaints = this.complaints.filter(c => {
-    return this.selectedStatus === 'Tous' || c.complaintStatus === this.selectedStatus;
+    const matchesSearch = !this.searchQuery || 
+        c.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        c.complaintStatus.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        c.user.username.toLowerCase().includes(this.searchQuery.toLowerCase()) 
+        
+    return (this.selectedStatus === 'Tous' || c.complaintStatus === this.selectedStatus) && matchesSearch;
   });
 
   this.applySorting();
@@ -235,7 +246,12 @@ statusOptionsForDropdown = [
      this.applyFilters();
      //this.applySorting();
    }
- 
+   clearFilters() {
+    this.searchQuery = '';
+    this.selectedSort = 'appliedDate_desc';
+    this.selectedStatus = 'Tous';
+    this.applyFilters();
+  }
    
  
  updateApplicationStatus(complaintId: number, newStatus: any) {
