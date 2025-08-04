@@ -141,7 +141,9 @@ statusOptionsForDropdownConfirmed = [
     { label: 'Entretien terminé', value: 'COMPLETED' }
   ];
 updateInterviewStatus(interviewId: number, newStatus: string) {
-    const interview = this.interviews.find(interview => interview.interviewId === interviewId);
+  console.log('test')
+    const interview = this.application.interviews?.find(interview => interview.interviewId === interviewId);
+    console.log(interview);
     if (interview) {
       interview.status = newStatus as any;
      

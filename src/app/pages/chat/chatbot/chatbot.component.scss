@@ -1,3 +1,8 @@
+
+.custom-spinner {
+  width: 40px !important;
+  height: 40px !important;
+}
 .bot-options {
   .p-button {
     width: 100%;
@@ -9,7 +14,7 @@
       max-width: 800px;
       margin: 0 auto;
       height: 100%;
-      background: #f8f9fa;
+      /* background: #f8f9fa; */
     }
 
     .chatbot-header {
@@ -17,24 +22,21 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.5rem;
-      border-bottom: 1px solid #e5e7eb;
-      background: white;
+      /* border-bottom: 1px solid #e5e7eb;
+      background: white; */
       border-radius: 12px 12px 0 0;
     }
 
     .chatbot-header h3 {
-      color: #1f2937;
+      /* color: #1f2937; */
       font-weight: 600;
       font-size: 1.25rem;
     }
 
-    .chatbot-header small {
-      color: #6b7280;
-    }
 
     .chat-messages {
       margin-bottom: 1rem;
-      background: white;
+      /* background: white; */
     }
 
     .messages-container {
@@ -66,7 +68,7 @@
     }
 
     .message-content {
-      background: #f3f4f6;
+      /* background: #f3f4f6; */
       padding: 1rem 1.25rem;
       border-radius: 18px;
       position: relative;
@@ -79,13 +81,13 @@
     }
 
     .bot-message .message-content {
-      background: #f9fafb;
-      color: #374151;
+      /* background: #f9fafb; */
+      /*   */
       border: 1px solid #e5e7eb;
     }
 
     .timestamp {
-      color: #9ca3af;
+      /* color: #9ca3af; */
       font-size: 0.75rem;
       margin-top: 0.5rem;
       display: block;
@@ -112,7 +114,7 @@
       border-radius: 12px;
       padding: 1.5rem;
       margin-bottom: 1rem;
-      background: white;
+      /* background: white; */
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       transition: all 0.2s ease;
     }
@@ -168,7 +170,7 @@
 
     .upload-section {
       margin-bottom: 1rem;
-      background: white;
+      /* background: white; */
       padding: 1.5rem;
       border-radius: 0 0 12px 12px;
     }
@@ -178,13 +180,13 @@
       padding: 3rem;
       border: 2px dashed #d1d5db;
       border-radius: 12px;
-      background: #f9fafb;
+      /* background: #f9fafb; */
       transition: all 0.2s ease;
     }
 
     .upload-area:hover {
       border-color: #10b981;
-      background: #ecfdf5;
+      /* background: #ecfdf5; */
     }
 
     .upload-area i {
@@ -194,19 +196,16 @@
     }
 
     .upload-area p {
-      color: #374151;
+      /* color: #374151; */
       font-weight: 500;
       margin-bottom: 0.5rem;
     }
 
-    .upload-area small {
-      color: #6b7280;
-    }
 
     .analysis-progress {
       margin-bottom: 1rem;
       padding: 1.5rem;
-      background: #ecfdf5;
+      /* background: #ecfdf5; */
       border-radius: 12px;
       text-align: center;
       border: 1px solid #d1fae5;
@@ -219,9 +218,9 @@
     }
 
     .chat-input {
-      border-top: 1px solid #e5e7eb;
+      /* border-top: 1px solid #e5e7eb; */
       padding: 1.5rem;
-      background: white;
+      /* background: white; */
       border-radius: 0 0 12px 12px;
     }
 
@@ -233,7 +232,7 @@
 
     .input-group input {
       border-radius: 25px;
-      border: 1px solid #d1d5db;
+      /* border: 1px solid #d1d5db; */
       padding: 0.75rem 1.25rem;
       font-size: 0.95rem;
     }
@@ -297,7 +296,7 @@
     }
 
     ::ng-deep .p-card .p-card-content {
-      padding: 0;
+      padding: 1.5rem;
     }
 
     ::ng-deep .p-badge.p-badge-success {
@@ -348,7 +347,7 @@
       }
       
       .message {
-        max-width: 90%;
+        max-width: 100%;
       }
       
       .job-suggestions {
@@ -372,7 +371,7 @@
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
-  background-color: #f9f9f9;
+ /*  background-color: #f9f9f9; */
 
   .suggestion-header {
     display: flex;

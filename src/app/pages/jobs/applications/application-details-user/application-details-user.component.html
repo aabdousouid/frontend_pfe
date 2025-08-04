@@ -106,7 +106,7 @@
                 label="Télécharger" 
                 icon="pi pi-download" 
                 size="small"
-                severity="secondary"
+                severity="success"
                 [text]="true"
                 (click)="downloadCV()"
                 [disabled]="!application.cvFileName">
@@ -165,6 +165,54 @@
                 <p-chip label="Arabe" icon="pi pi-flag"></p-chip>
               </div>
             </div>
+          </p-accordionTab>
+          <p-accordionTab header="Résultat de Quizz">
+            
+  <div class="quiz-results-content">
+    <div *ngIf="QuizResult.id!=null">
+    <div class="quiz-header">
+      <div class="quiz-score">
+        <span class="score-label">Score global</span>
+        <div class="score-circle">
+          <span class="score-value">{{ QuizResult.score || 85 }}%</span>
+        </div>
+      </div>
+      <div class="quiz-date">
+        <i class="pi pi-calendar"></i>
+        <span>{{ QuizResult.submittedAt | date:'dd/MM/yyyy' }}</span>
+      </div>
+    </div>
+    
+    <p-divider></p-divider>
+    
+    <div class="quiz-categories" *ngIf="QuizResult">
+      <div class="category-item" >
+        <div class="category-header">
+          <span class="category-name">Quiz</span>
+          <span class="category-score" 
+                [class.excellent]="QuizResult.score >= 80"
+                [class.good]="QuizResult.score >= 60 && QuizResult.score < 80"
+                [class.average]="QuizResult.score < 60">
+            {{ QuizResult.score }}%
+          </span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" 
+               [style.width.%]="QuizResult.score"
+               [class.excellent]="QuizResult.score >= 80"
+               [class.good]="QuizResult.score >= 60 && QuizResult.score < 80"
+               [class.average]="QuizResult.score < 60">
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="no-quiz-message" *ngIf="QuizResult.id==null">
+      <i class="pi pi-info-circle"></i>
+      <p>Aucun quiz n'a été passé pour cette candidature</p>
+    </div>
+  </div>
+
           </p-accordionTab>
         </p-accordion>
       </p-card>

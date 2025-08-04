@@ -46,4 +46,8 @@ export class ApplicationService {
     return this.http.get(AUTH_API + `findByUserAndJob/${userId}/${jobId}`, httpOptions);
   }
 
+
+  findQuizByApplication(applicationId:number){
+    return this.http.get(AUTH_API + `findByApplicationId/${applicationId}`,httpOptions);
+  }
 }

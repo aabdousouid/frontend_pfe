@@ -8,6 +8,8 @@ import { LayoutService } from '../service/layout.service';
 import { Menu } from 'primeng/menu';
 import { StorageService } from '../../shared/services/storage.service';
 import { BadgeModule } from 'primeng/badge';
+import { WebsocketService } from '../../shared/services/websocket.service';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
     selector: 'app-topbar',
@@ -68,9 +70,9 @@ import { BadgeModule } from 'primeng/badge';
                 </div>
             </div>
 
-            <!-- <button class="layout-topbar-menu-button layout-topbar-action" pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout" [hideOnOutsideClick]="true">
+            <button class="layout-topbar-menu-button layout-topbar-action" pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout" [hideOnOutsideClick]="true">
                 <i class="pi pi-ellipsis-v"></i>
-            </button> -->
+            </button>
 
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
@@ -78,10 +80,25 @@ import { BadgeModule } from 'primeng/badge';
                         <i class="pi pi-calendar"></i>
                         <span>Calendar</span>
                     </button> -->
-                    <!-- <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
-                    </button> -->
+                    <div class="relative">
+    <button type="button" class="layout-topbar-action" (click)="toggleNotificationsDropdown()">
+        <i class="pi pi-bell"></i>
+        <span *ngIf="notificationCount > 0" class="p-badge p-badge-danger">{{ notificationCount }}</span>
+    </button>
+    <div *ngIf="showNotifications" class="notification-dropdown shadow-xl rounded-xl">
+        <div class="notification-dropdown-header flex justify-between items-center">
+            <span class="font-semibold">Notifications</span>
+            <button class="text-xs underline">Mark all as read</button>
+        </div>
+        <div *ngIf="notifications.length === 0" class="empty-notif text-gray-500 py-4 text-center">No notifications</div>
+        <div *ngFor="let notif of notifications" class="notification-item py-2 px-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+            [class.unread]="!notif.isRead">
+            <div class="text-sm">{{ notif.message }}</div>
+            <div class="text-xs text-gray-400">{{ notif.createdAt | date:'short' }}</div>
+        </div>
+    </div>
+</div>
+
                     <button type="button" class="layout-topbar-action" (click)="menu.toggle($event)">
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
@@ -90,17 +107,59 @@ import { BadgeModule } from 'primeng/badge';
                 </div>
             </div>
         </div>
-    </div>`
+    </div>`,
+    styles:`
+    .notification-dropdown {
+    position: absolute;
+    right: 0;
+    top: 2.5rem;
+    min-width: 320px;
+    background: var(--surface-card, #fff);
+    z-index: 100;
+    max-height: 340px;
+    overflow-y: auto;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+    border-radius: 1rem;
+    padding: 0.5rem 0;
+}
+.notification-dropdown-header {
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #eee;
+}
+.notification-item.unread {
+    font-weight: 600;
+    background: #eef6ff;
+}
+.notification-item:last-child {
+    border-bottom: none;
+}
+.p-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    font-size: 12px;
+}
+`
 })
 export class AppTopbar implements OnInit {
    // items!: MenuItem[];
     items: MenuItem[] | undefined;
     isLoggedIn!:Boolean;
+    
     role:string[];
-    constructor(public layoutService: LayoutService,private storageService: StorageService,private router:Router) {
+    notificationCount: number = 0;
+    notifications: any[] = [];
+    showNotifications = false;
+    constructor(public layoutService: LayoutService,private storageService: StorageService,private router:Router,private webSocketService: WebsocketService,private notificationService:NotificationService ) {
         this.role= this.storageService.getUser().roles;
     }
-    
+    toggleNotificationsDropdown() {
+    this.showNotifications = !this.showNotifications;
+    if (this.showNotifications) {
+        // Optionally mark all as read when opening
+       
+    }
+}
     ngOnInit(): void {
         
         
@@ -123,8 +182,32 @@ export class AppTopbar implements OnInit {
                 ]
             }
         ];
+
+        this.webSocketService.notification$.subscribe((notif: any) => {
+        if (!notif) return;
+        // Add to notifications
+        this.notifications.unshift(notif);
+        if (this.notifications.length > 5) {
+            this.notifications = this.notifications.slice(0, 5);
+        }
+        // Only count if it's unread
+        if (!notif.isRead) {
+            this.notificationCount++;
+        }
+    });
+
+    this.fetchLatestNotifications();
+
     }
 
+    fetchLatestNotifications() {
+    // Use your notification API, e.g. GET /api/notifications/me?limit=5
+    // Replace with your actual API/service call
+    this.notificationService.getUserNotification().subscribe((notifs) => {
+        this.notifications = notifs.slice(0, 5);
+        /* this.notificationCount = notifs.filter((n:any) => !n.isRead).length; */
+    });
+}
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
     }

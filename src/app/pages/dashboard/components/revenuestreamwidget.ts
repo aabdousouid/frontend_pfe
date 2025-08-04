@@ -8,7 +8,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
     selector: 'app-revenue-stream-widget',
     imports: [ChartModule],
     template: `<div class="card !mb-8">
-        <div class="font-semibold text-xl mb-4">Revenue Stream</div>
+        <div class="font-semibold text-xl mb-4">Activité de la plateforme</div>
         <p-chart type="bar" [data]="chartData" [options]="chartOptions" class="h-80" />
     </div>`
 })
@@ -35,39 +35,34 @@ export class RevenueStreamWidget {
         const borderColor = documentStyle.getPropertyValue('--surface-border');
         const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
 
-        this.chartData = {
-            labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-            datasets: [
-                {
-                    type: 'bar',
-                    label: 'Subscriptions',
-                    backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
-                    data: [4000, 10000, 15000, 4000],
-                    barThickness: 32
-                },
-                {
-                    type: 'bar',
-                    label: 'Advertising',
-                    backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
-                    data: [2100, 8400, 2400, 7500],
-                    barThickness: 32
-                },
-                {
-                    type: 'bar',
-                    label: 'Affiliate',
-                    backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
-                    data: [4100, 5200, 3400, 7400],
-                    borderRadius: {
-                        topLeft: 8,
-                        topRight: 8,
-                        bottomLeft: 0,
-                        bottomRight: 0
-                    },
-                    borderSkipped: false,
-                    barThickness: 32
-                }
-            ]
-        };
+       this.chartData = {
+    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+    datasets: [
+        {
+            type: 'bar',
+            label: 'Job Postings',
+            backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
+            data: [50, 95, 130, 77],
+            barThickness: 32
+        },
+        {
+            type: 'bar',
+            label: 'Candidate Applications',
+            backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
+            data: [210, 340, 480, 210],
+            barThickness: 32
+        },
+        {
+            type: 'bar',
+            label: 'Hires',
+            backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
+            data: [12, 23, 19, 15],
+            barThickness: 32
+        }
+    ]
+};
+
+
 
         this.chartOptions = {
             maintainAspectRatio: false,

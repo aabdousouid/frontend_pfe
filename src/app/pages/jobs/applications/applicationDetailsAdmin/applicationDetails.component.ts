@@ -36,6 +36,7 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { TimelineModule } from 'primeng/timeline';
 import { PanelModule } from 'primeng/panel';
 import { AccordionModule } from 'primeng/accordion';
+import { QuizResult } from '../../../../shared/models/quiz-result';
 
 
 @Component({
@@ -84,6 +85,7 @@ export class ApplicationDetailsComponent implements OnInit {
   loading: boolean = true;
   applicationId: number = 0;
   newComment: string = '';
+  QuizResult:QuizResult = new QuizResult();
 
   /* statusOptions = [
     { label: 'Pending', value: 'PENDING', severity: 'warning' },
@@ -134,6 +136,8 @@ statusOptionsIfInterview = [
 
     this.applicationId = +this.route.snapshot.paramMap.get('id')!;
     this.loadApplicationDetails();
+    this.loadQuizDetails();
+    console.log('Quiz loaded:', QuizResult);
    
   }
 
@@ -151,7 +155,22 @@ statusOptionsIfInterview = [
     else return this.statusOptions;
 
   }
-
+  loadQuizDetails():void{
+    this.applicationService.findQuizByApplication(this.applicationId).subscribe({
+      next:((data:any)=>{
+        this.QuizResult = data;
+        
+      }),
+      error:(err=>{
+        this.messageService.add({
+          severity: 'error',
+            summary: 'Erreur',
+            detail: 'Impossible de charger les détails du quiz'
+        })
+      })
+      
+    })
+  }
 
   loadApplicationDetails(): void {
     this.loading = true;

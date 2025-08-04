@@ -23,7 +23,7 @@
                 
                                 <div class="md:w-40 relative">
                                     
-                                    <div class="absolute bg-black/70 rounded-border" [style]="{ left: '4px', top: '4px' }" *ngIf="interview.status == 'CONFIRMED'">
+                                    <div class="absolute bg-black/70 rounded-border" [style]="{ left: '4px', top: '4px' }" *ngIf="interview.status == 'CONFIRMED' || interview.status =='COMPLETED'">
                                         <p-tag [value]="interview.status" [severity]="getInterviewStatusSeverity(interview.status)"></p-tag>
                                     </div>
 

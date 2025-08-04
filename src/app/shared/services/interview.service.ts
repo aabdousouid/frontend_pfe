@@ -10,6 +10,13 @@ const httpOptions = {
 };
 
 
+export interface UpcomingInterview {
+  candidateName: string;
+  jobTitle: string;
+  scheduledDate: string; // ISO string
+  status: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -41,5 +48,9 @@ updateInterviewStatus(interviewId:number, status:string):Observable<any>{
 getApplicationByInterviewId(interviewId:number):Observable<any>{
   return this.http.get(AUTH_API + `/getApplicationByInterviewId/${interviewId}`,httpOptions);
 }
+
+getUpcomingInterviews() {
+    return this.http.get<UpcomingInterview[]>(AUTH_API+'/upcoming',httpOptions);
+  }
 
 }

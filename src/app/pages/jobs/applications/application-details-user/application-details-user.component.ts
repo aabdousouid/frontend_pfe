@@ -16,6 +16,7 @@ import { TimelineModule } from 'primeng/timeline';
 import { ToastModule } from 'primeng/toast';
 import { Application } from '../../../../shared/models/application';
 import { ApplicationService } from '../../../../shared/services/application.service';
+import { QuizResult } from '../../../../shared/models/quiz-result';
 
 interface TimelineStep {
   number: number;
@@ -55,6 +56,7 @@ export class ApplicationDetailsUserComponent {
   loading: boolean = true;
   applicationId: number = 0;
   timelineSteps: TimelineStep[] = [];
+  QuizResult:QuizResult = new QuizResult();
 
   statusOptions = [
     { label: 'En attente', value: 'PENDING', severity: 'warning' },
@@ -63,6 +65,8 @@ export class ApplicationDetailsUserComponent {
     { label: 'Entretien programmé', value: 'INTERVIEW', severity: 'info' },
     { label: 'Embauché', value: 'HIRED', severity: 'primary' }
   ];
+
+  
 
   constructor(
     private route: ActivatedRoute,
@@ -73,7 +77,11 @@ export class ApplicationDetailsUserComponent {
 
   ngOnInit(): void {
     this.applicationId = +this.route.snapshot.paramMap.get('id')!;
-    this.loadApplicationDetails();
+    this.loadApplicationDetails();    
+    this.loadQuizDetails();
+    console.log('Quiz loaded:', QuizResult);
+
+
   }
 
   loadApplicationDetails(): void {
@@ -108,6 +116,25 @@ export class ApplicationDetailsUserComponent {
       }
     });
   }
+
+  loadQuizDetails():void{
+    this.applicationService.findQuizByApplication(this.applicationId).subscribe({
+      next:((data:any)=>{
+        this.QuizResult = data;
+        
+      }),
+      error:(err=>{
+        this.messageService.add({
+          severity: 'error',
+            summary: 'Erreur',
+            detail: 'Impossible de charger les détails du quiz'
+        })
+      })
+      
+    })
+  }
+
+
 
   buildTimeline(): void {
     const currentStatus = this.application.status;

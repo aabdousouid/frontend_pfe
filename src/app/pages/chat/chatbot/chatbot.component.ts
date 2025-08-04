@@ -18,6 +18,9 @@ import { JobsService } from '../../../shared/services/jobs.service';
 import { Route, Router } from '@angular/router';
 import { DropdownModule } from 'primeng/dropdown';
 import { Job } from '../../../shared/models/job';
+import { StorageService } from '../../../shared/services/storage.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+
 
 interface ChatMessage {
   id: string;
@@ -28,15 +31,6 @@ interface ChatMessage {
   suggestions?: any[];
   context?: 'jobTypeSelection' | 'jobs'; // ✅ new context field
 }
-
-/* interface JobSuggestion {
-  title: string;
-  matchPercentage: number;
-  requiredSkills: string[];
-  experienceLevel: string;
-  salaryRange: string;
-  description: string;
-} */
 
 interface CVAnalysis {
   skills: string[];
@@ -65,6 +59,7 @@ interface CVAnalysis {
     ScrollPanelModule,
     RadioButtonModule,
     DropdownModule,
+    ProgressSpinnerModule,
     ToastModule],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.scss',
@@ -83,16 +78,21 @@ export class ChatbotComponent implements OnInit {
   analysisProgress = 0;
   cvAnalysis: CVAnalysis | null = null;
   quizQuestions: any[] = [];
-  quizAnswers: number[] = [];
+  quizAnswers: any[] = [];
   quizInProgress = false;
   quizCompleted = false;
   quizResult: any = null;
   selectedJob: any = null;
+  showDiv:boolean=true;
   jobs:any[]=[];
   selectedJobType: string = '';
-  constructor(private messageService: MessageService,private chatbotService:ChatbotService,private jobsService:JobsService,private router:Router) {}
+  filteredJobs!:any[];
+  parsedCv?:any;
+  isApplying: boolean = false; // <-- add this to your component
+  constructor(private messageService: MessageService,private chatbotService:ChatbotService,private jobsService:JobsService,private router:Router,private storageService:StorageService) {}
 
   ngOnInit() {
+    console.log( this.storageService.getUser().id);
     this.initializeChat();
 
     this.jobsService.getAllJobs().subscribe({
@@ -124,7 +124,7 @@ export class ChatbotComponent implements OnInit {
 
   const jobTypeSelectionMessage: ChatMessage = {
     id: this.generateId(),
-    content: "Please select your preferred job type:",
+    content: "Veuillez sélectionner votre type de poste préféré : ",
     sender: 'bot',
     timestamp: new Date(),
     type: 'suggestions',
@@ -159,6 +159,7 @@ export class ChatbotComponent implements OnInit {
   this.chatbotService.parseCV(file).subscribe({
     next: (parsedCV) => {
       // Add file to messages
+      this.parsedCv = parsedCV;
       this.messages.push({
         id: this.generateId(),
         content: file.name,
@@ -167,48 +168,49 @@ export class ChatbotComponent implements OnInit {
         type: 'file'
       });
 
-      
-      // For now, mock job list — later, fetch from backend DB
-      const mockJobs = [
-       {
-    id: 'JD005',
-    title: 'DevOps Engineer',
-    type: 'CDI',
-    company: 'CloudOps',
-    location: 'Sousse',
-    description: 'Manage CI/CD pipelines and cloud infrastructure.',
-    requirements: 'Strong knowledge of Docker, Jenkins, and Kubernetes.',
-    skills: 'Docker Jenkins Kubernetes AWS Terraform Git'
-  },
-  
-      ];
 
-      const filteredJobs :any[] = this.jobs.filter(job => job.jobType === this.selectedJobType);
-
-      this.chatbotService.matchJobs(parsedCV, filteredJobs).subscribe({
+      //const filteredJobs :any[] = this.jobs.filter(job => job.jobType === this.selectedJobType);
+      console.log(this.filteredJobs);
+      this.chatbotService.matchJobs(parsedCV, this.filteredJobs).subscribe({
         next: (matchedJobs: any[]) => {
           console.log(matchedJobs);
           this.messages.push({
             id: this.generateId(),
-            content: "Based on your CV, here are tailored job recommendations:",
+            content: "Super ! J'ai analysé votre CV. Voici quelques offres d'emploi qui correspondent à votre profil : ",
             sender: 'bot',
             timestamp: new Date(),
             type: 'suggestions',
             context: 'jobs',
-            suggestions: matchedJobs.map(job => ({
+            /* suggestions: matchedJobs.map(job => ({
               title: job.job_title,
               matchPercentage: Math.round(job.overall_score * 100),
               requiredSkills: job.job_description.skills || [],
               experienceLevel: job.job_description.requirements || '',
-              type: job.job_description.type,
+              type: job.job_description.jobType,
               description: job.job_description.description,
               fullJob: job.job_description
-            }))
+            })) */
+           suggestions: matchedJobs.map(job => ({
+            title: job.job_title,
+            matchPercentage: Math.round(job.similarity_score || 0),
+            requiredSkills: job.matching_skills || [],
+            experienceLevel: job.requirements || '',
+            type: job.job_type,
+            description: job.description,
+            match_explanation:job.match_explanation,
+            fullJob: job 
+          }))
+
           });
 
           this.cvUploaded = true;
           this.isAnalyzing = false;
           this.scrollToBottom();
+          this.messageService.add({
+        severity: 'success',
+        summary: 'Analyse du CV terminée',
+        detail: 'Votre CV a été analysé avec succès !'
+      });
         },
         error: (err) => {
           this.isAnalyzing = false;
@@ -223,79 +225,7 @@ export class ChatbotComponent implements OnInit {
   });
 }
 
-  completeAnalysis() {
-    this.isAnalyzing = false;
-    this.cvUploaded = true;
-    this.isTyping = true;
-
-    // Simulate CV analysis (in real implementation, this would call your backend API)
-    setTimeout(() => {
-      this.cvAnalysis = this.simulateCVAnalysis();
-      const suggestions = this.generateJobSuggestions(this.cvAnalysis);
-
-      const analysisMessage: ChatMessage = {
-        id: this.generateId(),
-        content: "Great! I've analyzed your CV. Here are some job opportunities that match your profile:",
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'suggestions',
-        suggestions: suggestions
-      };
-
-      this.messages.push(analysisMessage);
-      this.isTyping = false;
-      this.scrollToBottom();
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'CV Analysis Complete',
-        detail: 'Your CV has been analyzed successfully!'
-      });
-    }, 2000);
-  }
-
-  simulateCVAnalysis(): CVAnalysis {
-    // This would be replaced with actual CV parsing logic
-    return {
-      skills: ['JavaScript', 'Angular', 'TypeScript', 'Node.js', 'Python', 'SQL', 'AWS'],
-      experience: ['Full Stack Development', 'Frontend Development', 'API Development', 'Database Design'],
-      education: ['Computer Science Degree', 'Web Development Certification'],
-      certifications: ['AWS Certified Developer', 'Angular Certification'],
-      languages: ['English', 'French', 'Arabic'],
-      experienceLevel: 'Mid-level',
-      industries: ['Technology', 'Fintech', 'E-commerce']
-    };
-  }
-
-  generateJobSuggestions(analysis: CVAnalysis): any[] {
-    // This would be replaced with actual job matching algorithm
-    return [
-      {
-        title: 'Senior Frontend Developer',
-        matchPercentage: 92,
-        requiredSkills: ['Angular', 'TypeScript', 'JavaScript', 'CSS'],
-        experienceLevel: 'Mid to Senior Level',
-        salaryRange: '$70,000 - $95,000',
-        description: 'Join our team to build modern web applications using Angular and TypeScript. Perfect match for your frontend expertise!'
-      },
-      {
-        title: 'Full Stack Developer',
-        matchPercentage: 88,
-        requiredSkills: ['JavaScript', 'Node.js', 'Angular', 'SQL'],
-        experienceLevel: 'Mid Level',
-        salaryRange: '$65,000 - $85,000',
-        description: 'Develop end-to-end web solutions using your full stack skills. Great opportunity to work with modern technologies.'
-      },
-      {
-        title: 'Cloud Developer',
-        matchPercentage: 78,
-        requiredSkills: ['AWS', 'Node.js', 'Python', 'JavaScript'],
-        experienceLevel: 'Mid Level',
-        salaryRange: '$75,000 - $100,000',
-        description: 'Build scalable cloud solutions using AWS services. Your cloud certification makes you a strong candidate!'
-      }
-    ];
-  }
+  
 
   sendMessage() {
     if (!this.currentMessage.trim() || !this.cvUploaded) return;
@@ -377,12 +307,12 @@ export class ChatbotComponent implements OnInit {
   const candidateName = 'Test User'; // You can prompt for this
 
   this.isTyping = true;
-  this.chatbotService.startQuiz(job, candidateName).subscribe({
+  this.chatbotService.startQuiz(this.parsedCv,job, candidateName).subscribe({
     next: (quizResponse) => {
       const questions = quizResponse.questions;
       this.messages.push({
         id: this.generateId(),
-        content: "Let's test your knowledge! Please answer the following quiz:",
+        content: "Testez vos connaissances ! Répondez au quiz suivant : ",
         sender: 'bot',
         timestamp: new Date(),
         type: 'text'
@@ -392,9 +322,11 @@ export class ChatbotComponent implements OnInit {
       console.log('Quiz Questions:', questions);
       this.quizQuestions = quizResponse.questions;
       this.quizAnswers = new Array(this.quizQuestions.length).fill(-1);
+      //this.quizAnswers = new Array(this.quizQuestions.length).fill('');
+
       this.quizInProgress = true;
       this.selectedJob = job;
-
+      console.log('le offre selectionner : ',this.selectedJob);
       this.scrollToBottom();
       this.isTyping = false;
 
@@ -406,9 +338,14 @@ export class ChatbotComponent implements OnInit {
     }
   });
 }
+
+getCurrentUserId(): number {
+  
+  return this.storageService.getUser().id;
+}
+
 submitQuiz() {
   const candidateName = 'Test User';
-
   this.chatbotService.submitQuiz(this.quizAnswers, candidateName).subscribe({
     next: (result) => {
       this.quizResult = result;
@@ -417,17 +354,54 @@ submitQuiz() {
 
       this.messages.push({
         id: this.generateId(),
-        content: `Quiz completed! You scored ${result.score.toFixed(1)}%. Status: ${result.status}`,
+        content: `Quiz terminé ! Vous avez obtenu ${result.score.toFixed(1)}%. Status: ${result.status}`,
         sender: 'bot',
         timestamp: new Date(),
         type: 'text'
       });
 
-      // If RETRY, allow retry option
-      if (result.status === 'RETRY') {
+      if (result.status === 'PASS') {
+        const userId = this.getCurrentUserId();
+        const jobId = this.selectedJob.fullJob.job_id;
+        const quizScore = result.score;
+        const matchScore = this.selectedJob.matchPercentage;
+
+        if (quizScore == null || matchScore == null) {
+          console.error('Missing quizScore or matchScore');
+          return;
+        }
+
+        // Start loader
+        this.isApplying = true;
+
+        const formData = new FormData();
+        formData.append('quizScore', quizScore.toString());
+        formData.append('matchingScore', matchScore.toString());
+        this.chatbotService.applyToJobViaQuiz(jobId, userId, formData).subscribe({
+          next: res => {
+            this.showDiv = true;
+            this.isApplying = false; // stop loader
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Candidature envoyée',
+              detail: 'Votre candidature a été soumise avec succès !'
+            });
+          },
+          error: err => {
+            this.isApplying = false;
+            this.showDiv = false;
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erreur',
+              detail: 'Erreur lors de l\'envoi de la candidature.'
+            });
+          }
+        });
+
+      } else if (result.status === 'RETRY') {
         this.messages.push({
           id: this.generateId(),
-          content: "You can retry the quiz to improve your score.",
+          content: "Vous pouvez retenter le quiz pour améliorer votre score.",
           sender: 'bot',
           timestamp: new Date(),
           type: 'text'
@@ -442,6 +416,8 @@ submitQuiz() {
   });
 }
 
+
+
 categoryScoreKeys(): string[] {
   return this.quizResult ? Object.keys(this.quizResult.category_scores) : [];
 }
@@ -452,17 +428,19 @@ retryQuiz() {
   const candidateName = 'Test User'; // Or use a real user name if available
   this.isTyping = true;
 
-  this.chatbotService.startQuiz(this.selectedJob, candidateName).subscribe({
+  this.chatbotService.startQuiz(this.parsedCv,this.selectedJob, candidateName).subscribe({
     next: (quizResponse) => {
       this.quizQuestions = quizResponse.questions;
       this.quizAnswers = new Array(this.quizQuestions.length).fill(-1);
+      //this.quizAnswers = new Array(this.quizQuestions.length).fill('');
+
       this.quizInProgress = true;
       this.quizCompleted = false;
       this.quizResult = null;
 
       this.messages.push({
         id: this.generateId(),
-        content: "Here’s a fresh retry of your quiz. Good luck!",
+        content: "Voici une nouvelle tentative pour votre quiz. Bonne chance ! : ",
         sender: 'bot',
         timestamp: new Date(),
         type: 'text'
@@ -486,7 +464,8 @@ apply() {
 
 onSelectJobType(option: { label: string, value: string }) {
   this.selectedJobType = option.value;
-
+   this.filteredJobs = this.jobs.filter(job => job.jobType === option.value);
+   console.log(this.filteredJobs);
   // Push user response
   this.messages.push({
     id: this.generateId(),

@@ -67,6 +67,7 @@ export const appRoutes: Routes = [
             {path:'job-details/:id',component:JobDetailsComponent},
             {path: 'applicationUserDetails/:id', component: ApplicationDetailsUserComponent },
             
+            
         ]
     },
     

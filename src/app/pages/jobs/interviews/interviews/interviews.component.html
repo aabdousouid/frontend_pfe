@@ -59,7 +59,7 @@
                                     <div class="flex flex-col md:items-end gap-8">
                                         <div class="flex flex-row-reverse md:flex-row gap-2">
                                             <p-button icon="pi pi-trash" severity="danger" (click)="deleteInterview(interview.interviewId)" styleClass="h-full" [outlined]="true"></p-button>
-                                            <p-button icon="pi pi-eye" severity="info"pTooltip="Consulter/Modifier" [outlined]="true" (click)="sendBooleanToParent(interview)" [disabled]="interview.status === 'CONFIRMED'" styleClass="flex-auto md:flex-initial whitespace-nowrap"></p-button>
+                                            <p-button icon="pi pi-eye" severity="info"pTooltip="Consulter/Modifier" [outlined]="true" (click)="sendBooleanToParent(interview)" [disabled]="interview.status === 'COMPLETED' || interview.status === 'CANCELED' || interview.status === 'CONFIRMED'" styleClass="flex-auto md:flex-initial whitespace-nowrap"></p-button>
                                         </div>
                                     </div>
                                 </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { StyleClassModule } from 'primeng/styleclass';
@@ -18,12 +18,14 @@ import { MessageService } from 'primeng/api';
 import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { AnimateOnScroll } from 'primeng/animateonscroll';
+import { WebsocketService } from '../../shared/services/websocket.service';
 
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [RouterModule,TagModule,MessageModule,ToastModule, AvatarModule,CarouselModule,AnimateOnScroll,TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget,CardModule, PricingWidget, FooterWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule],
+    imports: [RouterModule, TagModule, MessageModule, ToastModule, AvatarModule, CarouselModule, AnimateOnScroll, TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget, CardModule, PricingWidget, FooterWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule],
     template: `
+        <p-toast></p-toast>
         <!-- <div class="bg-surface-0 dark:bg-surface-900">
             <div id="home" class="landing-wrapper overflow-hidden">
                 <topbar-widget class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
@@ -91,6 +93,7 @@ import { AnimateOnScroll } from 'primeng/animateonscroll';
         </div>
         </div>
     </div>
+    
 `,
 styles: [`:host {
                 @keyframes slidedown-icon {
@@ -121,11 +124,22 @@ styles: [`:host {
             }`],
 providers:[MessageService]
 })
-export class Landing { 
-    constructor(private service:MessageService) {}
+export class Landing implements OnInit{ 
+    constructor(private service:MessageService,private ws: WebsocketService) {}
+    ngOnInit(): void {
+      this.ws.notification$.subscribe((notif)=> {
+      console.log("Notification Messgae : ",notif.message);
+      if (notif && notif.message) {
+       
+        this.service.add({
+          severity: 'info',
+          summary: 'Notification',
+          detail: notif.message,
+          life: 3000
+        });
+      }
+    });
+  }
 
-    showSuccessViaToast() {
-        console.log('Success message displayed');
-        this.service.add({ severity: 'success', summary: 'Success Message', detail: 'Message sent' });
-    }
+    
 }

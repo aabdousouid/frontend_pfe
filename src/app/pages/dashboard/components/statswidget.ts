@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { StatCard } from '../dashboard';
 
 @Component({
     standalone: true,
     selector: 'app-stats-widget',
     imports: [CommonModule],
-    template: `<div class="col-span-12 lg:col-span-6 xl:col-span-3">
+    template: `<!-- <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
@@ -64,6 +65,26 @@ import { CommonModule } from '@angular/common';
                 <span class="text-primary font-medium">85 </span>
                 <span class="text-muted-color">responded</span>
             </div>
-        </div>`
+        </div> -->
+        <ng-container *ngFor="let stat of stats">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+            <div class="card mb-0">
+                <div class="flex justify-between mb-4">
+                    <div>
+                        <span class="block text-muted-color font-medium mb-4">{{ stat.label }}</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ stat.value }}</div>
+                    </div>
+                    <div class="flex items-center justify-center {{ stat.iconBgClass }} rounded-border" style="width: 2.5rem; height: 2.5rem">
+                        <i class="{{ stat.icon }} {{ stat.iconColorClass }} !text-xl"></i>
+                    </div>
+                </div>
+                <span class="text-primary font-medium">{{ stat.highlight }} </span>
+                <span class="text-muted-color">{{ stat.subtext }}</span>
+            </div>
+        </div>
+      </ng-container>
+        `
 })
-export class StatsWidget {}
+export class StatsWidget {
+    @Input() stats: StatCard[] = [];
+}

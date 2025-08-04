@@ -92,8 +92,8 @@ export class JobListComponent implements OnInit {
 
   
   job!: Job ;
-
-
+  customSkillInput: string = '';
+  isSubmitting:any;
 
   form: any={
     title: '',
@@ -261,37 +261,41 @@ dropdownValuesJob = [
     this.loadJobs();
   }
 updateRequirements() {
-  this.form.skills = this.toggleSkills
+  /* this.form.skills = this.toggleSkills
+    .filter(skill => (this as any)[skill.model])
+    .map(skill => skill.label); */
+     // List of skills checked by toggle buttons
+  const toggled = this.toggleSkills
     .filter(skill => (this as any)[skill.model])
     .map(skill => skill.label);
+
+  // Keep custom skills that are NOT in toggled list
+  const custom = this.form.skills.filter(
+  (skill: string) => !this.toggleSkills.some(ts => ts.label === skill)
+);
+
+  this.form.skills = [...toggled, ...custom];
 }
 
+
+addCustomSkill() {
+  const skill = this.customSkillInput.trim();
+  // Prevent empty and duplicate skills
+  if (skill && !this.form.skills.includes(skill)) {
+    this.form.skills.push(skill);
+    this.customSkillInput = '';
+  }
+}
+
+removeSkill(index: number): void {
+  this.form.skills.splice(index, 1);
+  const removed = this.toggleSkills.find((t: { label: string; model: string }) => t.label === this.form.skills[index]);
+  if (removed) (this as any)[removed.model] = false;
+}
+
+
   loadJobs() {
-    // Simulate API call
-    /* this.jobService.getAllJobs().subscribe({
-      next: (data) => {
-        for (const job of data) {
-          if (this.jobs.includes(job)) {
-            console.log('Job already exists:', job);
-          }
-          else{
-            this.jobs.push(job);
-            console.log('Job added:', job);
-          }}
-      },
-      error: (error) => {
-        console.error('Error fetching jobs:', error);
-        this.loading = false;
-      }
-    }) */
-   /*  setTimeout(() => {
-     // this.jobs = this.getMockJobs();
-     this.jobs = this.getJobs(); 
-     console.log(this.jobs);
-      this.filteredJobs = [...this.jobs];
-      this.updatePaginatedJobs();
-      this.loading = false;
-    }, 1500); */
+
 
 this.loading = true;
   this.jobService.getAllJobs().subscribe({

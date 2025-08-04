@@ -94,6 +94,27 @@
                           <p-togglebutton [(ngModel)]="option9" onLabel="NodeJS" offLabel="Node JS" (onChange)="updateRequirements()" />
                           <p-togglebutton [(ngModel)]="option10" onLabel="Docker" offLabel="Docker" (onChange)="updateRequirements()" />
                         </div>
+                        <div class="flex gap-2 mt-4 justify-center items-center">
+                        <input
+                          type="text"
+                          pInputText
+                          placeholder="Add a custom skill"
+                          [(ngModel)]="customSkillInput"
+                          (keydown.enter)="addCustomSkill()"
+                          style="width: 200px"
+                        />
+                        <p-button icon="pi pi-plus" (onClick)="addCustomSkill()" label="Add"></p-button>
+                      </div>
+
+                      <div *ngIf="form.skills.length > 0" class="flex gap-2 flex-wrap mt-3 justify-center">
+                        <p-chip
+                          *ngFor="let skill of form.skills; let idx = index"
+                          [label]="skill"
+                          (onRemove)="removeSkill(idx)"
+                          removable="true"
+                          class="bg-blue-50"
+                        ></p-chip>
+                      </div>
                     </div>
                     <div class="flex pt-6 justify-between">
                         <p-button (onClick)="activateCallback(1)" label="Back" severity="secondary" icon="pi pi-arrow-left" />
