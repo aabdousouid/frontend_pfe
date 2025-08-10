@@ -7,7 +7,7 @@ export class UserProfile {
     links!:string[];
     summary!:string;
     experienceYears!:number;
-    skills!:string[];
+    skills?:string[];
     languages!:string[];
     certifications!:string[];
     education!: EducationHistoryItem[];

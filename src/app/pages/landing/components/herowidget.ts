@@ -85,7 +85,7 @@ import { SideChatComponent } from '../../chat/side-chat/side-chat.component';
                             severity="secondary"
                             size="small"
                             class="px-8 py-3" 
-                            (click)="navigateToProfile()"/>
+                            (click)="navigateToDashboard()"/>
 
                         <p-button 
                             
@@ -167,14 +167,14 @@ export class HeroWidget implements OnInit {
         }
     }
 
-    navigateToProfile(){
+    navigateToDashboard(){
         /* if (this.isLoggedIn) {
             this.Router.navigate(['/app/profile']);
         } else {
             
             this.Router.navigate(['/auth/access']);
         } */
-       this.Router.navigate(['/app/profile']);
+       this.Router.navigate(['/app/']);
     }
 
     open() {

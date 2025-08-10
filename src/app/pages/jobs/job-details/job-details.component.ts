@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -53,7 +53,7 @@ export interface JobOffer {
 })
 export class JobDetailsComponent implements OnInit{
 
-  constructor(private route:ActivatedRoute,private jobService:JobsService){
+  constructor(private route:ActivatedRoute,private jobService:JobsService,private router:Router){
 
   }
 
@@ -75,6 +75,14 @@ export class JobDetailsComponent implements OnInit{
 
   onApply() {
     // Implement application logic
+
+    console.log('Applying for job:', this.jobOffer?.title);
+  }
+
+
+  Recommendation() {
+    // Implement application logic
+   this.router.navigate(['/app/chatbot']);
     console.log('Applying for job:', this.jobOffer?.title);
   }
 

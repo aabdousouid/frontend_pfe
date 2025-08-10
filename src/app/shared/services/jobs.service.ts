@@ -20,7 +20,7 @@ export class JobsService {
 
 
   getAllJobs() :Observable<any> {
-    return this.http.get(API + 'getJobs', httpOptions);
+    return this.http.get(API + 'getJobs');
   }
 
   addJob(job: Job):Observable<any> {

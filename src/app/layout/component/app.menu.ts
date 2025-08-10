@@ -61,7 +61,7 @@ export class AppMenu {
                     { label: 'Offres d\'emploi', icon: 'pi pi-fw pi-briefcase', routerLink: ['/app/jobs'] },
                     { label: 'Recommandations', icon: 'pi pi-fw pi-comments', routerLink: ['/app/chatbot'] },
                     { label: 'Reclamations', icon: 'pi pi-fw pi-flag-fill', routerLink: ['/app/complaints-admin'],visible:this.checkRoles()==true },
-                    { label: 'Mes Reclamations', icon: 'pi pi-fw pi-flag-fill', routerLink: ['/app/complaints-user'],visible:this.checkRoles()==false },
+                    { label: 'Mes Reclamations', icon: 'pi pi-fw pi-flag-fill', routerLink: ['/app/complaints-user'],visible:this.checkRoles()==false },/* 
                     { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/app/uikit/formlayout'] },
                     { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/app/uikit/input'] },
                     { label: 'Button', icon: 'pi pi-fw pi-mobile', class: 'rotated-icon', routerLink: ['/app/uikit/button'] },
@@ -69,15 +69,15 @@ export class AppMenu {
                     { label: 'List', icon: 'pi pi-fw pi-list', routerLink: ['/app/uikit/list'] },
                     { label: 'Tree', icon: 'pi pi-fw pi-share-alt', routerLink: ['/app/uikit/tree'] },
                     { label: 'Panel', icon: 'pi pi-fw pi-tablet', routerLink: ['/app/uikit/panel'] },
-                    { label: 'Overlay', icon: 'pi pi-fw pi-clone', routerLink: ['/app/uikit/overlay'] },
+                    { label: 'Overlay', icon: 'pi pi-fw pi-clone', routerLink: ['/app/uikit/overlay'] }, */
                     { label: 'Media', icon: 'pi pi-fw pi-image', routerLink: ['/app/uikit/media'] },
-                    { label: 'Menu', icon: 'pi pi-fw pi-bars', routerLink: ['/app/uikit/menu'] },
+                    /* { label: 'Menu', icon: 'pi pi-fw pi-bars', routerLink: ['/app/uikit/menu'] },
                     { label: 'Message', icon: 'pi pi-fw pi-comment', routerLink: ['/app/uikit/message'] },
                     { label: 'File', icon: 'pi pi-fw pi-file', routerLink: ['/app/uikit/file'] },
                     { label: 'Chart', icon: 'pi pi-fw pi-chart-bar', routerLink: ['/app/uikit/charts'] },
                     { label: 'Timeline', icon: 'pi pi-fw pi-calendar', routerLink: ['/app/uikit/timeline'] },
-                    { label: 'Misc', icon: 'pi pi-fw pi-circle', routerLink: ['/app/uikit/misc'] }
-                ]
+                    { label: 'Misc', icon: 'pi pi-fw pi-circle', routerLink: ['/app/uikit/misc'] }*/
+                ] 
             },
             {
                 label: 'Pages',
@@ -89,7 +89,7 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-globe',
                         routerLink: ['/landing']
                     },
-                    {
+                    /* {
                         label: 'Auth',
                         icon: 'pi pi-fw pi-user',
                         items: [
@@ -109,8 +109,8 @@ export class AppMenu {
                                 routerLink: ['/auth/access']
                             }
                         ]
-                    },
-                    {
+                    }, */
+                   /*  {
                         label: 'Crud',
                         icon: 'pi pi-fw pi-pencil',
                         routerLink: ['/app/pages/crud']
@@ -124,10 +124,10 @@ export class AppMenu {
                         label: 'Empty',
                         icon: 'pi pi-fw pi-circle-off',
                         routerLink: ['/app/pages/empty']
-                    }
+                    } */
                 ]
             },
-            {
+            /* {
                 label: 'Hierarchy',
                 items: [
                     {
@@ -170,7 +170,7 @@ export class AppMenu {
                         ]
                     }
                 ]
-            },
+            }, */
             {
                 label: 'Settings',
                 items: [

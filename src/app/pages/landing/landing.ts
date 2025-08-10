@@ -127,18 +127,7 @@ providers:[MessageService]
 export class Landing implements OnInit{ 
     constructor(private service:MessageService,private ws: WebsocketService) {}
     ngOnInit(): void {
-      this.ws.notification$.subscribe((notif)=> {
-      console.log("Notification Messgae : ",notif.message);
-      if (notif && notif.message) {
-       
-        this.service.add({
-          severity: 'info',
-          summary: 'Notification',
-          detail: notif.message,
-          life: 3000
-        });
-      }
-    });
+      
   }
 
     

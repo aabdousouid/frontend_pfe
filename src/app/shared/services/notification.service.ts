@@ -20,4 +20,12 @@ export class NotificationService {
   getUserNotification():Observable<any> {
     return this.http.get(API + 'geUserNotifications',httpOptions);
   }
+
+  markAsRead(notificationId:number):Observable<any> {
+    return this.http.put(API +`${notificationId}/read` , httpOptions);
+  }
+
+  markAllAsRead():Observable<any>{
+    return this.http.put(API +'markAllAsRead',httpOptions);
+  }
 }

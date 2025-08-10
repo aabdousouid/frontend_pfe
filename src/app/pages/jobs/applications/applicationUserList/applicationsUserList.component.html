@@ -92,7 +92,7 @@
                   [pRowToggler]="application"
                   pRipple
                   pButton
-                  [disabled]="application.status === 'PENDING' || 'REJECTED' || 'APPROVED'"
+                  [disabled]="['PENDING', 'REJECTED', 'APPROVED'].includes(application.status)"
                   [pTooltip]="application.status === 'INTERVIEW' ? 'Voir/Modifier les détails de l\'entretien' : 'Disponible uniquement pour les candidatures en entretien'"
                   [text]="true">
                 </p-button>

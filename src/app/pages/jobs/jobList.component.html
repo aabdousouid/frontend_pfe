@@ -58,14 +58,14 @@
             <p-step-panel [value]="1">
                 <ng-template #content let-activateCallback="activateCallback">
                     <div class="flex flex-col gap-2 mx-auto" style="min-height: 16rem; max-width: 20rem">
-                        <div class="text-center mt-4 mb-4 text-xl font-semibold">Create Job post</div>
-                         <label class="filter-label">Title</label>
+                        <div class="text-center mt-4 mb-4 text-xl font-semibold">Créer une offre d'emploi</div>
+                         <label class="filter-label">Titre</label>
                         <div class="field">
-                            <input [(ngModel)]="form.title" pInputText id="title" type="text" placeholder="Title" fluid />
+                            <input [(ngModel)]="form.title" pInputText id="title" type="text" placeholder="Titre du poste" fluid />
                         </div>
-                         <label class="filter-label">Company</label>
+                         <label class="filter-label">Entreprise</label>
                         <div class="field">
-                            <input [(ngModel)]="form.company" pInputText id="company" type="text" placeholder="company" fluid />
+                            <input [(ngModel)]="form.company" pInputText id="company" type="text" placeholder="Entreprise" fluid />
                         </div>
                          <label class="filter-label">Description</label>
                         <div class="field">
@@ -81,7 +81,7 @@
             <p-step-panel [value]="2">
                 <ng-template #content let-activateCallback="activateCallback">
                     <div class="flex flex-col gap-2 mx-auto" style="min-height: 16rem; max-width: 24rem">
-                        <div class="text-center mt-4 mb-4 text-xl font-semibold">Choose job skills</div>
+                        <div class="text-center mt-4 mb-4 text-xl font-semibold">Choisissez vos compétences professionnelles</div>
                         <div class="flex flex-wrap justify-center gap-4">
                           <p-togglebutton [(ngModel)]="option1" onLabel="Java" offLabel="Java" (onChange)="updateRequirements()" />
                           <p-togglebutton [(ngModel)]="option2" onLabel="Angular" offLabel="Angular" (onChange)="updateRequirements()" />
@@ -98,12 +98,12 @@
                         <input
                           type="text"
                           pInputText
-                          placeholder="Add a custom skill"
+                          placeholder="Ajouter une compétence"
                           [(ngModel)]="customSkillInput"
                           (keydown.enter)="addCustomSkill()"
                           style="width: 200px"
                         />
-                        <p-button icon="pi pi-plus" (onClick)="addCustomSkill()" label="Add"></p-button>
+                        <p-button icon="pi pi-plus" (onClick)="addCustomSkill()" label="Ajouter"></p-button>
                       </div>
 
                       <div *ngIf="form.skills.length > 0" class="flex gap-2 flex-wrap mt-3 justify-center">
@@ -126,34 +126,34 @@
             <p-step-panel [value]="3">
                 <ng-template #content let-activateCallback="activateCallback">
                     <div class="flex flex-col gap-2 mx-auto" style="min-height: 16rem; max-width: 24rem">
-                        <div class="text-center mt-4 mb-4 text-xl font-semibold">Additional information</div>
-                        <label class="filter-label">Location</label>
+                        <div class="text-center mt-4 mb-4 text-xl font-semibold">Informations supplémentaires</div>
+                        <label class="filter-label">Localisation</label>
                         <div class="field">
                             
-                            <p-select class="filter-dropdown" [(ngModel)]="form.location" [options]="dropdownValues" optionLabel="name" placeholder="Location" />
+                            <p-select class="filter-dropdown" [(ngModel)]="form.location" [options]="dropdownValues" optionLabel="name" placeholder="Localisation" />
                         </div>
-                        <label class="filter-label">Job Type</label>
+                        <label class="filter-label">Type d'emploi</label>
                          <div class="field">
                             
                             <p-select class="filter-dropdown" [(ngModel)]="form.jobType" [options]="dropdownValuesJob" optionLabel="name" placeholder="Type" />
                         </div>
-                        <label class="filter-label">Salary Range</label>
+                        <!-- <label class="filter-label">Salary Range</label>
                          <div class="field">
                             
                             <p-select class="filter-dropdown" [(ngModel)]="form.salaryRange" [options]="dropdownValuesSalary" optionLabel="name" placeholder="salary Range" />
-                        </div>
+                        </div> -->
 
-                        <label class="filter-label">Requirements</label>
+                        <label class="filter-label">Exigences</label>
                          <div class="field">
                             
-                            <textarea pTextarea placeholder="Your Description" id="" [(ngModel)]="form.requirements" [autoResize]="true" rows="3" cols="30"></textarea>
+                            <textarea pTextarea placeholder="Exigences du poste" id="" [(ngModel)]="form.requirements" [autoResize]="true" rows="3" cols="30"></textarea>
                         </div>
 
 
                         <label class="filter-label">Experience</label>
                          <div class="field">
                             
-                           <input [(ngModel)]="form.experience" pInputText id="company" type="text" placeholder="company" fluid />
+                           <input [(ngModel)]="form.experience" pInputText id="company" type="text" placeholder="Experience" fluid />
                         </div>
                         <label class="filter-label">Urgency</label>
                         <div class="field">
@@ -355,7 +355,7 @@
 
             <div class="job-actions">
               <p-button 
-                label="View Details" 
+                label="Voir les détails" 
                 icon="pi pi-eye" 
                 [outlined]="true"
                 (onClick)="viewJobDetails(job.jobId)"
@@ -369,7 +369,7 @@
                 class="view-btn"
               ></p-button> -->
               <p-button 
-                label="Apply Now" 
+                label="Postuler" 
                 icon="pi pi-send"
                 (click)="applyToJob(job.jobId)"
                 class="apply-btn"

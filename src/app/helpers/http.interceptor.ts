@@ -4,16 +4,39 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class HttpRequestInterceptor implements HttpInterceptor {
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = localStorage.getItem('token');
+    // Try sessionStorage first
+   
+    let token = null;
+    const user = sessionStorage.getItem('auth-user');
+    if (user) {
+      try {
+        const userObj = JSON.parse(user);
+        token = userObj.accessToken;
+        
+      } catch (e) {
+        console.log('Could not parse user object:', e);
+      }
+    } else {
+      console.log('No user object found in sessionStorage');
+    }
+
+    // Try localStorage fallback (optional)
+    if (!token) {
+      token = localStorage.getItem('token');
+      
+    }
 
     if (token) {
-      // Clone request and add Authorization header
       req = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
         }
       });
+      
+    } else {
+      console.log('No token found, Authorization header not set');
     }
 
     return next.handle(req);

@@ -102,7 +102,7 @@ export class JobListComponent implements OnInit {
     location: '',
     jobType:'' ,
     experience:'',
-    salary: '',
+    /* salary: '', */
     requirements: '',
     skills:[],
     postedDate: new Date(),
@@ -177,11 +177,11 @@ toggleSkills = [
 
 
 dropdownValuesJob = [
-  {name:"Full-time",value:'FULL_TIME'  },
-  {name:"Part-time",value:'PART_TIME'  },
-  {name:"Internship",value:'INTERNSHIP'  },
-  {name:"Remote",value:'REMOTE'  },
-  {name:"Contract",value:'CONTRACT'  },];
+  {name:"Contrat CDI",value:'CDI'  },
+  {name:"Stage de fin d\'étude (PFE)",value:'STAGE_PFE'  },
+  {name:"Stage d\'été",value:'STAGE_ETE'  },
+  {name:"Contrat alternance",value:'ALTERNANCE'  },
+  ];
 
     dropdownValuesSalary = [
         { name: '1700Dt - 2000Dt' },
@@ -244,8 +244,8 @@ dropdownValuesJob = [
   
   sortOptions = [
     { label: 'Most Recent', value: 'recent' },
-    { label: 'Salary: High to Low', value: 'salary-desc' },
-    { label: 'Salary: Low to High', value: 'salary-asc' },
+   /*  { label: 'Salary: High to Low', value: 'salary-desc' },
+    { label: 'Salary: Low to High', value: 'salary-asc' }, */
     { label: 'Company A-Z', value: 'company-asc' },
     { label: 'Title A-Z', value: 'title-asc' }
   ];
@@ -506,10 +506,10 @@ this.loading = true;
   }
 }
 
-  extractSalaryNumber(salary: string): number {
+  /* extractSalaryNumber(salary: string): number {
     const numbers = salary.match(/\d+/g);
     return numbers ? parseInt(numbers[0]) : 0;
-  }
+  } */
 
   clearFilters() {
     this.searchQuery = '';
