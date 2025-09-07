@@ -34,4 +34,12 @@ export class StorageService {
 
     return false;
   }
+
+  public isAdmin():boolean{
+    const user = this.getUser();
+    if (user && user.roles.includes('ROLE_ADMIN') ) {
+      return true;
+    }
+    return false;
+  }
 }

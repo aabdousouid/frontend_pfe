@@ -24,11 +24,10 @@ export class SideChatComponent {
   messages: { from: 'user' | 'bot', text: string }[] = [];
 
   quickReplies = [
-    'Quels postes sont ouverts ?',
-    'Comment postuler ?',
-    'Processus de recrutement',
-    "À propos de l'entreprise"
-  ];
+    {label:'Comment postuler ?',value:'Comment postuler dans une platforme de recrutement d\'ACTIA engineerig service?'},
+    {label:'Processus de recrutement',value:'Réponse courte sur le processus de recrutement dans une platforme de recrutement entreprise Actia enginnering service'},
+    {label:"À propos de l'entreprise",value:'Réponse courte sur l\'entreprise Actia enginnering service'},
+];
 
   constructor(private http: HttpClient) {}
 
@@ -36,7 +35,29 @@ export class SideChatComponent {
     this.visible = !this.visible;
   }
 
+
+  // Manual typing: display what the user typed AND send that as payload
   sendMessage(text: string) {
+    if (!text?.trim()) return;
+    this.messages.push({ from: 'user', text });
+    this.userInput = '';
+    this.callBackend(text); // payload == text
+  }
+
+  // Quick reply: display label, send value
+  sendQuickReply(q: { label: string; value: string }) {
+    this.messages.push({ from: 'user', text: q.label });
+    this.callBackend(q.value); // payload == value
+  }
+
+  private callBackend(payload: string) {
+    this.http.post<any>('http://localhost:8080/api/cv/chat', { message: payload }).subscribe({
+      next: (res) => this.messages.push({ from: 'bot', text: res.reply }),
+      error: () => this.messages.push({ from: 'bot', text: "Désolé, une erreur s'est produite." }),
+    });
+  }
+
+  /* sendMessage(text: string) {
     if (!text.trim()) return;
     this.messages.push({ from: 'user', text });
     this.userInput = '';
@@ -45,5 +66,5 @@ export class SideChatComponent {
       next: (res) => this.messages.push({ from: 'bot', text: res.reply }),
       error: () => this.messages.push({ from: 'bot', text: "Désolé, une erreur s'est produite." }),
     });
-  }
+  } */
 }

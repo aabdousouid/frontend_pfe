@@ -55,8 +55,8 @@
   <div class="quick-replies">
     <p-button
       *ngFor="let q of quickReplies"
-      label="{{ q }}"
-      (click)="sendMessage(q)"
+      label="{{ q.label }}"
+      (click)="sendQuickReply(q)"
       class="p-button-text p-button-sm p-button-secondary"
     ></p-button>
   </div>

@@ -60,13 +60,14 @@ export class JobDetailsComponent implements OnInit{
   jobId :number = null as any;
   job?:any | null = null;
   @Input() jobOffer: JobOffer | null = null;
-  
+  requirements: string[] = [];
   isFavorite = false;
 
   ngOnInit() {
     this.jobId = this.route.snapshot.params['id'];
 
     this.retreiveJob();
+  
     // Mock data for demonstration
     if (!this.jobOffer) {
       this.jobOffer = this.getMockJobOffer();
@@ -105,7 +106,7 @@ export class JobDetailsComponent implements OnInit{
       description: 'Nous recherchons un développeur Full Stack expérimenté pour rejoindre notre équipe dynamique. Vous travaillerez sur des projets innovants utilisant les dernières technologies web et contribuerez au développement de solutions logicielles de haute qualité.',
       requirements: [
         'Diplôme en informatique ou équivalent',
-        'Minimum 5 ans d\'expérience en développement web',
+        `Minimum ${this.job?.experience} ans d\'expérience en développement web`,
         'Maîtrise d\'Angular et Spring Boot',
         'Expérience avec les bases de données relationnelles',
         'Connaissance des méthodologies Agile/Scrum'
@@ -135,9 +136,15 @@ export class JobDetailsComponent implements OnInit{
   retreiveJob(){
     this.jobService.getJobById(this.jobId).subscribe({
       next:(data=>{
+         
         this.job = data;
-      
-        console.log(this.job);
+        if (this.job.requirements) {
+          this.requirements = this.job.requirements.split(',');
+          this.job.requirements = this.requirements.map((item: string) => item.trim());
+          console.log(this.requirements);
+        }
+        
+        console.log("job retreived : ",this.job);
       }),
       error(err) {
         console.error("error occured fetching the jon : ",err
@@ -145,6 +152,14 @@ export class JobDetailsComponent implements OnInit{
         )
       },
     })
+  }
+
+
+    applyToJob(jobId: any) {
+    //console.log('Applying to job:', job.title);
+
+    // Implement job application logic
+    this.router.navigate(['/app/jobapplication', jobId]);
   }
 
 

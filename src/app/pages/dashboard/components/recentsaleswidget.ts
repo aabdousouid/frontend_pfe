@@ -6,14 +6,15 @@ import { CommonModule } from '@angular/common';
 import { Product, ProductService } from '../../service/product.service';
 import { UpcomingInterview } from '../../../shared/services/interview.service';
 import { TagModule } from 'primeng/tag';
+import { StorageService } from '../../../shared/services/storage.service';
 
 @Component({
     standalone: true,
     selector: 'app-recent-sales-widget',
     imports: [CommonModule, TableModule, ButtonModule, RippleModule,TagModule],
     template: `<div class="card !mb-8">
-        <div class="font-semibold text-xl mb-4">Les prochains entretiens</div>
-        <p-table [value]="interviews" [paginator]="true" [rows]="5" responsiveLayout="scroll">
+        <div class="font-semibold text-xl mb-4"><span *ngIf="!isAdmin">Les</span>Prochains entretiens</div>
+        <p-table [value]="interviews" [paginator]="true" [rows]="5" responsiveLayout="scroll" *ngIf="interviews.length>0">
             <ng-template #header>
                 <tr>
                     <th pSortableColumn="candidateName">Candidat <p-sortIcon field="candidateName"></p-sortIcon></th>
@@ -36,7 +37,13 @@ import { TagModule } from 'primeng/tag';
                     </td>
                 </tr>
             </ng-template>
+            
         </p-table>
+        <div *ngIf="interviews.length === 0" #empty>
+                <tr>
+                    <td colspan="5" class="text-center">Aucune donnée disponible pour le moment.</td>
+                </tr>
+        </div>
     </div>
    <!--  <div class="card !mb-8">
       <div class="font-semibold text-xl mb-4">Upcoming Interviews</div>
@@ -65,10 +72,19 @@ import { TagModule } from 'primeng/tag';
 export class RecentSalesWidget {
     products!: Product[];
     @Input() interviews: UpcomingInterview[] = [];
+    isAdmin = false;
 
-    constructor(private productService: ProductService) {}
+    constructor(private productService: ProductService,private storageService:StorageService) {}
 
     ngOnInit() {
+
+        this.checkRole();
         this.productService.getProductsSmall().then((data) => (this.products = data));
+        console.log('Upcoming Interviews:', this.interviews);
+    }
+
+    checkRole(){
+      this.isAdmin = this.storageService.isAdmin();
+      console.log("is admin : ",this.isAdmin);
     }
 }

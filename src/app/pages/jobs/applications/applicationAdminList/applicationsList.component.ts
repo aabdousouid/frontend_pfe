@@ -111,6 +111,27 @@ receivedInterview: Interview | undefined | null = null;
     {label:'Recruté',value:'HIRED'}
   ];
 
+  statusOptionsIfApproved = [
+  { label: 'Approuvé', value: 'APPROVED', severity: 'success' },
+  { label: 'Entretien programmé', value: 'INTERVIEW', severity: 'info' },
+  { label: 'Rejeté', value: 'REJECTED', severity: 'danger' },
+
+]
+
+statusOptionsIfPending = [
+  { label: 'En attente', value: 'PENDING', severity: 'warning' },
+  { label: 'Approuvé', value: 'APPROVED', severity: 'success' },
+  { label: 'Rejeté', value: 'REJECTED', severity: 'danger' },
+
+]
+
+statusOptionsIfInterview = [
+  { label: 'Entretien programmé', value: 'INTERVIEW', severity: 'info' },
+  { label: 'Embauché', value: 'HIRED', severity: 'primary' },
+  { label: 'Rejeté', value: 'REJECTED', severity: 'danger' },
+
+]
+
   statusOptionsForDropdown = [
     { label: 'En attente', value: 'PENDING' },
     { label: 'Approuvée', value: 'APPROVED' },
@@ -165,7 +186,19 @@ getInterviewStatusSeverity(status: string): string {
   }
 }
 
+checkStatusforDropdown(status:string){
+    if(status === 'Approved'){
+      return this.statusOptionsIfApproved;
+    }
+    else if(status ==='PENDING'){
+      return this.statusOptionsIfPending;
+    }
+    else if(status === 'INTERVIEW'){
+      return this.statusOptionsIfInterview;
+    }
+    else return this.statusOptions;
 
+  }
   getMatchingColor(score: number | null): string {
   if (score == null) {
     return '#cccccc'; // default gray if no score

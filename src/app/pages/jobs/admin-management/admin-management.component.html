@@ -1,0 +1,744 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Job Creation/Edit Dialog
+ [(visible)]="displayCreateDialog"  -->
+<p-dialog 
+  [(visible)]="displayCreateDialog" 
+  [breakpoints]="{ '960px': '90vw', '640px': '95vw' }" 
+  [style]="{ width: '800px', maxWidth: '90vw', maxHeight: '90vh' }" 
+  [modal]="true"
+  [closable]="true"
+  header=false
+  [resizable]="false"
+  [draggable]="false"
+  styleClass="job-creation-dialog">
+  
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <h2 class="dialog-title">Créer une nouvelle offre</h2>
+    <p class="dialog-subtitle">Partagez votre opportunité avec les meilleurs talents</p>
+  </div>
+
+  <!-- Progress Stepper -->
+  <div class="stepper-progress">
+    <div class="progress-step" [class.completed]="activeStep > 1" [class.active]="activeStep === 1">
+      <div class="step-circle">
+        <i class="pi pi-user" *ngIf="activeStep === 1"></i>
+        <i class="pi pi-check" *ngIf="activeStep > 1"></i>
+        <span *ngIf="activeStep < 1">1</span>
+      </div>
+      <span>Informations de base</span>
+    </div>
+    <div class="progress-divider" [class.completed]="activeStep > 1"></div>
+    
+    <div class="progress-step" [class.completed]="activeStep > 2" [class.active]="activeStep === 2">
+      <div class="step-circle">
+        <i class="pi pi-star" *ngIf="activeStep === 2"></i>
+        <i class="pi pi-check" *ngIf="activeStep > 2"></i>
+        <span *ngIf="activeStep < 2">2</span>
+      </div>
+      <span>Compétences</span>
+    </div>
+    <div class="progress-divider" [class.completed]="activeStep > 2"></div>
+    
+    <div class="progress-step" [class.completed]="activeStep > 3" [class.active]="activeStep === 3">
+      <div class="step-circle">
+        <i class="pi pi-id-card" *ngIf="activeStep === 3"></i>
+        <i class="pi pi-check" *ngIf="activeStep > 3"></i>
+        <span *ngIf="activeStep < 3">3</span>
+      </div>
+      <span>Publication</span>
+    </div>
+  </div>
+
+  <!-- Step 1: Basic Information -->
+  <div class="step-content" *ngIf="activeStep === 1">
+    <h3 class="step-title">Informations de base</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label required">Titre du poste</label>
+        <input 
+          [(ngModel)]="form.title" 
+          pInputText 
+          class="form-input" 
+          placeholder="Ex: Développeur Full Stack Senior"
+          required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label required">Entreprise</label>
+        <input 
+          [(ngModel)]="form.company" 
+          pInputText 
+          class="form-input" 
+          placeholder="Nom de votre entreprise"
+          required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label required">Description du poste</label>
+        <textarea 
+          [(ngModel)]="form.description" 
+          pTextarea 
+          class="form-textarea"
+          [autoResize]="true" 
+          rows="4" 
+          placeholder="Décrivez le poste, les missions principales et l'environnement de travail..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Skills -->
+  <div class="step-content" *ngIf="activeStep === 2">
+    <h3 class="step-title">Compétences professionnelles requises</h3>
+    <div class="skills-section">
+      <div class="predefined-skills">
+        <div class="skill-toggle" 
+             *ngFor="let skill of toggleSkills" 
+             [class.selected]="isSkillSelected(skill.model)"
+             (click)="toggleSkill(skill.model)">
+          {{skill.label}}
+        </div>
+      </div>
+      
+      <div class="custom-skill-section">
+        <label class="form-label">Ajouter d'autres compétences</label>
+        <div class="custom-skill-input">
+          <input 
+            type="text" 
+            [(ngModel)]="customSkillInput"
+            (keydown.enter)="addCustomSkill()"
+            class="form-input" 
+            placeholder="Ex: React, Kubernetes, AWS...">
+          <p-button 
+            (onClick)="addCustomSkill()" 
+            icon="pi pi-plus" 
+            label="Ajouter"
+            styleClass="btn-add-skill">
+          </p-button>
+        </div>
+        
+        <div class="selected-skills" *ngIf="form.skills.length > 0">
+          <div class="skill-chip" *ngFor="let skill of form.skills; let idx = index">
+            {{skill}}
+            <button class="remove-btn" (click)="removeSkill(idx)">&times;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Additional Information -->
+  <div class="step-content" *ngIf="activeStep === 3">
+    <h3 class="step-title">Détails et publication</h3>
+    <div class="form-grid">
+      <div class="info-grid">
+        <div class="form-group">
+          <label class="form-label required">Localisation</label>
+          <p-select 
+            [(ngModel)]="form.location" 
+            [options]="dropdownValues" 
+            optionLabel="name"
+            placeholder="Sélectionner une localisation"
+            class="form-select">
+          </p-select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label required">Type d'emploi</label>
+          <p-select 
+            [(ngModel)]="form.jobType" 
+            [options]="dropdownValuesJob" 
+            optionLabel="name"
+            placeholder="Sélectionner le type"
+            class="form-select">
+          </p-select>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Niveau d'expérience requis</label>
+        <input 
+          [(ngModel)]="form.experience" 
+          pInputText 
+          class="form-input" 
+          placeholder="Ex: 2-5 ans, Junior, Senior...">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Exigences spécifiques</label>
+       <!--  <textarea 
+          [(ngModel)]="form.requirements" 
+          pTextarea 
+          class="form-textarea"
+          [autoResize]="true" 
+          rows="3" 
+          placeholder="Diplômes, certifications, expériences particulières..."></textarea> -->
+            <input 
+          [(ngModel)]="form.requirements" 
+          pInputText 
+          class="form-input" 
+          placeholder="Ex: 2-5 ans, Junior, Senior...">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Offre urgente</label>
+        <div class="urgency-toggle" [class.urgent]="form.isUrgent">
+          <div class="urgency-label">
+            <i class="pi pi-exclamation-triangle urgency-icon"></i>
+            Marquer comme urgent
+          </div>
+          <p-toggleSwitch [(ngModel)]="form.isUrgent"></p-toggleSwitch>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="step-actions">
+    <p-button 
+      *ngIf="activeStep > 1"
+      (onClick)="previousStep()" 
+      label="Précédent" 
+      icon="pi pi-arrow-left"
+      severity="secondary"
+      styleClass="btn-secondary">
+    </p-button>
+    
+    <div class="spacer" *ngIf="activeStep === 1"></div>
+    
+    <p-button 
+      *ngIf="activeStep < 3"
+      (onClick)="nextStep()" 
+      label="Suivant" 
+      icon="pi pi-arrow-right" 
+      iconPos="right"
+      styleClass="btn-primary">
+    </p-button>
+    
+    <p-button 
+      *ngIf="activeStep === 3"
+      (onClick)="onSubmit()" 
+      label="Publier l'offre" 
+      icon="pi pi-check" 
+      iconPos="left"
+      styleClass="btn-success"
+      [loading]="isSubmitting">
+    </p-button>
+  </div>
+</p-dialog>
+
+<!-- Job Details Dialog -->
+<p-dialog 
+  [(visible)]="displayJobDialog" 
+  [style]="{ width: '600px' }" 
+  [modal]="true"
+  [closable]="true"
+  header="Détails de l'offre d'emploi"
+  styleClass="job-details-dialog">
+  
+  <div class="job-details-content" *ngIf="selectedJob">
+    <div class="job-header">
+      <div class="job-title-section">
+        <h2 class="job-title">{{ selectedJob.title }}</h2>
+        <p class="job-company">{{ selectedJob.company }}</p>
+      </div>
+      <div class="job-status">
+        <p-tag 
+          [value]="selectedJob.isActive ? 'Actif' : 'Inactif'"
+          [severity]="selectedJob.isActive ? 'success' : 'secondary'">
+        </p-tag>
+        <p-tag 
+          *ngIf="selectedJob.isUrgent"
+          value="Urgent" 
+          severity="danger">
+        </p-tag>
+      </div>
+    </div>
+    
+    <p-divider></p-divider>
+    
+    <div class="job-info-grid">
+      <div class="info-item">
+        <label>Localisation:</label>
+        <span>{{ selectedJob.location }}</span>
+      </div>
+      <div class="info-item">
+        <label>Type d'emploi:</label>
+        <span>{{ selectedJob.jobType }}</span>
+      </div>
+      <div class="info-item">
+        <label>Expérience:</label>
+        <span>{{ selectedJob.experience || 'Non spécifié' }}</span>
+      </div>
+      <div class="info-item">
+        <label>Publié le:</label>
+        <span>{{ selectedJob.postedDate | date:'short' }}</span>
+      </div>
+    </div>
+    
+    <div class="job-description">
+      <h4>Description</h4>
+      <p>{{ selectedJob.description }}</p>
+    </div>
+    
+    <div class="job-skills" *ngIf="selectedJob.skills?.length">
+      <h4>Compétences requises</h4>
+      <div class="skills-list">
+        <p-chip 
+          *ngFor="let skill of selectedJob.skills" 
+          [label]="skill"
+          class="skill-chip">
+        </p-chip>
+      </div>
+    </div>
+    
+    <div class="job-requirements" *ngIf="selectedJob.requirements">
+      <h4>Exigences</h4>
+      <p>{{ selectedJob.requirements }}</p>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <p-button 
+      label="Modifier" 
+      icon="pi pi-pencil" 
+      (onClick)="editJob(selectedJob); displayJobDialog = false"
+      class="p-button-outlined">
+    </p-button>
+    <p-button 
+      label="Voir les candidatures" 
+      icon="pi pi-users" 
+      (onClick)="viewApplications(selectedJob)"
+      class="p-button-outlined">
+    </p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Main Content -->
+<div class="admin-job-container">
+  <!-- Header Section -->
+  <div class="admin-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="main-title">Gestion des Offres d'Emploi</h1>
+        <p class="subtitle">Tableau de bord administrateur pour la gestion des offres</p>
+      </div>
+      
+      <div class="header-actions">
+        <p-button 
+          label="Nouvelle Offre" 
+          icon="pi pi-plus" 
+          (onClick)="createNewJob()"
+          class="create-job-btn">
+        </p-button>
+        
+        <p-button 
+          label="Exporter" 
+          icon="pi pi-download" 
+          [outlined]="true"
+          (onClick)="exportJobs()"
+          class="export-btn">
+        </p-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <p-card class="stat-card total">
+      <div class="stat-content">
+        <div class="stat-icon">
+          <i class="pi pi-briefcase"></i>
+        </div>
+        <div class="stat-info">
+          <h3>{{ jobStats.total }}</h3>
+          <p>Total des offres</p>
+        </div>
+      </div>
+    </p-card>
+    
+    <p-card class="stat-card active">
+      <div class="stat-content">
+        <div class="stat-icon">
+          <i class="pi pi-check-circle"></i>
+        </div>
+        <div class="stat-info">
+          <h3>{{ jobStats.active }}</h3>
+          <p>Offres actives</p>
+        </div>
+      </div>
+    </p-card>
+    
+    <p-card class="stat-card inactive">
+      <div class="stat-content">
+        <div class="stat-icon">
+          <i class="pi pi-pause-circle"></i>
+        </div>
+        <div class="stat-info">
+          <h3>{{ jobStats.inactive }}</h3>
+          <p>Offres inactives</p>
+        </div>
+      </div>
+    </p-card>
+    
+    <p-card class="stat-card urgent">
+      <div class="stat-content">
+        <div class="stat-icon">
+          <i class="pi pi-exclamation-triangle"></i>
+        </div>
+        <div class="stat-info">
+          <h3>{{ jobStats.urgent }}</h3>
+          <p>Offres urgentes</p>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Filters Section -->
+  <p-card class="filters-section">
+    <div class="filters-header">
+      <h3>Filtres et Recherche</h3>
+      <div class="view-toggle">
+        <p-button 
+          icon="pi pi-table" 
+          [outlined]="viewMode !== 'table'"
+          (onClick)="viewMode = 'table'"
+          pTooltip="Vue tableau">
+        </p-button>
+        <p-button 
+          icon="pi pi-th-large" 
+          [outlined]="viewMode !== 'grid'"
+          (onClick)="viewMode = 'grid'"
+          pTooltip="Vue grille">
+        </p-button>
+      </div>
+    </div>
+    
+    <div class="filters-content">
+      <!-- <div class="search-section">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input 
+            type="text" 
+            pInputText 
+            placeholder="Rechercher des offres..." 
+            [(ngModel)]="searchQuery"
+            (input)="applyFilters()"
+            class="search-input">
+        </span>
+      </div> -->
+      <div class="search-bar">
+            <span class="p-input-icon-left search-input-wrapper">
+              <i class="pi pi-search"></i>
+              <input 
+                type="text" 
+                pInputText 
+                placeholder="Recherchez des emplois, des entreprises ou des keywords..." 
+                [(ngModel)]="searchQuery"
+                (input)="applyFilters()"
+                class="search-input"
+              />
+            </span>
+          </div>
+      
+      <div class="filter-controls">
+        <div class="filter-group">
+          <label>Localisation</label>
+          <p-dropdown 
+            [(ngModel)]="selectedLocation"
+            [options]="dropdownValues"
+            optionLabel="name"
+            optionValue="name"
+            placeholder="Toutes les localisations"
+            [showClear]="true"
+            (onChange)="applyFilters()">
+          </p-dropdown>
+        </div>
+        
+        <div class="filter-group">
+          <label>Type d'emploi</label>
+          <p-dropdown 
+            [(ngModel)]="selectedJobType"
+            [options]="dropdownValuesJob"
+            optionLabel="name"
+            optionValue="value"
+            placeholder="Tous les types"
+            [showClear]="true"
+            (onChange)="applyFilters()">
+          </p-dropdown>
+        </div>
+        
+        <div class="filter-group">
+          <label>Statut</label>
+          <p-dropdown 
+            [(ngModel)]="selectedStatus"
+            [options]="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Tous les statuts"
+            (onChange)="applyFilters()">
+          </p-dropdown>
+        </div>
+        
+        <div class="filter-group">
+          <label>Période</label>
+          <p-dropdown 
+            [(ngModel)]="selectedDateRange"
+            [options]="dateRangeOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Toutes les dates"
+            (onChange)="applyFilters()">
+          </p-dropdown>
+        </div>
+        
+        <div class="filter-actions">
+          <p-button 
+            label="Effacer" 
+            icon="pi pi-times" 
+            [outlined]="true" 
+            (onClick)="clearFilters()">
+          </p-button>
+        </div>
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Bulk Actions Toolbar -->
+  <p-toolbar *ngIf="selectedJobs.length > 0" class="bulk-actions-toolbar">
+    <ng-template pTemplate="start">
+      <span class="bulk-info">{{ selectedJobs.length }} offre(s) sélectionnée(s)</span>
+    </ng-template>
+    
+    <ng-template pTemplate="end">
+      <p-splitButton 
+        label="Actions groupées" 
+        icon="pi pi-cog"
+        [model]="bulkActions"
+        styleClass="bulk-actions-btn">
+      </p-splitButton>
+    </ng-template>
+  </p-toolbar>
+
+  <!-- Table View -->
+  <p-card *ngIf="viewMode === 'table'" class="jobs-table-section">
+    <p-table 
+      [value]="filteredJobs" 
+      [(selection)]="selectedJobs"
+      [paginator]="true" 
+      [rows]="10"
+      [loading]="loading"
+      [globalFilterFields]="['title', 'company', 'location']"
+      selectionMode="multiple"
+      dataKey="jobId"
+      styleClass="p-datatable-gridlines">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th pSortableColumn="title">Titre <p-sortIcon field="title"></p-sortIcon></th>
+          <th pSortableColumn="company">Entreprise <p-sortIcon field="company"></p-sortIcon></th>
+          <th pSortableColumn="location">Localisation</th>
+          <th pSortableColumn="jobType">Type</th>
+          <th pSortableColumn="postedDate">Date de publication <p-sortIcon field="postedDate"></p-sortIcon></th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-job>
+        <tr>
+          <td>
+            <p-tableCheckbox [value]="job"></p-tableCheckbox>
+          </td>
+          <td>
+            <div class="job-title-cell">
+              <strong>{{ job.title }}</strong>
+              <p-tag 
+                *ngIf="job.isUrgent" 
+                value="Urgent" 
+                severity="danger" 
+                class="urgent-tag">
+              </p-tag>
+            </div>
+          </td>
+          <td>{{ job.company }}</td>
+          <td>{{ job.location }}</td>
+          <td>
+            <p-tag 
+              [value]="job.jobType" 
+              [severity]="getJobTypeSeverity(job.jobType)">
+            </p-tag>
+          </td>
+          <td>{{ job.postedDate | date:'short' }}</td>
+          <td>
+            <p-tag 
+              [value]="job.isActive ? 'Actif' : 'Inactif'"
+              [severity]="job.isActive ? 'success' : 'secondary'">
+            </p-tag>
+          </td>
+          <td>
+            <div class="table-actions">
+              <p-button 
+                icon="pi pi-eye" 
+                [rounded]="true" 
+                [outlined]="true" 
+                (onClick)="viewJobDetails(job)"
+                pTooltip="Voir les détails"
+                size="small">
+              </p-button>
+              
+              <p-button 
+                icon="pi pi-pencil" 
+                [rounded]="true" 
+                [outlined]="true" 
+                (onClick)="editJob(job)"
+                pTooltip="Modifier"
+                size="small">
+              </p-button>
+              
+              <p-button 
+                [icon]="job.isActive ? 'pi pi-pause' : 'pi pi-play'" 
+                [rounded]="true" 
+                [outlined]="true" 
+                (onClick)="toggleJobStatus(job)"
+                [pTooltip]="job.isActive ? 'Désactiver' : 'Activer'"
+                size="small">
+              </p-button>
+              
+              <p-button 
+                icon="pi pi-trash" 
+                [rounded]="true" 
+                severity="danger" 
+                [outlined]="true" 
+                (onClick)="deleteJob(job)"
+                pTooltip="Supprimer"
+                size="small">
+              </p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center">
+            <div class="empty-state">
+              <i class="pi pi-search empty-icon"></i>
+              <h3>Aucune offre trouvée</h3>
+              <p>Aucune offre d'emploi ne correspond à vos critères de recherche</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Grid View -->
+  <div *ngIf="viewMode === 'grid'" class="jobs-grid-section">
+    <div class="jobs-grid" *ngIf="!loading; else loadingTemplate">
+      <div class="job-card-wrapper" *ngFor="let job of filteredJobs">
+        <p-card class="admin-job-card" [class.inactive-job]="!job.isActive" [class.urgent-job]="job.isUrgent">
+          <!-- Selection checkbox -->
+          <div class="card-selection">
+            <p-checkbox 
+              [(ngModel)]="selectedJobs" 
+              [value]="job" 
+              inputId="job-{{job.jobId}}">
+            </p-checkbox>
+          </div>
+          
+          <div class="job-card-header">
+            <div class="job-title-info">
+              <h3 class="job-title">{{ job.title }}</h3>
+              <p class="company-name">{{ job.company }}</p>
+            </div>
+            
+            <div class="job-badges">
+              <p-tag 
+                [value]="job.isActive ? 'Actif' : 'Inactif'"
+                [severity]="job.isActive ? 'success' : 'secondary'">
+              </p-tag>
+              <p-tag 
+                *ngIf="job.isUrgent" 
+                value="Urgent" 
+                severity="danger">
+              </p-tag>
+            </div>
+          </div>
+
+          <div class="job-details">
+            <div class="job-meta">
+              <span class="meta-item">
+                <i class="pi pi-map-marker"></i>
+                {{ job.location }}
+              </span>
+              <span class="meta-item">
+                <i class="pi pi-briefcase"></i>
+                {{ job.jobType }}
+              </span>
+              <span class="meta-item">
+                <i class="pi pi-calendar"></i>
+                {{ getTimeAgo(job.postedDate) }}
+              </span>
+            </div>
+
+            <p class="job-description">{{ job.description }}</p>
+
+            <div class="job-skills" *ngIf="job.skills?.length">
+              <p-chip 
+                *ngFor="let skill of job.skills.slice(0, 3)" 
+                [label]="skill"
+                class="skill-chip">
+              </p-chip>
+              <span *ngIf="job.skills.length > 3" class="more-skills">
+                +{{ job.skills.length - 3 }} autres
+              </span>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <div class="job-actions">
+            <p-button 
+              label="Détails" 
+              icon="pi pi-eye" 
+              [outlined]="true"
+              (onClick)="viewJobDetails(job)"
+              class="details-btn">
+            </p-button>
+            
+            <p-button 
+              label="Modifier" 
+              icon="pi pi-pencil" 
+              [outlined]="true"
+              (onClick)="editJob(job)"
+              class="edit-btn">
+            </p-button>
+            
+            <p-button 
+              [label]="job.isActive ? 'Désactiver' : 'Activer'"
+              [icon]="job.isActive ? 'pi pi-pause' : 'pi pi-play'"
+              [outlined]="true"
+              (onClick)="toggleJobStatus(job)"
+              class="toggle-btn">
+            </p-button>
+          </div>
+        </p-card>
+      </div>
+    </div>
+
+    <!-- Loading Template -->
+    <ng-template #loadingTemplate>
+      <div class="jobs-skeleton">
+        <div class="skeleton-card" *ngFor="let item of [1,2,3,4,5,6]">
+          <p-skeleton height="300px"></p-skeleton>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

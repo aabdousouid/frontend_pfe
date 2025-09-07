@@ -40,8 +40,20 @@
                     <span>Planning de l'entretien</span>
                   </div>
                 </ng-template>
-
-                <div class="grid">
+                <div class="notes-section">
+                
+              <div class="mb-4" *ngIf="interview.status === 'CANCELLED'">
+                <!-- <label class="notes-label">Notes préalables à l'entretien</label> -->
+                <p-message 
+                  severity="error" 
+                  
+                  styleClass="pre-notes-message">
+                  Entretien Annulé
+                </p-message>
+              </div>
+            
+            </div>
+                <div class="grid" *ngIf="interview.status !== 'CANCELLED'">
                   <div class="col-12 md:col-6">
                     <div class="schedule-item mb-3">
                       <div class="flex align-items-center gap-3">
@@ -164,7 +176,7 @@
                     severity="success"
                     size="small">
                   </p-button>
-                  <p-button 
+                  <p-button *ngIf="interview.status !== 'CANCELLED'"
                     label="Reporter l'entretien" 
                     icon="pi pi-calendar" 
                     styleClass="quick-action-btn"
@@ -172,23 +184,17 @@
                     [outlined]="true"
                     size="small">
                   </p-button>
-                  <p-button 
-                    label="Send Message" 
-                    icon="pi pi-comment" 
-                    styleClass="quick-action-btn"
-                    severity="secondary"
-                    [outlined]="true"
-                    size="small">
-                  </p-button>
+                  
                   <div class="action-divider"></div>
-                  <p-button 
-                    label="Annulé L'entretien"
-                    icon="pi pi-times" 
-                    styleClass="quick-action-btn cancel-btn"
-                    severity="danger"
-                    [outlined]="true"
-                    size="small">
-                  </p-button>
+                  <p-button *ngIf="interview.status !== 'CANCELLED'"
+                  label="Annulé L'entretien"
+                  icon="pi pi-times"
+                  styleClass="quick-action-btn cancel-btn"
+                  severity="danger"
+                  [outlined]="true"
+                  size="small"
+                  (onClick)="onCancelInterview()">
+                </p-button>
                 </div>
               </p-card>
 

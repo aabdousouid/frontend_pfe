@@ -243,11 +243,11 @@ dropdownValuesJob = [
   };
   
   sortOptions = [
-    { label: 'Most Recent', value: 'recent' },
+    { label: 'le plus récent', value: 'recent' },
    /*  { label: 'Salary: High to Low', value: 'salary-desc' },
     { label: 'Salary: Low to High', value: 'salary-asc' }, */
-    { label: 'Company A-Z', value: 'company-asc' },
-    { label: 'Title A-Z', value: 'title-asc' }
+    { label: 'Entreprise A-Z', value: 'company-asc' },
+    { label: 'Titre A-Z', value: 'title-asc' }
   ];
   role:string [] = [];
   isAdmin: boolean = false;
@@ -308,7 +308,10 @@ this.loading = true;
         requirements: Array.isArray(job.requirements) ? job.requirements : [] // Ensure requirements is an array
       }));
       
-      this.filteredJobs = [...this.jobs];
+      //this.filteredJobs = [...this.jobs];
+      this.filteredJobs = this.jobs.filter(j => j.isActive === true);
+
+
       this.updatePaginatedJobs();
       this.loading = false;
       console.log('Jobs loaded successfully:', this.jobs);
@@ -435,37 +438,72 @@ this.loading = true;
   }
 
   applyFilters() {
-    this.filteredJobs = this.jobs.filter(job => {
-      const matchesSearch = !this.searchQuery || 
-        job.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        job.company.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        job.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        job.skills.some(skill => skill.toLowerCase().includes(this.searchQuery.toLowerCase()));
+  const source = this.jobs.filter(j => j.isActive === true);
 
-      const matchesLocation = !this.selectedLocation || 
-        job.location.toLowerCase().includes(this.selectedLocation.toLowerCase());
+  this.filteredJobs = source.filter(job => {
+    const matchesSearch = !this.searchQuery || 
+      job.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      job.company.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      job.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      job.skills.some(skill => skill.toLowerCase().includes(this.searchQuery.toLowerCase()));
 
-      const matchesJobType = !this.selectedJobType || 
-        job.jobType === this.selectedJobType;
+    const matchesLocation = !this.selectedLocation || 
+      job.location.toLowerCase().includes(this.selectedLocation.toLowerCase());
 
-      const matchesExperience = !this.selectedExperience || 
-        this.matchesExperienceLevel(job.experience, this.selectedExperience);
+    const matchesJobType = !this.selectedJobType || 
+      job.jobType === this.selectedJobType;
 
-      const matchesSkills = this.selectedSkills.length === 0 || 
-        this.selectedSkills.some(skill => 
-          job.skills.some(jobSkill => 
-            jobSkill.toLowerCase().includes(skill.toLowerCase())
-          )
-        );
+    const matchesExperience = !this.selectedExperience || 
+      this.matchesExperienceLevel(job.experience, this.selectedExperience);
 
-      return matchesSearch && matchesLocation && matchesJobType && matchesExperience && matchesSkills;
-    });
+    const matchesSkills = this.selectedSkills.length === 0 || 
+      this.selectedSkills.some(skill => 
+        job.skills.some(jobSkill => 
+          jobSkill.toLowerCase().includes(skill.toLowerCase())
+        )
+      );
 
-    this.applySorting();
-    this.first = 0;
-    this.updatePaginatedJobs();
-  }
+    return matchesSearch && matchesLocation && matchesJobType && matchesExperience && matchesSkills;
+  });
 
+  this.applySorting();
+  this.first = 0;
+  this.updatePaginatedJobs();
+}
+
+resetForm() {
+  this.form = {
+    title: '',
+    company: '',
+    description: '',
+    location: '',
+    jobType: '',
+    experience: '',
+    requirements: '',
+    skills: [],
+    postedDate: new Date(),
+    isActive: true,
+    isUrgent: false,
+  };
+  
+  // Reset all toggle buttons
+  this.option1 = false;
+  this.option2 = false;
+  this.option3 = false;
+  this.option4 = false;
+  this.option5 = false;
+  this.option6 = false;
+  this.option7 = false;
+  this.option8 = false;
+  this.option9 = false;
+  this.option10 = false;
+  
+  // Reset custom skill input
+  this.customSkillInput = '';
+  
+  // Reset stepper to first step
+  this.activeStep = 1;
+}
   matchesExperienceLevel(jobExperience: string, selectedLevel: string): boolean {
     const experience = jobExperience.toLowerCase();
     switch (selectedLevel) {
@@ -576,6 +614,7 @@ deleteJob(job: Job) {
     this.jobService.deleteJob(job.jobId).subscribe({
       next:(data=>{
         this.service.add({ severity: 'success', summary: 'Job Deleted', detail: 'Your job has been successfully deleted' });
+        this.loadJobs();
       })
       ,
       error:(error=>{
@@ -585,7 +624,27 @@ deleteJob(job: Job) {
     // Implement navigation to job details page
     // this.router.navigate(['/jobs', job.id]);
   }
+nextStep() {
+  if (this.activeStep < 3) {
+    this.activeStep++;
+  }
+}
 
+previousStep() {
+  if (this.activeStep > 1) {
+    this.activeStep--;
+  }
+}
+
+// Skill management methods
+isSkillSelected(skillModel: string): boolean {
+  return (this as any)[skillModel] === true;
+}
+
+toggleSkill(skillModel: string) {
+  (this as any)[skillModel] = !(this as any)[skillModel];
+  this.updateRequirements();
+}
   viewJobDetails(jobId: any) {
 
      this.router.navigate(['/app/job-details', jobId]);
@@ -604,12 +663,11 @@ deleteJob(job: Job) {
 
 
 
- onsubmit() {
+ /* onsubmit() {
   this.updateRequirements();
   this.job = this.form;
   this.job.jobType = this.form.jobType.value;
   this.job.location = this.form.location.name;
-/*   this.job.salary = this.form.salaryRange.name; // Ensure requirements are up to date */
   console.log(this.job);
   this.jobService.addJob(this.job).subscribe({
     next: (response) => {
@@ -624,8 +682,46 @@ deleteJob(job: Job) {
       console.error('Error adding job:', error);
     }
   }) 
-} 
+}  */
 
+
+onsubmit() {
+  this.updateRequirements();
+  this.job = { ...this.form }; // Create a copy instead of direct assignment
+  this.job.jobType = this.form.jobType.value;
+  this.job.location = this.form.location.name;
+  
+  console.log(this.job);
+  
+  this.jobService.addJob(this.job).subscribe({
+    next: (response) => {
+      this.service.add({ 
+        severity: 'success', 
+        summary: 'Job Added', 
+        detail: 'Your job has been successfully added!' 
+      });
+      
+      // Reset the form properly
+      this.resetForm();
+      
+      // Close the dialog
+      this.close();
+      
+      // Reload jobs to get the updated list
+      this.loadJobs();
+      
+      console.log('Job added successfully:', response);
+    },
+    error: (error) => {
+      this.service.add({ 
+        severity: 'error', 
+        summary: 'Error', 
+        detail: 'There was an error adding the job. Please try again.' 
+      });
+      console.error('Error adding job:', error);
+    }
+  });
+}
 
   open() {
         this.display = true;

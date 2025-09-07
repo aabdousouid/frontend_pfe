@@ -22,6 +22,11 @@ import { ComplaintsListAdminComponent } from './app/pages/complaints/complaints-
 import { ComplaintsListUserComponent } from './app/pages/complaints/complaints-list-user/complaints-list-user.component';
 import { JobDetailsComponent } from './app/pages/jobs/job-details/job-details.component';
 import { ApplicationDetailsUserComponent } from './app/pages/jobs/applications/application-details-user/application-details-user.component';
+import { UserDashboard } from './app/pages/dashboard/userDashboard';
+import { UserManagementComponent } from './app/pages/user/gestion-user/gestion-user.component';
+import { JobRecommendationComponent } from './app/pages/user/job-recommendation';
+import { RecommendUserComponent } from './app/pages/chat/recommend-user/recommend-user.component';
+import { AdminJobManagementComponent } from './app/pages/jobs/admin-management/admin-management.component';
 
 export const appRoutes: Routes = [
     
@@ -50,17 +55,21 @@ export const appRoutes: Routes = [
         children: [
             { path: '', component: Dashboard },
             { path: 'dashboard', component: Dashboard },
+            { path: 'userDashboard', component: UserDashboard },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             {path: 'jobs', component: JobListComponent },
             {path:'profile',component:ProfileComponent},
             {path:'addProfile',component:AddProfileComponent},
+            {path:'adminJobs',component:AdminJobManagementComponent},
             {path:'chatbot',component:ChatbotComponent},
             {path:'jobapplication/:id',component:JobApplicationComponent},
             {path: 'applications/:id', component: ApplicationDetailsComponent },
             {path: 'userApplications/:id', component: ApplicationUserListComponent },
             {path:'applications',component:ApplicationListComponent,canActivate: [AdminGuard] },
+            {path: 'gestionUser', component: UserManagementComponent ,canActivate: [AdminGuard]},
+            {path: 'recommend', component: RecommendUserComponent ,canActivate: [AdminGuard]},
             {path:'admindashboard',component:AdminDashboardComponent },
             {path:'complaints-admin',component:ComplaintsListAdminComponent,canActivate:[AdminGuard]},
             {path:'complaints-user',component:ComplaintsListUserComponent},

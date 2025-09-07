@@ -172,9 +172,12 @@ export class HeroWidget implements OnInit {
             this.Router.navigate(['/app/profile']);
         } else {
             
-            this.Router.navigate(['/auth/access']);
+            this.Router.navigate(['/auth/access']);S
         } */
-       this.Router.navigate(['/app/']);
+       if(this.isAdmin){
+       this.Router.navigate(['/app/dashboard']);
+       }
+       else this.Router.navigate(['/app/userDashboard/']);
     }
 
     open() {

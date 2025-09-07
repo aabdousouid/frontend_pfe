@@ -85,15 +85,15 @@
 
           <ng-template pTemplate="body" let-application let-expanded="expanded">
             <tr>
-            <td>
+            <td [pTooltip]="application.status === 'INTERVIEW' ? 'Voir/Modifier les détails de l\'entretien' : 'Disponible uniquement pour les candidatures en entretien'">
                <p-button
                   type="button"
                   [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
                   [pRowToggler]="application"
                   pRipple
                   pButton
-                  [disabled]="['PENDING', 'REJECTED', 'APPROVED'].includes(application.status)"
-                  [pTooltip]="application.status === 'INTERVIEW' ? 'Voir/Modifier les détails de l\'entretien' : 'Disponible uniquement pour les candidatures en entretien'"
+                  *ngIf="['PENDING', 'REJECTED', 'APPROVED'].includes(application.status)===false"
+                  
                   [text]="true">
                 </p-button>
               </td>

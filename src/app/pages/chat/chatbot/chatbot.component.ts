@@ -32,6 +32,17 @@ interface ChatMessage {
   context?: 'jobTypeSelection' | 'jobs'; // ✅ new context field
 }
 
+type JobSuggestionVM = {
+  title: string;
+  matchPercentage: number;
+  description: string;
+  experienceLevel?: string;
+  type: string;
+  requiredSkills: string[];
+  match_explanation?: string;
+  fullJob?: any;
+};
+
 interface CVAnalysis {
   skills: string[];
   experience: string[];
@@ -92,7 +103,8 @@ export class ChatbotComponent implements OnInit {
   constructor(private messageService: MessageService,private chatbotService:ChatbotService,private jobsService:JobsService,private router:Router,private storageService:StorageService) {}
 
   ngOnInit() {
-    console.log( this.storageService.getUser().id);
+ 
+    /* console.log( this.storageService.getUser().id+'    '+this.storageService.getUser().username); */
     this.initializeChat();
 
     this.jobsService.getAllJobs().subscribe({
@@ -168,55 +180,59 @@ export class ChatbotComponent implements OnInit {
         type: 'file'
       });
 
+const jobsForMatching = (this.filteredJobs && this.filteredJobs.length > 0)
+  ? this.filteredJobs
+  : this.jobs;
 
-      //const filteredJobs :any[] = this.jobs.filter(job => job.jobType === this.selectedJobType);
-      console.log(this.filteredJobs);
-      this.chatbotService.matchJobs(parsedCV, this.filteredJobs).subscribe({
-        next: (matchedJobs: any[]) => {
-          console.log(matchedJobs);
-          this.messages.push({
-            id: this.generateId(),
-            content: "Super ! J'ai analysé votre CV. Voici quelques offres d'emploi qui correspondent à votre profil : ",
-            sender: 'bot',
-            timestamp: new Date(),
-            type: 'suggestions',
-            context: 'jobs',
-            /* suggestions: matchedJobs.map(job => ({
-              title: job.job_title,
-              matchPercentage: Math.round(job.overall_score * 100),
-              requiredSkills: job.job_description.skills || [],
-              experienceLevel: job.job_description.requirements || '',
-              type: job.job_description.jobType,
-              description: job.job_description.description,
-              fullJob: job.job_description
-            })) */
-           suggestions: matchedJobs.map(job => ({
-            title: job.job_title,
-            matchPercentage: Math.round(job.similarity_score || 0),
-            requiredSkills: job.matching_skills || [],
-            experienceLevel: job.requirements || '',
-            type: job.job_type,
-            description: job.description,
-            match_explanation:job.match_explanation,
-            fullJob: job 
-          }))
+// (Optional) if the CV parser failed earlier, stop here with a toast
+if (parsedCV && parsedCV.error) {
+  this.isAnalyzing = false;
+  this.messageService.add({
+    severity: 'error',
+    summary: 'CV Parsing Error',
+    detail: 'Le CV n’a pas pu être analysé. Réessayez avec un PDF/DOC lisible.'
+  });
+  return;
+}
 
-          });
+this.chatbotService.matchJobs(parsedCV, jobsForMatching).subscribe({
+  next: (matchedJobs: any[]) => {
+    // Map backend payload to UI schema expected by the template
+    const suggestions: JobSuggestionVM[] = (matchedJobs || []).map(m => ({
+      title: m.job_title ?? m.title ?? 'Untitled job',
+      matchPercentage: Math.round(m.similarity_score ?? m.matchPercentage ?? 0),
+      description: m.description ?? '',
+      experienceLevel: m.requirements ?? m.experience ?? '',
+      type: m.job_type ?? m.type ?? '',
+      requiredSkills: m.matching_skills ?? m.requiredSkills ?? [],
+      match_explanation: m.match_explanation ?? '',
+      fullJob: m, // keep raw object for quiz/apply flows
+    }));
 
-          this.cvUploaded = true;
-          this.isAnalyzing = false;
-          this.scrollToBottom();
-          this.messageService.add({
-        severity: 'success',
-        summary: 'Analyse du CV terminée',
-        detail: 'Votre CV a été analysé avec succès !'
-      });
-        },
-        error: (err) => {
-          this.isAnalyzing = false;
-          this.messageService.add({ severity: 'error', summary: 'Matching Error', detail: err.message });
-        }
-      });
+    this.messages.push({
+      id: this.generateId(),
+      content: "Super ! J'ai analysé votre CV. Voici quelques offres d'emploi qui correspondent à votre profil : ",
+      sender: 'bot',
+      timestamp: new Date(),
+      type: 'suggestions',
+      context: 'jobs',          // <<< IMPORTANT for *ngIf in template
+      suggestions               // <<< array shaped for the template
+    });
+
+    this.cvUploaded = true;
+    this.isAnalyzing = false;
+    this.scrollToBottom();
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Analyse du CV terminée',
+      detail: 'Votre CV a été analysé avec succès !'
+    });
+  },
+  error: (err) => {
+    this.isAnalyzing = false;
+    this.messageService.add({ severity: 'error', summary: 'Matching Error', detail: err.message });
+  }
+});
     },
     error: (err) => {
       this.isAnalyzing = false;
@@ -304,7 +320,8 @@ export class ChatbotComponent implements OnInit {
 
 
   onSelectJob(job: any) {
-  const candidateName = 'Test User'; // You can prompt for this
+
+  const candidateName = this.storageService.getUser().username; // You can prompt for this
 
   this.isTyping = true;
   this.chatbotService.startQuiz(this.parsedCv,job, candidateName).subscribe({
@@ -457,7 +474,7 @@ retryQuiz() {
 }
 
 apply() {
- 
+    console.log('Applying for job:', this.selectedJob);
     this.router.navigate(['/app/jobapplication/', this.selectedJob.jobId]);
   
 }

@@ -19,11 +19,12 @@ import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { AnimateOnScroll } from 'primeng/animateonscroll';
 import { WebsocketService } from '../../shared/services/websocket.service';
+import { MediaCarouselWidget } from "./components/mediacarouselwidget";
 
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [RouterModule, TagModule, MessageModule, ToastModule, AvatarModule, CarouselModule, AnimateOnScroll, TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget, CardModule, PricingWidget, FooterWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule],
+    imports: [RouterModule, TagModule, MessageModule, ToastModule, AvatarModule, CarouselModule, AnimateOnScroll, TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget, CardModule, PricingWidget, FooterWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule, MediaCarouselWidget],
     template: `
         <p-toast></p-toast>
         <!-- <div class="bg-surface-0 dark:bg-surface-900">
@@ -45,6 +46,10 @@ import { WebsocketService } from '../../shared/services/websocket.service';
 
             <!-- Hero Section -->
             <hero-widget />
+
+
+            <media-carousel-widget />
+
 
             <!-- Features Section -->
             <features-widget id="features"/>

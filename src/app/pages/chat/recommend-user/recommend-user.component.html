@@ -1,0 +1,484 @@
+<div class="job-recommendation-container">
+      <!-- Header -->
+      <p-card styleClass="header-card mb-4">
+        <div class="header-content">
+          <div class="header-text">
+            <h1 class="main-title">Recommandations d'Emploi</h1>
+            <p class="subtitle">Recommandez les meilleurs candidats pour vos offres d'emploi</p>
+          </div>
+          <div class="header-stats">
+            <div class="stat-item">
+              <span class="stat-number">{{totalRecommendations}}</span>
+              <span class="stat-label">Recommandations</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{activeJobs}}</span>
+              <span class="stat-label">Postes Actifs</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{matchingCandidates}}</span>
+              <span class="stat-label">Candidats</span>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Quick Actions Toolbar -->
+      <p-toolbar styleClass="toolbar-custom mb-4">
+        <div class="p-toolbar-group-left">
+          <p-button 
+            label="Nouvelle Recommandation" 
+            icon="pi pi-plus" 
+            styleClass="p-button-success mr-3"
+            (click)="openNewRecommendationDialog()">
+          </p-button>
+          
+          <p-button 
+            label="Analyse de Correspondance" 
+            icon="pi pi-chart-bar" 
+            styleClass="p-button-outlined"
+            (click)="openMatchAnalysis()">
+          </p-button>
+        </div>
+        
+        <div class="p-toolbar-group-right">
+          <span class="p-input-icon-left mr-3">
+            <i class="pi pi-search"></i>
+            <input 
+              type="text" 
+              pInputText 
+              placeholder="Rechercher poste ou candidat..." 
+              [(ngModel)]="searchTerm"
+              (input)="onGlobalFilter($event)">
+          </span>
+          
+          <p-dropdown 
+            [options]="departmentOptions" 
+            [(ngModel)]="selectedDepartment" 
+            placeholder="Département"
+            [showClear]="true"
+            (onChange)="applyFilters()">
+          </p-dropdown>
+        </div>
+      </p-toolbar>
+
+      <!-- Active Jobs Section -->
+      <p-card header="Postes Disponibles" styleClass="jobs-card mb-4">
+        <div class="jobs-grid">
+          <div class="job-card" 
+               *ngFor="let job of filteredJobs" 
+               [class.selected]="selectedJob?.id === job.id" 
+               (click)="selectJob(job)">
+            <div class="job-header">
+              <div class="job-info">
+                <h3 class="job-title">{{job.title}}</h3>
+                <p class="job-meta">{{job.department}} • {{job.location}}</p>
+              </div>
+              <div class="job-badges">
+                <p-tag [value]="job.type" [severity]="getJobTypeSeverity(job.type)" class="mr-2"></p-tag>
+                <p-tag [value]="job.level" severity="info"></p-tag>
+              </div>
+            </div>
+            
+            <div class="job-details">
+              <div class="job-salary">
+                <i class="pi pi-money-bill mr-2"></i>
+                <span>{{formatSalary(job.salary)}}</span>
+              </div>
+              <div class="job-experience">
+                <i class="pi pi-calendar mr-2"></i>
+                <span>{{job.experience}}+ ans d'expérience</span>
+              </div>
+            </div>
+            
+            <div class="job-skills">
+              <p-chip *ngFor="let skill of job.requiredSkills.slice(0, 3)" 
+                     [label]="skill" 
+                     styleClass="skill-chip mr-2 mb-2">
+              </p-chip>
+              <span *ngIf="job.requiredSkills.length > 3" class="more-skills">
+                +{{job.requiredSkills.length - 3}} autres
+              </span>
+            </div>
+            
+            <div class="job-stats">
+              <div class="stat">
+                <span class="stat-value">{{job.applicationsCount}}</span>
+                <span class="stat-label">Candidatures</span>
+              </div>
+              <div class="stat">
+                <span class="stat-value">{{job.recommendationsCount}}</span>
+                <span class="stat-label">Recommandations</span>
+              </div>
+              <div class="job-deadline">
+                <i class="pi pi-clock mr-2"></i>
+                <span>{{getDaysRemaining(job.deadline)}} jours</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Candidate Matching Section -->
+      <p-card *ngIf="selectedJob" styleClass="candidates-card mb-4">
+        <ng-template pTemplate="header">
+          <div class="card-header-custom">
+            <h3>Candidats pour: {{selectedJob.title}}</h3>
+            <div class="header-actions">
+              <p-slider [(ngModel)]="minMatchScore" 
+                       [min]="0" 
+                       [max]="100" 
+                       [step]="5"
+                       (onChange)="filterByMatchScore()"
+                       class="match-slider mr-3">
+              </p-slider>
+              <span class="match-label">Score min: {{minMatchScore}}%</span>
+            </div>
+          </div>
+        </ng-template>
+
+        <div class="candidates-grid">
+          <div class="candidate-card" 
+               *ngFor="let candidate of getMatchingCandidates()" 
+               [class.recommended]="isRecommended(candidate.id, selectedJob.id)">
+            
+            <div class="candidate-header">
+              <p-avatar [label]="candidate.firstName.charAt(0) + candidate.lastName.charAt(0)"
+                       [style]="{'background-color': getAvatarColor(candidate.id)}"
+                       size="large">
+              </p-avatar>
+              
+              <div class="candidate-info">
+                <h4>{{candidate.firstName}} {{candidate.lastName}}</h4>
+                <p class="candidate-role">{{candidate.role}} • {{candidate.department}}</p>
+                <p class="candidate-location">{{candidate.location || 'Tunis, TN'}}</p>
+              </div>
+              
+              <div class="candidate-score">
+                <div class="score-circle" [class]="getScoreClass(candidate.profileScore)">
+                  <span>{{candidate.profileScore}}%</span>
+                </div>
+                <span class="score-label">Correspondance</span>
+              </div>
+            </div>
+            
+            <div class="candidate-details">
+              <div class="detail-row">
+                <i class="pi pi-briefcase mr-2"></i>
+                <span>{{candidate.experience}} ans d'expérience</span>
+              </div>
+              <div class="detail-row">
+                <i class="pi pi-calendar mr-2"></i>
+                <span>Actif {{getLastActiveText(candidate.lastActive)}}</span>
+              </div>
+            </div>
+            
+            <div class="candidate-skills">
+              <p-chip *ngFor="let skill of getMatchingSkills(candidate, selectedJob)" 
+                     [label]="skill" 
+                     styleClass="matching-skill mr-2 mb-2">
+              </p-chip>
+              <p-chip *ngFor="let skill of getNonMatchingSkills(candidate, selectedJob).slice(0, 2)" 
+                     [label]="skill" 
+                     styleClass="other-skill mr-2 mb-2">
+              </p-chip>
+            </div>
+            
+            <p-divider></p-divider>
+            
+            <div class="candidate-actions">
+              <p-button 
+                icon="pi pi-eye" 
+                label="Voir Profil"
+                styleClass="p-button-text p-button-sm"
+                (click)="viewCandidateProfile(candidate)">
+              </p-button>
+              
+              <p-button 
+                *ngIf="!isRecommended(candidate.id, selectedJob.id)"
+                icon="pi pi-send" 
+                label="Recommander"
+                styleClass="p-button-success p-button-sm"
+                (click)="recommendCandidate(candidate, selectedJob)">
+              </p-button>
+              
+              <p-button 
+                *ngIf="isRecommended(candidate.id, selectedJob.id)"
+                icon="pi pi-check" 
+                label="Recommandé"
+                styleClass="p-button-success p-button-sm"
+                [disabled]="true">
+              </p-button>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Existing Recommendations -->
+      <p-card header="Recommandations Récentes" styleClass="recommendations-card mb-4">
+        <p-table [value]="recentRecommendations" 
+                [paginator]="true" 
+                [rows]="10"
+                styleClass="p-datatable-sm">
+          
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Candidat</th>
+              <th>Poste</th>
+              <th>Score</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="body" let-recommendation>
+            <tr>
+              <td>
+                <div class="candidate-mini">
+                  <p-avatar [label]="getCandidateInitials(recommendation.userId)"
+                           [style]="{'background-color': getAvatarColor(recommendation.userId)}"
+                           size="normal">
+                  </p-avatar>
+                  <div class="ml-3">
+                    <div class="candidate-name">{{getUser(recommendation.userId)?.firstName}} {{getUser(recommendation.userId)?.lastName}}</div>
+                    <div class="candidate-email">{{getUser(recommendation.userId)?.email}}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="job-mini">
+                  <div class="job-title-mini">{{getJob(recommendation.jobId)?.title}}</div>
+                  <div class="job-department">{{getJob(recommendation.jobId)?.department}}</div>
+                </div>
+              </td>
+              <td>
+                <div class="score-mini" [class]="getScoreClass(recommendation.matchScore)">
+                  {{recommendation.matchScore}}%
+                </div>
+              </td>
+              <td>
+                <p-tag [value]="getStatusLabel(recommendation.status)" 
+                      [severity]="getStatusSeverity(recommendation.status)">
+                </p-tag>
+              </td>
+              <td>{{formatDate(recommendation.createdDate)}}</td>
+              <td>
+                <div class="action-buttons">
+                  <p-button 
+                    icon="pi pi-eye" 
+                    styleClass="p-button-rounded p-button-text p-button-sm mr-2"
+                    pTooltip="Voir détails"
+                    (click)="viewRecommendation(recommendation)">
+                  </p-button>
+                  
+                  <p-button 
+                    icon="pi pi-times" 
+                    styleClass="p-button-rounded p-button-text p-button-danger p-button-sm"
+                    pTooltip="Retirer"
+                    (click)="withdrawRecommendation(recommendation)"
+                    [disabled]="recommendation.status !== 'pending'">
+                  </p-button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+
+      <!-- New Recommendation Dialog (Select Job and Candidate) -->
+      <p-dialog [(visible)]="newRecommendationDialogVisible" 
+               [style]="{width: '700px'}" 
+               header="Créer une Nouvelle Recommandation"
+               [modal]="true"
+               [maximizable]="true"
+               [closable]="true">
+        
+        <div class="new-recommendation-form">
+          <div class="form-section">
+            <h4>Sélectionner un Poste</h4>
+            <div class="job-selection">
+              <p-dropdown 
+                [options]="jobOptions" 
+                [(ngModel)]="selectedJobForRecommendation" 
+                optionLabel="title"
+                optionValue="value"
+                placeholder="Choisir un poste"
+                [filter]="true"
+                filterBy="title"
+                class="w-full">
+              </p-dropdown>
+            </div>
+          </div>
+
+          <div class="form-section" *ngIf="selectedJobForRecommendation">
+            <h4>Sélectionner un Candidat</h4>
+            <div class="candidate-selection">
+              <p-dropdown 
+                [options]="candidateOptions" 
+                [(ngModel)]="selectedCandidateForRecommendation" 
+                optionLabel="fullName"
+                optionValue="value"
+                placeholder="Choisir un candidat"
+                [filter]="true"
+                filterBy="fullName"
+                class="w-full">
+              </p-dropdown>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <p-button 
+              label="Annuler" 
+              icon="pi pi-times" 
+              styleClass="p-button-text mr-3"
+              (click)="closeNewRecommendationDialog()">
+            </p-button>
+            <p-button 
+              label="Continuer" 
+              icon="pi pi-arrow-right" 
+              styleClass="p-button-success"
+              [disabled]="!selectedJobForRecommendation || !selectedCandidateForRecommendation"
+              (click)="proceedToRecommendationDetails()">
+            </p-button>
+          </div>
+        </div>
+      </p-dialog>
+
+      <!-- Recommendation Dialog -->
+      <p-dialog [(visible)]="recommendationDialogVisible" 
+               [style]="{width: '600px'}" 
+               header="Créer une Recommandation"
+               [modal]="true">
+        
+        <div class="recommendation-form" *ngIf="selectedCandidate && selectedJob">
+          <div class="form-section">
+            <h4>Candidat Sélectionné</h4>
+            <div class="selected-candidate">
+              <p-avatar [label]="selectedCandidate.firstName.charAt(0) + selectedCandidate.lastName.charAt(0)"
+                       [style]="{'background-color': getAvatarColor(selectedCandidate.id)}">
+              </p-avatar>
+              <div class="ml-3">
+                <h5>{{selectedCandidate.firstName}} {{selectedCandidate.lastName}}</h5>
+                <p>{{selectedCandidate.role}} • {{selectedCandidate.experience}} ans d'expérience</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4>Poste</h4>
+            <div class="selected-job">
+              <h5>{{selectedJob.title}}</h5>
+              <p>{{selectedJob.department}} • {{selectedJob.location}}</p>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <label for="recommendationReason">Raison de la recommandation *</label>
+            <p-textarea 
+              id="recommendationReason"
+              [(ngModel)]="recommendationReason" 
+              rows="4" 
+              cols="50"
+              placeholder="Expliquez pourquoi vous recommandez ce candidat..."
+              class="w-full mt-2">
+            </p-textarea>
+          </div>
+
+          <div class="form-section">
+            <label for="recommendationNotes">Notes additionnelles</label>
+            <p-textarea 
+              id="recommendationNotes"
+              [(ngModel)]="recommendationNotes" 
+              rows="3" 
+              cols="50"
+              placeholder="Notes privées (optionnel)..."
+              class="w-full mt-2">
+            </p-textarea>
+          </div>
+
+          <div class="calculated-match">
+            <h4>Score de Correspondance Calculé</h4>
+            <div class="match-breakdown">
+              <div class="match-item">
+                <span>Compétences correspondantes:</span>
+                <p-progressBar [value]="getSkillMatchPercentage(selectedCandidate, selectedJob)" 
+                             styleClass="skill-progress">
+                </p-progressBar>
+                <span>{{getMatchingSkills(selectedCandidate, selectedJob).length}}/{{selectedJob.requiredSkills.length}}</span>
+              </div>
+              <div class="match-item">
+                <span>Expérience:</span>
+                <p-progressBar [value]="getExperienceMatchPercentage(selectedCandidate, selectedJob)"
+                             styleClass="experience-progress">
+                </p-progressBar>
+                <span>{{selectedCandidate.experience >= selectedJob.experience ? 'Suffisante' : 'Insuffisante'}}</span>
+              </div>
+              <div class="overall-score">
+                <strong>Score Global: {{calculateOverallMatch(selectedCandidate, selectedJob)}}%</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <p-button 
+              label="Annuler" 
+              icon="pi pi-times" 
+              styleClass="p-button-text mr-3"
+              (click)="closeRecommendationDialog()">
+            </p-button>
+            <p-button 
+              label="Créer Recommandation" 
+              icon="pi pi-send" 
+              styleClass="p-button-success"
+              [disabled]="!recommendationReason.trim()"
+              (click)="submitRecommendation()">
+            </p-button>
+          </div>
+        </div>
+      </p-dialog>
+
+      <!-- Match Analysis Dialog -->
+      <p-dialog [(visible)]="matchAnalysisVisible" 
+               [style]="{width: '800px'}" 
+               header="Analyse de Correspondance"
+               [modal]="true">
+        
+        <div class="match-analysis" *ngIf="selectedJob">
+          <div class="analysis-header">
+            <h4>Analyse pour: {{selectedJob.title}}</h4>
+            <p>Analyse détaillée des candidats potentiels</p>
+          </div>
+
+          <div class="analysis-charts">
+            <div class="chart-section">
+              <h5>Distribution des Scores</h5>
+              <div class="score-distribution">
+                <div class="score-range" *ngFor="let range of getScoreDistribution()">
+                  <span class="range-label">{{range.label}}</span>
+                  <p-progressBar [value]="range.percentage" 
+                               [style]="{'width': '200px'}"
+                               [showValue]="false"
+                               class="mx-3">
+                  </p-progressBar>
+                  <span class="range-count">{{range.count}} candidats</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-section">
+              <h5>Compétences Manquantes</h5>
+              <div class="missing-skills">
+                <p-chip *ngFor="let skill of getMissingSkills()" 
+                       [label]="skill.name + ' (' + skill.count + ')'"
+                       styleClass="missing-skill-chip mr-2 mb-2">
+                </p-chip>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-dialog>
+    </div>
+
+    <p-toast></p-toast>
+    <p-confirmDialog></p-confirmDialog>

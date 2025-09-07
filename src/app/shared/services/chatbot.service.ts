@@ -1,10 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from './../../env/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ChatbotService {
-  private baseUrl = 'http://localhost:8080/api/chat-bot';
+  private baseUrl = `${environment.apiBaseUrl}/api/chat-bot`;
 
   constructor(private http: HttpClient) {}
 

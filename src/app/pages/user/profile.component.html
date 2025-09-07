@@ -89,10 +89,10 @@
   <div class="profile-content">
     <p-tabView>
       <!-- Overview Tab -->
-      <p-tabPanel header="Overview" leftIcon="pi pi-user">
+      <p-tabPanel header="Vue d'ensemble" leftIcon="pi pi-user">
         <div class="tab-content">
           <!-- About Section -->
-          <p-card header="About" class="section-card" [style]="{'marginBottom': '1.5rem'}">
+          <p-card header="À propos" class="section-card" [style]="{'marginBottom': '1.5rem'}">
             <div *ngIf="!editMode" class="about-content">
               <p>{{profile.summary}}</p>
             </div>
@@ -107,7 +107,7 @@
           </p-card>
 
           <!-- Contact Information -->
-          <p-card header="Contact Information" class="section-card">
+          <p-card header="Informations de contact" class="section-card">
             <div class="contact-grid">
               <div class="contact-item">
                 <i class="pi pi-envelope contact-icon"></i>
@@ -120,7 +120,7 @@
               <div class="contact-item">
                 <i class="pi pi-phone contact-icon"></i>
                 <div>
-                  <label>Phone</label>
+                  <label>Téléphone</label>
                   <p *ngIf="!editMode">{{profile.phoneNumber}}</p>
                   <input *ngIf="editMode" pInputText [(ngModel)]="profile.phoneNumber" class="w-full">
                 </div>
@@ -150,7 +150,7 @@
       <p-tabPanel header="Experience" leftIcon="pi pi-briefcase">
         <div class="tab-content">
           <div class="section-header">
-            <h3>Work Experience</h3>
+            <h3>Expérience professionnelle</h3>
             <p-button 
               *ngIf="editMode"
               icon="pi pi-plus" 

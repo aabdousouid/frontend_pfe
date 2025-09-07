@@ -1,8 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from './../../env/environment';
 
-const API = 'http://localhost:8080/api/notifications/';
+const API = `${environment.apiBaseUrl}/api/notifications/`;
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })

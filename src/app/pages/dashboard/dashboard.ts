@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
 import { NotificationsWidget } from './components/notificationswidget';
 import { StatsWidget } from './components/statswidget';
 import { RecentSalesWidget } from './components/recentsaleswidget';
@@ -12,6 +12,7 @@ import { WebsocketService } from '../../shared/services/websocket.service';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { NotificationService } from '../../shared/services/notification.service';
+import { JobsService } from '../../shared/services/jobs.service';
 
 
 export interface StatCard {
@@ -34,7 +35,7 @@ export interface StatCard {
                 <app-recent-sales-widget [interviews]="upcomingInterviews" *ngIf="!loadingInterviews"></app-recent-sales-widget>
                 <p-progress-spinner *ngIf="loadingInterviews" ariaLabel="loading" strokeWidth="8" fill="transparent" animationDuration=".5s" [style]="{ width: '50px', height: '50px' }"/>
 
-                <app-best-selling-widget />
+                <app-best-selling-widget/>
             </div>
             <div class="col-span-12 xl:col-span-6">
                 <app-revenue-stream-widget />
@@ -53,11 +54,12 @@ export class Dashboard implements OnInit {
   loadingInterviews = true;
  
 
-constructor(private notificationService:NotificationService,private statsService: DashboardstatsService,private interviewService: InterviewService,private wsService:WebsocketService,private messageService:MessageService) {}
+constructor(private statsService: DashboardstatsService,private interviewService: InterviewService,private jobService:JobsService) {}
 
 
   ngOnInit(): void {
-   
+    
+
     this.interviewService.getUpcomingInterviews().subscribe((data) => {
       this.upcomingInterviews = data;
       this.loadingInterviews = false;
@@ -65,6 +67,7 @@ constructor(private notificationService:NotificationService,private statsService
 
 
     this.statsService.getStats().subscribe((stats: DashboardStatsResponse) => {
+      console.log("Statistaks : ",stats);
       this.statsData = [
         {
           label: 'Candidatures',
@@ -109,4 +112,6 @@ constructor(private notificationService:NotificationService,private statsService
     }
     
 
+
+    
 }

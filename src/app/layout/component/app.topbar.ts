@@ -56,9 +56,9 @@ import { PopoverModule } from 'primeng/popover';
             <div class="layout-config-menu">
                 <div [style]="{'margin': '5%'}">
                     @if(this.role.includes('ROLE_ADMIN')){
-                        <p-badge value="Administrateur" badgeSize="large" severity="success" />
+                        <p-badge value="Ressourcehumaine" badgeSize="large" severity="success" />
                     }@else {
-                        <p-badge value="Utilisateur" badgeSize="large" severity="info" />
+                        <p-badge value="Candidat" badgeSize="large" severity="info" />
                     }
                 </div>
                 <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">

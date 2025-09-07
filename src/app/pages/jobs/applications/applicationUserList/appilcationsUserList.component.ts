@@ -104,6 +104,29 @@ export class ApplicationUserListComponent implements OnInit {
     { label: 'Statut', value: 'status_asc' }
   ];
 
+  
+
+statusOptionsIfApproved = [
+  { label: 'Approuvé', value: 'APPROVED', severity: 'success' },
+  { label: 'Entretien programmé', value: 'INTERVIEW', severity: 'info' },
+  { label: 'Rejeté', value: 'REJECTED', severity: 'danger' },
+
+]
+
+statusOptionsIfPending = [
+  { label: 'En attente', value: 'PENDING', severity: 'warning' },
+  { label: 'Approuvé', value: 'APPROVED', severity: 'success' },
+  { label: 'Rejeté', value: 'REJECTED', severity: 'danger' },
+
+]
+
+statusOptionsIfInterview = [
+  { label: 'Entretien programmé', value: 'INTERVIEW', severity: 'info' },
+  { label: 'Embauché', value: 'HIRED', severity: 'primary' },
+  { label: 'Rejeté', value: 'REJECTED', severity: 'danger' },
+
+]
+
   constructor(
     private messageService: MessageService,
     private storageService: StorageService,
@@ -120,6 +143,21 @@ export class ApplicationUserListComponent implements OnInit {
     console.log(this.filteredApplications);
   }
 
+
+
+  checkStatusforDropdown(status:string){
+    if(status === 'Approved'){
+      return this.statusOptionsIfApproved;
+    }
+    else if(status ==='PENDING'){
+      return this.statusOptionsIfPending;
+    }
+    else if(status === 'INTERVIEW'){
+      return this.statusOptionsIfInterview;
+    }
+    else return this.statusOptions;
+
+  }
 
   getMatchingColor(score: number | null): string {
   if (score == null) {

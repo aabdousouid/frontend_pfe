@@ -86,7 +86,7 @@
 
           <ng-template pTemplate="body" let-application let-rowIndex="rowIndex" #groupheader let-expanded="expanded">
             <tr>
-              <td>
+              <td [pTooltip]="application.status === 'INTERVIEW' ? 'Voir/Modifier les détails de l entretien' : 'Disponible uniquement pour les candidatures en entretien'">
                 
                <p-button
                   type="button"
@@ -94,7 +94,7 @@
                   [pRowToggler]="application"
                   pRipple
                   pButton
-                  [disabled]="application.status !== 'INTERVIEW'"
+                  *ngIf="application.status === 'INTERVIEW'"
                   [pTooltip]="application.status === 'INTERVIEW' ? 'Voir/Modifier les détails de l entretien' : 'Disponible uniquement pour les candidatures en entretien'"
                   [text]="true">
                 </p-button>
@@ -121,7 +121,7 @@
               </td>
               <td>
                 <p-dropdown *ngIf="application.status!=='HIRED' && application.status!=='REJECTED'; else elseBlock"
-                  [options]="statusOptionsForDropdown" 
+                  [options]="checkStatusforDropdown(application.status)" 
                   [(ngModel)]="application.status"
                   optionLabel="label" 
                   optionValue="value"

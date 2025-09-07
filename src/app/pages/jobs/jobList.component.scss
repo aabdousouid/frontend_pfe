@@ -1,4 +1,407 @@
+// Professional Job Dialog Styles
+::ng-deep .job-creation-dialog {
+  .p-dialog {
+    max-height: 90vh;
+  }
+  
+  .p-dialog-content {
+    padding: 0 !important;
+    border-radius: 12px;
+    overflow: hidden;
+    max-height: calc(90vh - 2rem);
+    display: flex;
+    flex-direction: column;
+  }
 
+  .p-dialog-header {
+    display: none;
+  }
+}
+
+.dialog-header {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dialog-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.dialog-subtitle {
+  opacity: 0.9;
+  font-size: 1rem;
+  margin: 0;
+}
+
+// Stepper Progress
+.stepper-progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  color: #6c757d;
+  font-weight: 500;
+  font-size: 0.9rem;
+
+  &.active {
+    color: #27ae60;
+  }
+
+  &.completed {
+    color: #27ae60;
+  }
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid currentColor;
+  margin-right: 0.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+
+  .progress-step.active &,
+  .progress-step.completed & {
+    background: #27ae60;
+    color: white;
+    border-color: #27ae60;
+  }
+}
+
+.progress-divider {
+  width: 60px;
+  height: 2px;
+  background: #dee2e6;
+  transition: all 0.3s ease;
+
+  &.completed {
+    background: #27ae60;
+  }
+}
+
+// Content Styles - Make scrollable
+.step-content {
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0; // Important for flex scrolling
+}
+
+.step-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.9rem;
+
+  &.required::after {
+    content: ' *';
+    color: #e74c3c;
+  }
+}
+
+// Form Input Styles
+::ng-deep .form-input,
+::ng-deep .form-textarea,
+::ng-deep .form-select .p-select,
+::ng-deep .form-select .p-inputtext {
+  width: 100% !important;
+  border: 2px solid #e8f5e8 !important;
+  border-radius: 8px !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  padding: 0.75rem !important;
+
+  &:focus,
+  &.p-focus {
+    border-color: #27ae60 !important;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1) !important;
+  }
+}
+
+// Skills Section
+.skills-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.predefined-skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.skill-toggle {
+  padding: 0.6rem 1rem;
+  border: 2px solid #e8f5e8;
+  border-radius: 25px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #2c3e50;
+
+  &:hover {
+    border-color: #27ae60;
+    background: #e8f5e8;
+    transform: translateY(-1px);
+  }
+
+  &.selected {
+    background: #27ae60;
+    color: white;
+    border-color: #27ae60;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  }
+}
+
+.custom-skill-section {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.custom-skill-input {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  align-items: end;
+
+  input {
+    flex: 1;
+  }
+}
+
+::ng-deep .btn-add-skill {
+  background: #27ae60 !important;
+  color: white !important;
+  border: none !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+
+  &:hover {
+    background: #229954 !important;
+    transform: translateY(-1px) !important;
+  }
+}
+
+.selected-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skill-chip {
+  background: #e8f5e8;
+  color: #27ae60;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(39, 174, 96, 0.2);
+
+  .remove-btn {
+    background: none;
+    border: none;
+    color: #27ae60;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    line-height: 1;
+    font-weight: bold;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #e74c3c;
+    }
+  }
+}
+
+// Additional Info Section
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.urgency-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 2px solid #e8f5e8;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: white;
+
+  &.urgent {
+    border-color: #e74c3c;
+    background: #fdf2f2;
+  }
+}
+
+.urgency-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.urgency-icon {
+  font-size: 1.2rem;
+  color: #e74c3c;
+}
+
+// Action Buttons - Fixed at bottom
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  gap: 1rem;
+  flex-shrink: 0; // Prevent shrinking
+}
+
+.spacer {
+  flex: 1;
+}
+
+::ng-deep .btn-secondary {
+  background: #6c757d !important;
+  color: white !important;
+  border: none !important;
+
+  &:hover {
+    background: #5a6268 !important;
+  }
+}
+
+::ng-deep .btn-primary {
+  background: #27ae60 !important;
+  color: white !important;
+  border: none !important;
+
+  &:hover {
+    background: #229954 !important;
+    transform: translateY(-1px) !important;
+  }
+}
+
+::ng-deep .btn-success {
+  background: linear-gradient(135deg, #27ae60, #2ecc71) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border: none !important;
+
+  &:hover {
+    background: linear-gradient(135deg, #229954, #27ae60) !important;
+    transform: translateY(-1px) !important;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  ::ng-deep .job-creation-dialog {
+    .p-dialog-content {
+      max-height: 95vh;
+    }
+  }
+
+  .dialog-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .dialog-title {
+    font-size: 1.5rem;
+  }
+
+  .stepper-progress {
+    padding: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    .progress-step {
+      justify-content: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-divider {
+      display: none;
+    }
+  }
+
+  .step-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .predefined-skills {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  .step-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+
+    .spacer {
+      display: none;
+    }
+  }
+
+  .custom-skill-input {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
 .job-list-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -445,7 +848,7 @@
     }
 
     ::ng-deep .p-paginator {
-      background: white;
+      
       border: 1px solid rgba(39, 174, 96, 0.1);
       border-radius: 8px;
     }

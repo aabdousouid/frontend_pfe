@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { debounceTime, Subscription } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
+import { DashboardstatsService } from '../../../shared/services/dashboardstats.service';
 
 @Component({
     standalone: true,
@@ -19,90 +20,61 @@ export class RevenueStreamWidget {
 
     subscription!: Subscription;
 
-    constructor(public layoutService: LayoutService) {
+    constructor(public layoutService: LayoutService,private dashboardStatsService: DashboardstatsService) {
         this.subscription = this.layoutService.configUpdate$.pipe(debounceTime(25)).subscribe(() => {
-            this.initChart();
+            /* this.initChart(); */
         });
     }
 
-    ngOnInit() {
-        this.initChart();
-    }
+   ngOnInit() {
+    this.dashboardStatsService.activityChart().subscribe(res => {
+      const s = getComputedStyle(document.documentElement);
 
-    initChart() {
-        const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue('--text-color');
-        const borderColor = documentStyle.getPropertyValue('--surface-border');
-        const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
+      // ensure each dataset has a type (Chart.js + PrimeNG)
+      res.datasets = res.datasets.map((d: any, i: number) => ({
+        ...d,
+        type: 'bar',
+        backgroundColor:
+          i === 0 ? s.getPropertyValue('--p-primary-400') :
+          i === 1 ? s.getPropertyValue('--p-primary-300') :
+                    s.getPropertyValue('--p-primary-200'),
+        barThickness: 32
+      }));
 
-       this.chartData = {
-    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-    datasets: [
-        {
-            type: 'bar',
-            label: 'Job Postings',
-            backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
-            data: [50, 95, 130, 77],
-            barThickness: 32
+      this.chartData = res;     // <- keep data as-is from backend
+      this.buildOptions();      // <- only (re)compute options
+    });
+  }
+
+  // ⬇️ Build ONLY options here; do NOT assign chartData
+  private buildOptions() {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const borderColor = documentStyle.getPropertyValue('--surface-border');
+    const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
+
+    this.chartOptions = {
+      maintainAspectRatio: false,
+      aspectRatio: 0.8,
+      plugins: {
+        legend: { labels: { color: textColor } }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          ticks: { color: textMutedColor },
+          grid: { color: 'transparent', borderColor: 'transparent' }
         },
-        {
-            type: 'bar',
-            label: 'Candidate Applications',
-            backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
-            data: [210, 340, 480, 210],
-            barThickness: 32
-        },
-        {
-            type: 'bar',
-            label: 'Hires',
-            backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
-            data: [12, 23, 19, 15],
-            barThickness: 32
+        y: {
+          stacked: true,
+          ticks: { color: textMutedColor },
+          grid: { color: borderColor, borderColor: 'transparent', drawTicks: false }
         }
-    ]
-};
+      }
+    };
+  }
 
-
-
-        this.chartOptions = {
-            maintainAspectRatio: false,
-            aspectRatio: 0.8,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: textColor
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    stacked: true,
-                    ticks: {
-                        color: textMutedColor
-                    },
-                    grid: {
-                        color: 'transparent',
-                        borderColor: 'transparent'
-                    }
-                },
-                y: {
-                    stacked: true,
-                    ticks: {
-                        color: textMutedColor
-                    },
-                    grid: {
-                        color: borderColor,
-                        borderColor: 'transparent',
-                        drawTicks: false
-                    }
-                }
-            }
-        };
-    }
-
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-    }
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
+  }
 }

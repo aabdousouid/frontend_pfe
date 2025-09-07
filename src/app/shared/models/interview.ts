@@ -7,7 +7,7 @@ export class Interview {
     scheduledHour!:Date;
     location!:string;
     notes?:string;
-    status!: 'SCHEDULED' | 'RESCHEDULED' | 'COMPLETED' | 'CANCELED' | 'CONFIRMED';
+    status!: 'SCHEDULED' | 'RESCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'CONFIRMED';
     interviewType!: 'REMOTE' | 'ONSITE' | 'ONPHONE';
     interviewTest!:'TECHNIQUE' | 'RH' ;
     interviewerEmail?: string;

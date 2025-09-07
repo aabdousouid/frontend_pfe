@@ -144,4 +144,36 @@ export class UserInterviewDetailsComponent {
     })
   }
 
+  onCancelInterview() {
+    // Optional: prevent cancel if already completed/cancelled
+    if (this.interview.status === 'COMPLETED' || this.interview.status === 'CANCELLED') {
+      alert(`Interview is already ${this.interview.status.toLowerCase()}.`);
+      return;
+    }
+
+    if (!confirm("Confirmer l'annulation de cet entretien ?")) {
+      return;
+    }
+
+    // Optional reason
+    const reason = prompt('Raison (optionnelle) :') || undefined;
+
+    // Preferred: use PATCH cancel endpoint if available
+    this.interviewService.cancelInterview(this.interview.interviewId, reason).subscribe({
+      next: (updated) => {
+        this.interview.status = updated.status || 'CANCELLED';
+        // You can also refresh application details if needed:
+        // this.retieveApplication(this.interview.interviewId);
+      },
+      error: (_) => {
+        // Fallback to old PUT endpoint if PATCH not available
+        this.interviewService.cancelUsingPut(this.interview.interviewId).subscribe({
+          next: () => (this.interview.status = 'CANCELLED'),
+          error: (err) => console.error('Failed to cancel interview:', err),
+        });
+      },
+    });
+  }
+
+
 }

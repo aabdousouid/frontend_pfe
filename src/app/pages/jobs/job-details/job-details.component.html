@@ -26,7 +26,7 @@
               label="Postuler" 
               icon="pi pi-send"
               styleClass="apply-button"
-              (click)="onApply()">
+              (click)="applyToJob(job?.jobId)">
             </p-button>
             <p-button 
               icon="pi pi-heart" 
@@ -82,7 +82,7 @@
               Exigences
             </h3>
             <ul class="requirement-list">
-              <li *ngFor="let requirement of jobOffer?.requirements">
+              <li *ngFor="let requirement of requirements">
                 {{ requirement }}
               </li>
             </ul>

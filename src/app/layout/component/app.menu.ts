@@ -49,19 +49,26 @@ export class AppMenu {
 
         const candidatureLabel = this.userType === 'admin' ? 'Les Candidatures' : 'Mes Candidatures';
         const routePath = this.userType === 'admin' ? '/app/applications' : '/app/userApplications/' + this.storageService.getUser().id;
+        const DashboardPath = this.userType ==='admin' ? '/app/dashboard' : '/app/userDashboard';
+        const AIPath = this.userType ==='admin' ? '/app/recommend' : '/app/chatbot';
+        const JobsPath = this.userType ==='admin' ? '/app/adminJobs' : '/app/jobs';
         this.model = [
             {
                 label: 'Accueil',
-                items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/app/'] }]
+                items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: [DashboardPath] }]
             },
             {
                 label: 'Gestion',
                 items: [
                     { label: candidatureLabel, icon: 'pi pi-fw pi-id-card', routerLink: [routePath]},
-                    { label: 'Offres d\'emploi', icon: 'pi pi-fw pi-briefcase', routerLink: ['/app/jobs'] },
-                    { label: 'Recommandations', icon: 'pi pi-fw pi-comments', routerLink: ['/app/chatbot'] },
+                    { label: 'Offres d\'emploi', icon: 'pi pi-fw pi-briefcase', routerLink: [JobsPath] },
+                    { label: 'Recommandations', icon: 'pi pi-fw pi-comments', routerLink: [AIPath] ,visible:this.checkRoles()==false},
                     { label: 'Reclamations', icon: 'pi pi-fw pi-flag-fill', routerLink: ['/app/complaints-admin'],visible:this.checkRoles()==true },
-                    { label: 'Mes Reclamations', icon: 'pi pi-fw pi-flag-fill', routerLink: ['/app/complaints-user'],visible:this.checkRoles()==false },/* 
+                    { label: 'Mes Reclamations', icon: 'pi pi-fw pi-flag-fill', routerLink: ['/app/complaints-user'],visible:this.checkRoles()==false },
+                    { label: 'Gestion Utilisateurs', icon: 'pi pi-fw pi-user', routerLink: ['/app/gestionUser'],visible:this.checkRoles()==true },
+                    /* { label: 'Gestion des utilisateurs', icon: 'pi pi-fw pi-user', routerLink: ['/app/complaints-admin'],visible:this.checkRoles()==true }, */
+                    /* 
+                    
                     { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/app/uikit/formlayout'] },
                     { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/app/uikit/input'] },
                     { label: 'Button', icon: 'pi pi-fw pi-mobile', class: 'rotated-icon', routerLink: ['/app/uikit/button'] },
@@ -70,7 +77,7 @@ export class AppMenu {
                     { label: 'Tree', icon: 'pi pi-fw pi-share-alt', routerLink: ['/app/uikit/tree'] },
                     { label: 'Panel', icon: 'pi pi-fw pi-tablet', routerLink: ['/app/uikit/panel'] },
                     { label: 'Overlay', icon: 'pi pi-fw pi-clone', routerLink: ['/app/uikit/overlay'] }, */
-                    { label: 'Media', icon: 'pi pi-fw pi-image', routerLink: ['/app/uikit/media'] },
+                   /*  { label: 'Media', icon: 'pi pi-fw pi-image', routerLink: ['/app/uikit/media'] }, */
                     /* { label: 'Menu', icon: 'pi pi-fw pi-bars', routerLink: ['/app/uikit/menu'] },
                     { label: 'Message', icon: 'pi pi-fw pi-comment', routerLink: ['/app/uikit/message'] },
                     { label: 'File', icon: 'pi pi-fw pi-file', routerLink: ['/app/uikit/file'] },
@@ -174,11 +181,11 @@ export class AppMenu {
             {
                 label: 'Settings',
                 items: [
-                    {
+                  /*   {
                         label: 'Documentation',
                         icon: 'pi pi-fw pi-book',
                         routerLink: ['/documentation']
-                    },
+                    }, */
                     {
                         label: 'Logout',
                         icon: 'pi pi-fw pi-sign-out',
