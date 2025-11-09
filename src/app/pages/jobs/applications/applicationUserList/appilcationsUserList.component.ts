@@ -35,6 +35,8 @@ import { Interview } from '../../../../shared/models/interview';
 import { InterviewService } from '../../../../shared/services/interview.service';
 import { UserInterviewsComponent } from '../../interviews/user-interviews/user-interviews.component';
 import { JobsService } from '../../../../shared/services/jobs.service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-application-list',
@@ -65,7 +67,9 @@ import { JobsService } from '../../../../shared/services/jobs.service';
     StepperModule,
     MessageModule,
     SelectModule,
-    ToggleSwitchModule
+    ToggleSwitchModule,
+    IconFieldModule,
+    InputIconModule
   ],
   templateUrl:'./applicationsUserList.component.html',
   styleUrl: './applicationsUserList.component.scss',
@@ -78,6 +82,7 @@ export class ApplicationUserListComponent implements OnInit {
   selectedSort: string = 'appliedDate_desc';
   loading: boolean = false;
   userId:any;
+  searchQuery: string = '';
   interviews!:Interview[];
 
   statusOptions = [
@@ -197,17 +202,49 @@ statusOptionsIfInterview = [
     });
   }
 
-  applyFilters() {
-    // Filter by status
+  onSearchChange() {
+  this.applyFilters();
+}
+
+
+applyFilters() {
+  // 1) Filter by status (unchanged)
+  let filtered = [...this.applications];
+  if (this.selectedStatus && this.selectedStatus !== 'Tous') {
+    filtered = filtered.filter(app => app.status === this.selectedStatus);
+  }
+
+  // 2) Apply search (IDENTICAL style to complaints list)
+  if (this.searchQuery && this.searchQuery.trim() !== '') {
+    const q = this.searchQuery.toLowerCase();
+    filtered = filtered.filter(app =>
+      app.user?.username?.toLowerCase().includes(q) ||
+      app.user?.email?.toLowerCase().includes(q) ||
+      app.job?.title?.toLowerCase().includes(q) ||
+      app.status?.toLowerCase().includes(q)
+      // (optional) add more fields if you want:
+      // || (app.matchingScore !== null && app.matchingScore?.toString().toLowerCase().includes(q))
+      // || this.formatDate(app.appliedDate).toLowerCase().includes(q)
+    );
+  }
+
+  this.filteredApplications = filtered;
+
+  // 3) Sorting (unchanged)
+  this.applySorting();
+}
+
+ /*  applyFilters() {
+    
     this.filteredApplications = this.applications.filter(app => {
       if (this.selectedStatus === 'Tous') return true;
       return app.status === this.selectedStatus;
     });
 
-    // Apply sorting
+    
     this.applySorting();
   }
-
+ */
   applySorting() {
     const [field, order] = this.selectedSort.split('_');
     const isAsc = order === 'asc';
@@ -363,5 +400,11 @@ statusOptionsIfInterview = [
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+  clearFilters() {
+    this.searchQuery = '';
+    this.selectedSort = 'appliedDate_desc';
+    this.selectedStatus = 'Tous';
+    this.applyFilters();
   }
 }

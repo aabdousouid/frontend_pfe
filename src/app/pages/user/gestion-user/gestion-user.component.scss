@@ -1,18 +1,16 @@
 .user-management-container {
       padding: 1rem;
-     
       min-height: 100vh;
     }
 
     .header-card {
-      margin-bottom: 1.5rem;
+      margin-bottom: 3rem; /* Increased from 1.5rem */
       background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
       border: none;
     }
 
     .header-card ::ng-deep .p-card-body {
       padding: 2rem;
-      
     }
 
     .header-content {
@@ -27,7 +25,6 @@
       font-size: 2.5rem;
       font-weight: 300;
       margin: 0 0 0.5rem 0;
-  
     }
 
     .subtitle {
@@ -49,7 +46,6 @@
       display: block;
       font-size: 2rem;
       font-weight: bold;
-      
     }
 
     .stat-label {
@@ -58,8 +54,7 @@
     }
 
     .toolbar-custom {
-      margin-bottom: 1rem;
-  
+      margin-bottom: 3rem; /* Increased from 1rem */
       border: 1px solid #dee2e6;
       border-radius: 8px;
     }
@@ -67,7 +62,6 @@
     .toolbar-custom ::ng-deep .p-toolbar-group-left,
     .toolbar-custom ::ng-deep .p-toolbar-group-right {
       display: flex;
-      
       align-items: center;
       gap: 1rem;
     }
@@ -86,7 +80,7 @@
     }
 
     .table-card {
-     
+      margin-top: 2rem; /* Added margin-top for extra spacing */
       border: 1px solid #dee2e6;
       border-radius: 8px;
     }
@@ -217,6 +211,18 @@
 
     /* Responsive Design */
     @media (max-width: 768px) {
+      .header-card {
+        margin-bottom: 2rem; /* Reduced spacing on mobile */
+      }
+
+      .toolbar-custom {
+        margin-bottom: 2rem; /* Reduced spacing on mobile */
+      }
+
+      .table-card {
+        margin-top: 1rem; /* Reduced spacing on mobile */
+      }
+
       .header-content {
         flex-direction: column;
         text-align: center;
@@ -260,23 +266,6 @@
     ::ng-deep .p-button-success:hover {
       background-color: #218838;
       border-color: #1e7e34;
-    }
-
-    ::ng-deep .p-tag.p-tag-success {
-      background-color: #28a745;
-    }
-
-    ::ng-deep .p-tag.p-tag-warning {
-      background-color: #ffc107;
-      color: #212529;
-    }
-
-    ::ng-deep .p-tag.p-tag-danger {
-      background-color: #dc3545;
-    }
-
-    ::ng-deep .p-tag.p-tag-info {
-      background-color: #17a2b8;
     }
 
     ::ng-deep .p-datatable .p-datatable-thead > tr > th {

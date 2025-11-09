@@ -1,0 +1,157 @@
+<div class="assessment-container" *ngIf="!loading">
+  <!-- Header Section -->
+  <p-card class="assessment-header-card">
+    <div class="header-content">
+      <button 
+        pButton 
+        icon="pi pi-arrow-left" 
+        class="p-button-text back-button"
+        (click)="goBack()">
+      </button>
+      
+      <div class="job-info">
+        <p-avatar 
+          [image]="jobData.companyLogo" 
+          [label]="!jobData.companyLogo ? jobData.company?.charAt(0) : ''"
+          size="large" 
+          shape="square"
+          styleClass="company-avatar">
+        </p-avatar>
+        <div>
+          <h2 class="job-title">{{ jobData.title }}</h2>
+          <div class="job-meta">
+            <span><i class="pi pi-building"></i> {{ jobData.company }}</span>
+            <span><i class="pi pi-map-marker"></i> {{ jobData.location }}</span>
+            <p-tag [value]="jobData.type" severity="info"></p-tag>
+          </div>
+        </div>
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Score Card -->
+  <p-card class="score-card">
+    <div class="score-content">
+      <div class="score-visual">
+        <p-knob 
+          [(ngModel)]="animatedScore" 
+          [size]="200"
+          [strokeWidth]="12"
+          [readonly]="true"
+          valueColor="#52c41a"
+          rangeColor="#e0e0e0">
+        </p-knob>
+        <div class="score-label">
+          <h3>Score de Correspondance</h3>
+          <p-tag 
+            [value]="matchAssessment.level" 
+            [severity]="getScoreSeverity()"
+            styleClass="score-tag">
+          </p-tag>
+        </div>
+      </div>
+      
+      <div class="score-insights">
+        <h3><i class="pi pi-lightbulb"></i> Insights Clés</h3>
+        <div class="insights-list">
+          <div class="insight-item" *ngFor="let insight of matchAssessment.keyInsights">
+            <i class="pi pi-check-circle"></i>
+            <p>{{ insight }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Strengths Section -->
+  <p-card class="strengths-card">
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <i class="pi pi-star-fill"></i>
+        <h3>Points Forts</h3>
+      </div>
+    </ng-template>
+    
+    <div class="strengths-list">
+      <div class="strength-item" *ngFor="let strength of matchAssessment.strengths">
+        <div class="strength-header">
+          <h4>{{ strength.skill }}</h4>
+          <p-tag [value]="strength.level + '%'" severity="success"></p-tag>
+        </div>
+        <p>{{ strength.description }}</p>
+        <p-progressBar 
+          [value]="strength.level" 
+          [showValue]="false"
+          styleClass="strength-progress">
+        </p-progressBar>
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Weaknesses Section -->
+  <p-card class="weaknesses-card">
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <i class="pi pi-exclamation-triangle"></i>
+        <h3>Points à Améliorer</h3>
+      </div>
+    </ng-template>
+    
+    <div class="weaknesses-list">
+      <div class="weakness-item" *ngFor="let weakness of matchAssessment.weaknesses">
+        <div class="weakness-header">
+          <h4><i class="pi pi-minus-circle"></i> {{ weakness.skill }}</h4>
+          <p-tag 
+            [value]="'Impact: ' + weakness.impact" 
+            [severity]="getImpactSeverity(weakness.impact)">
+          </p-tag>
+        </div>
+        <div class="weakness-suggestion">
+          <i class="pi pi-arrow-right"></i>
+          <p>{{ weakness.suggestion }}</p>
+        </div>
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Recommendations Section -->
+  <p-card class="recommendations-card">
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <i class="pi pi-megaphone"></i>
+        <h3>Recommandations</h3>
+      </div>
+    </ng-template>
+    
+    <div class="recommendations-list">
+      <div class="recommendation-item" *ngFor="let recommendation of matchAssessment.recommendations; let i = index">
+        <div class="recommendation-number">{{ i + 1 }}</div>
+        <p>{{ recommendation }}</p>
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <p-button 
+      label="Générer un Quiz de Préparation" 
+      icon="pi pi-book"
+      severity="secondary"
+      [outlined]="true"
+      styleClass="quiz-button"
+      (click)="generateQuiz()">
+    </p-button>
+    
+    <p-button 
+      label="Postuler Maintenant" 
+      icon="pi pi-send"
+      styleClass="apply-button"
+      (click)="applyToJob()">
+    </p-button>
+  </div>
+</div>
+
+<div class="loading-container" *ngIf="loading">
+  <i class="pi pi-spin pi-spinner loading-spinner"></i>
+  <p>Analyse de votre profil en cours...</p>
+</div>

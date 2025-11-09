@@ -1,0 +1,247 @@
+<div class="interview-management">
+  <!-- Header -->
+  <div class="header-section mb-4">
+    <h1 class="page-title">Gestion des Entretiens</h1>
+    <p class="page-subtitle">Tableau de bord administrateur pour la gestion des entretiens</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid mb-4">
+    <div class="stat-card stat-total">
+      <i class="pi pi-calendar stat-icon"></i>
+      <div class="stat-content">
+        <span class="stat-number">{{ getTotalInterviews() }}</span>
+        <span class="stat-label">Total des entretiens</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-scheduled">
+      <i class="pi pi-check-circle stat-icon"></i>
+      <div class="stat-content">
+        <span class="stat-number">{{ getScheduledInterviews() }}</span>
+        <span class="stat-label">Entretiens programmés</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-completed">
+      <i class="pi pi-pause stat-icon"></i>
+      <div class="stat-content">
+        <span class="stat-number">{{ getCompletedInterviews() }}</span>
+        <span class="stat-label">Entretiens terminés</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-urgent">
+      <i class="pi pi-exclamation-triangle stat-icon"></i>
+      <div class="stat-content">
+        <span class="stat-number">{{ getUrgentInterviews() }}</span>
+        <span class="stat-label">Entretiens urgents</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <p-card>
+    <div class="filters-section">
+      <div class="filters-header">
+        <h3>Filtres et Recherche</h3>
+        <div class="view-toggle">
+          <p-button icon="pi pi-list" [outlined]="true" size="small" class="mr-1"></p-button>
+          <p-button icon="pi pi-th-large" [outlined]="true" size="small"></p-button>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-section mb-3">
+        <p-iconField iconPosition="left" class="w-full">
+          <p-inputIcon>
+            <i class="pi pi-search"></i>
+          </p-inputIcon>
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="searchValue"
+            placeholder="Recherchez des entretiens, des candidats ou des mots-clés..."
+            class="w-full"
+            (input)="onGlobalFilter($event)"
+          />
+        </p-iconField>
+      </div>
+
+      <!-- Filter Dropdowns -->
+      <div class="filter-dropdowns">
+        <div class="filter-group">
+          <label>Localisation</label>
+          <p-dropdown
+            [options]="locationOptions"
+            [(ngModel)]="selectedLocation"
+            placeholder="Toutes les localisations"
+            [showClear]="true"
+            class="filter-dropdown"
+            (onChange)="onFilterChange()">
+          </p-dropdown>
+        </div>
+
+        <div class="filter-group">
+          <label>Type d'entretien</label>
+          <p-dropdown
+            [options]="interviewTypeOptions"
+            [(ngModel)]="selectedInterviewType"
+            placeholder="Tous les types"
+            [showClear]="true"
+            class="filter-dropdown"
+            (onChange)="onFilterChange()">
+          </p-dropdown>
+        </div>
+
+        <div class="filter-group">
+          <label>Statut</label>
+          <p-dropdown
+            [options]="statusOptions"
+            [(ngModel)]="selectedStatus"
+            placeholder="Tous les statuts"
+            [showClear]="true"
+            class="filter-dropdown"
+            (onChange)="onFilterChange()">
+          </p-dropdown>
+        </div>
+
+        <div class="filter-group">
+          <label>Période</label>
+          <p-calendar
+            [(ngModel)]="selectedDateRange"
+            selectionMode="range"
+            placeholder="Toutes les dates"
+            [showClear]="true"
+            class="filter-dropdown"
+            (onSelect)="onFilterChange()"
+            (onClearClick)="onFilterChange()">
+          </p-calendar>
+        </div>
+
+        <div class="filter-actions">
+          <p-button
+            label="Effacer"
+            icon="pi pi-times"
+            [outlined]="true"
+            size="small"
+            (onClick)="clearFilters()">
+          </p-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Toolbar -->
+   <!--  <p-toolbar class="action-toolbar">
+      <div class="p-toolbar-group-start">
+       
+      </div>
+      <div class="p-toolbar-group-end">
+        <p-button
+          label="Exporter"
+          icon="pi pi-download"
+          [outlined]="true"
+          (onClick)="exportData()">
+        </p-button>
+      </div>
+    </p-toolbar> -->
+
+    <!-- Interviews Table -->
+    <p-table
+      #dt
+      [value]="getFilteredInterviews()"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [globalFilterFields]="['candidateName','position','company','location','interviewer','interviewType','interviewTest','status']"
+      [sortField]="'scheduledDate'"
+      [sortOrder]="-1"
+      [(selection)]="selectedRows"
+      dataKey="interviewId"
+      class="interviews-table">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th pSortableColumn="candidateName">
+            Candidat <i class="pi pi-sort-alt sort-icon"></i>
+          </th>
+          <th pSortableColumn="position">
+            Poste <i class="pi pi-sort-alt sort-icon"></i>
+          </th>
+          <th>Entreprise</th>
+          <th>Localisation</th>
+          <th>Type</th>
+          <th pSortableColumn="scheduledDate">
+            Date d'entretien <i class="pi pi-sort-alt sort-icon"></i>
+          </th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-interview>
+        <tr>
+          <td><p-tableCheckbox [value]="interview"></p-tableCheckbox></td>
+          <td>
+            <strong>{{ interview.candidateName }}</strong><br />
+            <small>{{ interview.candidateEmail }}</small>
+          </td>
+          <td>{{ interview.position }}</td>
+          <td>{{ interview.company }}</td>
+          <td>{{ interview.location }}</td>
+          <td>
+            <p-tag
+              [value]="interview.interviewType"
+              [severity]="getInterviewTypeSeverity(interview.interviewType)">
+            </p-tag>
+            <p-tag
+              *ngIf="interview.interviewTest"
+              class="ml-1"
+              [value]="interview.interviewTest"
+              severity="secondary">
+            </p-tag>
+          </td>
+          <td>{{ formatDate(interview.scheduledDate) }}</td>
+          <td>
+            <p-tag
+              [value]="getStatusLabel(interview.status)"
+              [severity]="getStatusSeverity(interview.status)">
+            </p-tag>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <p-button icon="pi pi-eye" [rounded]="true" [outlined]="true" size="small"
+                        pTooltip="Voir" (onClick)="viewInterview(interview)"></p-button>
+              <p-button icon="pi pi-pencil" [rounded]="true" [outlined]="true" size="small"
+                        pTooltip="Modifier" (onClick)="editInterview(interview)"></p-button>
+              <p-button icon="pi pi-ban" [rounded]="true" [outlined]="true" size="small"
+              severity="warn"
+              pTooltip="Annuler l'entretien"
+              (onClick)="onCancelInterview(interview)"
+              [disabled]="interview.status === 'COMPLETED' || interview.status === 'CANCELLED' || isCancelling(interview.interviewId)">
+    </p-button>
+              <p-button icon="pi pi-trash" [rounded]="true" [outlined]="true" size="small" severity="danger"
+                        pTooltip="Supprimer" (onClick)="deleteInterview(interview)"></p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="9" class="text-center p-4">
+            <i class="pi pi-calendar-times text-4xl text-gray-400 mb-3"></i>
+            <div class="text-xl text-gray-600 mb-2">Aucun entretien trouvé</div>
+            <div class="text-gray-500">Essayez d'ajuster vos filtres ou ajoutez un nouvel entretien</div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <p-confirmDialog></p-confirmDialog>
+  <p-toast></p-toast>
+</div>

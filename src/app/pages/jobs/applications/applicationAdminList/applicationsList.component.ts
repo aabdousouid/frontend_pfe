@@ -38,6 +38,8 @@ import { InterviewDetailsComponent } from "../../interviews/interview-details/in
 import { InterviewsComponent } from '../../interviews/interviews/interviews.component';
 import { InterviewUpadteComponent } from '../../interviews/interview-upadte/interview-upadte.component';
 import { JobsService } from '../../../../shared/services/jobs.service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 
 @Component({
@@ -74,6 +76,8 @@ import { JobsService } from '../../../../shared/services/jobs.service';
     InputNumberModule,
     InterviewDetailsComponent,
     InterviewsComponent,
+    IconFieldModule,
+    InputIconModule
 ],
   templateUrl:'./applicationList.component.html' ,
   styleUrl: './applicationList.component.scss',
@@ -87,6 +91,7 @@ export class ApplicationListComponent implements OnInit {
   loading: boolean = false;
   savingInterview: boolean = false;
   applicationInterviewsMap: { [key: number]: Interview[] } = {};
+   searchQuery: string = '';
 
 receivedBoolean: boolean = false;
 receivedInterview: Interview | undefined | null = null;
@@ -244,17 +249,47 @@ checkStatusforDropdown(status:string){
     this.jobService.downloadCv(filename);
   }
 
+   onSearchChange() {
+  this.applyFilters();
+}
+
+
+applyFilters() {
+  // 1) Filter by status (unchanged)
+  let filtered = [...this.applications];
+  if (this.selectedStatus && this.selectedStatus !== 'Tous') {
+    filtered = filtered.filter(app => app.status === this.selectedStatus);
+  }
+
+  // 2) Apply search (IDENTICAL style to complaints list)
+  if (this.searchQuery && this.searchQuery.trim() !== '') {
+    const q = this.searchQuery.toLowerCase();
+    filtered = filtered.filter(app =>
+      app.user?.username?.toLowerCase().includes(q) ||
+      app.user?.email?.toLowerCase().includes(q) ||
+      app.job?.title?.toLowerCase().includes(q) ||
+      app.status?.toLowerCase().includes(q)
+      // (optional) add more fields if you want:
+      // || (app.matchingScore !== null && app.matchingScore?.toString().toLowerCase().includes(q))
+      // || this.formatDate(app.appliedDate).toLowerCase().includes(q)
+    );
+  }
+
+  this.filteredApplications = filtered;
+
+  // 3) Sorting (unchanged)
+  this.applySorting();
+}
    
-  applyFilters() {
-    // Filter by status
+ /*  applyFilters() {
     this.filteredApplications = this.applications.filter(app => {
       if (this.selectedStatus === 'Tous') return true;
       return app.status === this.selectedStatus;
     });
 
-    // Apply sorting
+    
     this.applySorting();
-  }
+  } */
 
   applySorting() {
     const [field, order] = this.selectedSort.split('_');
@@ -487,6 +522,11 @@ updateApplicationStatus(applicationId: number, newStatus: any) {
       return []; // REJECTED, HIRED have no transitions
   }
 }
-
+clearFilters() {
+    this.searchQuery = '';
+    this.selectedSort = 'appliedDate_desc';
+    this.selectedStatus = 'Tous';
+    this.applyFilters();
+  }
    
 }

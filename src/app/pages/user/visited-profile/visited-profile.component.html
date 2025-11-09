@@ -1,0 +1,186 @@
+<p-toast></p-toast>
+
+<div class="profile-container" *ngIf="profile">
+  <!-- Header Section -->
+  <div class="profile-header">
+    <div class="header-content">
+      <div class="profile-avatar-section">
+        <p-avatar 
+          icon="pi pi-user" 
+          size="xlarge" 
+          shape="circle"
+          [style]="{'width': '120px', 'height': '120px'}"
+          class="profile-avatar">
+        </p-avatar>
+      </div>
+      
+      <div class="profile-info">
+        <h1 class="profile-name">{{user.firstname}} {{user.lastname}}</h1>
+        <p class="profile-title">{{profile.title}}</p>
+        
+        <div class="profile-location" [style]="{'marginTop': '3%'}">
+          <i class="pi pi-map-marker"></i>
+          <span>{{profile.address}}</span>
+        </div>
+        
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-number">{{profile.experienceYears}}</span>
+            <span class="stat-label">Années d'expérience</span>
+          </div>
+         
+          <div class="stat-item">
+            <span class="stat-number">{{profile.skills?.length || 0}}</span>
+            <span class="stat-label">Skills</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="profile-actions">
+        <p-button 
+          label="Back" 
+          icon="pi pi-arrow-left" 
+          severity="secondary"
+          outlined="true"
+          (click)="goBack()">
+        </p-button>
+        
+        <p-button *ngIf="profile.cvFilePath"
+          label="Download CV" 
+          icon="pi pi-download" 
+          severity="primary"
+          (click)="downloadCV()">
+        </p-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="profile-content">
+    <p-tabView>
+      <!-- Overview Tab -->
+      <p-tabPanel header="Vue d'ensemble" leftIcon="pi pi-user">
+        <div class="tab-content">
+          <!-- About Section -->
+          <p-card header="À propos" class="section-card" [style]="{'marginBottom': '1.5rem'}">
+            <div class="about-content">
+              <p>{{profile.summary || 'No summary available.'}}</p>
+            </div>
+          </p-card>
+
+          <!-- Contact Information -->
+          <p-card header="Informations de contact" class="section-card">
+            <div class="contact-grid">
+              <div class="contact-item">
+                <i class="pi pi-envelope contact-icon"></i>
+                <div>
+                  <label>Email</label>
+                  <p>{{user.email}}</p>
+                </div>
+              </div>
+              <div class="contact-item" *ngIf="profile.phoneNumber">
+                <i class="pi pi-phone contact-icon"></i>
+                <div>
+                  <label>Téléphone</label>
+                  <p>{{profile.phoneNumber}}</p>
+                </div>
+              </div>
+              <div class="contact-item" *ngIf="linkedinLink">
+                <i class="pi pi-linkedin contact-icon"></i>
+                <div>
+                  <label>LinkedIn</label>
+                  <p>
+                    <a [href]="linkedinLink" target="_blank" class="social-link">
+                      {{linkedinLink}}
+                    </a>
+                  </p>
+                </div>
+              </div>
+              <div class="contact-item" *ngIf="githubLink">
+                <i class="pi pi-github contact-icon"></i>
+                <div>
+                  <label>GitHub</label>
+                  <p>
+                    <a [href]="githubLink" target="_blank" class="social-link">
+                      {{githubLink}}
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </p-card>
+        </div>
+      </p-tabPanel>
+
+      <!-- Experience Tab -->
+      <p-tabPanel header="Experience" leftIcon="pi pi-briefcase">
+        <div class="tab-content">
+          <div class="section-header">
+            <h3>Expérience professionnelle</h3>
+          </div>
+          
+          <div class="experience-list" *ngIf="profile.workHistory && profile.workHistory.length > 0; else noExperience">
+            <p-card *ngFor="let exp of profile.workHistory" class="experience-card">
+              <div class="experience-header">
+                <div class="experience-info">
+                  <h4>{{exp.title}}</h4>
+                  <h5>{{exp.company}}</h5>
+                  <p class="duration">{{exp.duration}}</p>
+                </div>
+              </div>
+              <p-divider></p-divider>
+              <p>{{exp.description}}</p>
+            </p-card>
+          </div>
+          
+          <ng-template #noExperience>
+            <p-card class="no-data-card">
+              <div class="no-data-content">
+                <i class="pi pi-briefcase no-data-icon"></i>
+                <p>No work experience available.</p>
+              </div>
+            </p-card>
+          </ng-template>
+        </div>
+      </p-tabPanel>
+
+      <!-- Education Tab -->
+      <p-tabPanel header="Education" leftIcon="pi pi-book">
+        <div class="tab-content">
+          <div class="section-header">
+            <h3>Education</h3>
+          </div>
+
+          <div class="education-list" *ngIf="profile.education && profile.education.length > 0; else noEducation">
+            <p-card *ngFor="let edu of profile.education" class="education-card">
+              <div class="education-header">
+                <div class="education-info">
+                  <h4>{{edu.degree}}</h4>
+                  <h5>{{edu.school}}</h5>
+                  <p class="year">{{edu.duration}}</p>
+                </div>
+              </div>
+            </p-card>
+          </div>
+          
+          <ng-template #noEducation>
+            <p-card class="no-data-card">
+              <div class="no-data-content">
+                <i class="pi pi-book no-data-icon"></i>
+                <p>No education information available.</p>
+              </div>
+            </p-card>
+          </ng-template>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</div>
+
+<!-- Loading state -->
+<div *ngIf="!profile" class="loading-container">
+  <div class="loading-content">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+    <p>Loading profile...</p>
+  </div>
+</div>

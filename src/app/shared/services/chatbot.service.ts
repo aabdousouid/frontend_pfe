@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { environment } from './../../env/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -50,4 +50,18 @@ export class ChatbotService {
 applyToJobViaQuiz(jobId:number,userId:number,formData:FormData):Observable<any>{
   return this.http.post('http://localhost:8080/api/chat-bot/apply-with-quiz/' + jobId + '/' + userId, formData)
 }
+
+
+/* applyToJobViaQuiz(jobId: number, userId: number, quizScore: number, matchScore: number, formData: FormData): Observable<any> {
+  const url = `http://localhost:8080/api/chat-bot/apply-with-quiz/${jobId}/${userId}?quizScore=${quizScore}&matchingScore=${matchScore}`;
+  return this.http.post(url, formData);
+} */
+
+
+async parseCvOfUser(userId: number): Promise<any> {
+  return await firstValueFrom(
+    this.http.post<any>(`${this.baseUrl}/parse-cv-of-user/${userId}`, {}, { withCredentials: true })
+  );
+}
+
 }

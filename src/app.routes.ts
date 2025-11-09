@@ -27,6 +27,9 @@ import { UserManagementComponent } from './app/pages/user/gestion-user/gestion-u
 import { JobRecommendationComponent } from './app/pages/user/job-recommendation';
 import { RecommendUserComponent } from './app/pages/chat/recommend-user/recommend-user.component';
 import { AdminJobManagementComponent } from './app/pages/jobs/admin-management/admin-management.component';
+import { VisitedProfileComponent } from './app/pages/user/visited-profile/visited-profile.component';
+import { InterviewListComponent } from './app/pages/jobs/interviews/interview-list/interview-list.component';
+import { OfferMatchingComponent } from './app/pages/chat/offer-matching/offer-matching.component';
 
 export const appRoutes: Routes = [
     
@@ -61,6 +64,7 @@ export const appRoutes: Routes = [
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             {path: 'jobs', component: JobListComponent },
             {path:'profile',component:ProfileComponent},
+            {path:'profile/:id',component:VisitedProfileComponent},
             {path:'addProfile',component:AddProfileComponent},
             {path:'adminJobs',component:AdminJobManagementComponent},
             {path:'chatbot',component:ChatbotComponent},
@@ -75,6 +79,8 @@ export const appRoutes: Routes = [
             {path:'complaints-user',component:ComplaintsListUserComponent},
             {path:'job-details/:id',component:JobDetailsComponent},
             {path: 'applicationUserDetails/:id', component: ApplicationDetailsUserComponent },
+            {path:'interviews-list',component:InterviewListComponent,canActivate:[AdminGuard]},
+            {path:'offer-matching/:id',component:OfferMatchingComponent},
             
             
         ]

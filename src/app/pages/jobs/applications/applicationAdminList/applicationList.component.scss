@@ -326,3 +326,7 @@
         width: 100%;
       }
     }
+        :host ::ng-deep p-card.filters-card {
+    display: block;
+    margin-bottom: 1.5rem !important;
+    }

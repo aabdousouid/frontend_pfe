@@ -131,7 +131,8 @@ getStatusLabel(status: string): string {
 
 statusOptionsForDropdownScheduled = [
     { label: 'Entretien Planifié', value: 'SCHEDULED' },
-    { label: 'Entretien Confirmée', value: 'CONFIRMED' }
+    { label: 'Entretien Confirmée', value: 'CONFIRMED' },
+    { label: 'Entretien Annulé', value: 'CANCELED' },
   ];
 
 

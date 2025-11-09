@@ -7,13 +7,26 @@ import { Product, ProductService } from '../../service/product.service';
 import { UpcomingInterview } from '../../../shared/services/interview.service';
 import { TagModule } from 'primeng/tag';
 import { StorageService } from '../../../shared/services/storage.service';
+import { MenuModule } from 'primeng/menu';
+import { Router } from '@angular/router';
 
 @Component({
     standalone: true,
     selector: 'app-recent-sales-widget',
-    imports: [CommonModule, TableModule, ButtonModule, RippleModule,TagModule],
+    imports: [CommonModule, TableModule, ButtonModule, RippleModule,TagModule,MenuModule],
     template: `<div class="card !mb-8">
+      <div class="flex justify-between items-center mb-6">
         <div class="font-semibold text-xl mb-4"><span *ngIf="!isAdmin">Les</span>Prochains entretiens</div>
+         
+    
+          <div>
+        <button pButton type="button" icon="pi pi-ellipsis-v"
+                class="p-button-rounded p-button-text p-button-plain"
+                (click)="menu.toggle($event)"></button>
+        <p-menu #menu [popup]="true" [model]="items"></p-menu>
+      </div>
+      </div>
+  
         <p-table [value]="interviews" [paginator]="true" [rows]="5" responsiveLayout="scroll" *ngIf="interviews.length>0">
             <ng-template #header>
                 <tr>
@@ -70,12 +83,20 @@ import { StorageService } from '../../../shared/services/storage.service';
     providers: [ProductService]
 })
 export class RecentSalesWidget {
+
     products!: Product[];
     @Input() interviews: UpcomingInterview[] = [];
     isAdmin = false;
 
-    constructor(private productService: ProductService,private storageService:StorageService) {}
 
+        items = [
+    { label: 'Voir tous les entretiens', icon: 'pi pi-fw pi-refresh' ,command: () => this.redirect() }
+  ];
+    constructor(private productService: ProductService,private storageService:StorageService,private router:Router) {}
+    redirect(){ 
+    
+      this.router.navigate(['/app/interviews-list']);
+    }
     ngOnInit() {
 
         this.checkRole();

@@ -52,6 +52,18 @@
           styleClass="p-datatable-striped p-datatable-gridlines">
           
           <ng-template pTemplate="header">
+            <ng-template #caption>
+            <div class="flex">
+                <p-button label="Clear" [outlined]="true" (click)="clearFilters()" icon="pi pi-filter-slash"  />
+                <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input pInputText type="text" [(ngModel)]="searchQuery"
+                (input)="onSearchChange()" placeholder="Search keyword" />
+                </p-iconfield>
+            </div>
+        </ng-template>
             <tr>
               <th style="width: 3rem"></th>
               <th pSortableColumn="user.username">

@@ -473,11 +473,11 @@ retryQuiz() {
   });
 }
 
-apply() {
-    console.log('Applying for job:', this.selectedJob);
-    this.router.navigate(['/app/jobapplication/', this.selectedJob.jobId]);
-  
-}
+  apply() {
+      console.log('Applying for job:', this.selectedJob.fullJob.job_id);
+      this.router.navigate(['/app/jobapplication', this.selectedJob.fullJob.job_id]);
+    
+  }
 
 onSelectJobType(option: { label: string, value: string }) {
   this.selectedJobType = option.value;

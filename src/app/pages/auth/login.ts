@@ -457,7 +457,7 @@ export class Login implements OnInit {
                 // Navigate after a short delay to show success state
                 setTimeout(() => {
                     this.navigateAfterLogin();
-                }, 2000);
+                }, 6000);
             },
             error: err => {
                 this.isLoggingIn = false;

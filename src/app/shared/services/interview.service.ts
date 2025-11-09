@@ -31,6 +31,10 @@ export class InterviewService {
   return this.http.post(AUTH_API+`/${applicationId}/interviews`, interview,httpOptions);
 }
 
+findAll():Observable<any> {
+  return this.http.get(AUTH_API + '/getAllInterviews', httpOptions);
+}
+
 
 getInterviewsByApplication(applicationId:number): Observable<Interview[]> {
   return this.http.get<Interview[]>(AUTH_API + `/getApplicationInterviews/${applicationId}`, httpOptions);

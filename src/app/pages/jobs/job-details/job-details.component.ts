@@ -83,7 +83,7 @@ export class JobDetailsComponent implements OnInit{
 
   Recommendation() {
     // Implement application logic
-   this.router.navigate(['/app/chatbot']);
+   this.router.navigate(['/app/offer-matching', this.jobId]);
     console.log('Applying for job:', this.jobOffer?.title);
   }
 

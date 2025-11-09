@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild, ElementRef, asNativeElements } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule as NgFormsModule } from '@angular/forms';
 
 // PrimeNG Imports
 import { CardModule } from 'primeng/card';
@@ -16,35 +16,41 @@ import { TabViewModule } from 'primeng/tabview';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { BadgeModule } from 'primeng/badge';
 import { TooltipModule } from 'primeng/tooltip';
-import { StorageService } from '../../shared/services/storage.service';
-import { IconField, IconFieldModule } from 'primeng/iconfield';
+import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { UserService } from '../../shared/services/user.service';
-import { EducationHistoryItem, UserProfile, WorkHistoryItem } from '../../shared/models/user-profile';
-import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+
+import { MessageService } from 'primeng/api';
+
+import { StorageService } from '../../shared/services/storage.service';
+import { UserService } from '../../shared/services/user.service';
 import { JobsService } from '../../shared/services/jobs.service';
+import { EducationHistoryItem, UserProfile, WorkHistoryItem } from '../../shared/models/user-profile';
+import { TextareaModule } from 'primeng/textarea';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
   imports: [
     CommonModule,
+    // Angular Forms
+    NgFormsModule,
+
+    // PrimeNG
     IconFieldModule,
     InputIconModule,
     InputNumberModule,
-    FormsModule,
+    InputTextModule,
+    TextareaModule,
     CardModule,
     ButtonModule,
-    InputTextModule,
     DropdownModule,
     ChipsModule,
     TagModule,
     AvatarModule,
     DividerModule,
     PanelModule,
-    
     TabViewModule,
     ProgressBarModule,
     BadgeModule,
@@ -56,9 +62,8 @@ import { JobsService } from '../../shared/services/jobs.service';
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent implements OnInit {
-  
-  @ViewChild('fileInput') fileInput!: ElementRef;
-  
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   profile: UserProfile = new UserProfile();
   user: any;
   editMode = false;
@@ -69,73 +74,98 @@ export class ProfileComponent implements OnInit {
   uploading = false;
 
   constructor(
-    private storageService: StorageService, 
+    private storageService: StorageService,
     private userService: UserService,
     private messageService: MessageService,
-    private jobService:JobsService
+    private jobService: JobsService
   ) {}
 
   ngOnInit(): void {
     this.user = this.storageService.getUser();
     this.userService.getUser(this.user.id).subscribe({
       next: (data) => {
-        this.profile = data.profile ? data.profile : new UserProfile();
+        this.profile = data?.profile ? data.profile : new UserProfile();
+        this.normalizeProfile();
         this.extractLinks();
+      },
+      error: () => {
+        // Ensure we always work with a normalized object
+        this.profile = new UserProfile();
+        this.normalizeProfile();
       }
     });
   }
 
-  extractLinks() {
+  /** Ensure arrays are never null to avoid unshift/splice errors */
+  private normalizeProfile(): void {
+    this.profile.skills = this.profile.skills ?? [];
+    this.profile.links = this.profile.links ?? [];
+    this.profile.workHistory = this.profile.workHistory ?? [];
+    this.profile.education = this.profile.education ?? [];
+  }
+
+  extractLinks(): void {
     this.linkedinLink = '';
     this.githubLink = '';
 
-    this.profile.links?.forEach(link => {
-      if (link.includes('linkedin')) this.linkedinLink = link;
-      if (link.includes('github')) this.githubLink = link;
-    });
+    for (const link of this.profile.links ?? []) {
+      const lower = (link || '').toLowerCase();
+      if (!this.linkedinLink && lower.includes('linkedin')) this.linkedinLink = link;
+      if (!this.githubLink && lower.includes('github')) this.githubLink = link;
+    }
   }
 
-  toggleEditMode() {
+  toggleEditMode(): void {
     if (!this.editMode) {
       this.originalProfile = structuredClone(this.profile);
     }
     this.editMode = !this.editMode;
+    if (this.editMode) this.normalizeProfile();
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      // Validate file type (optional)
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      if (allowedTypes.includes(file.type)) {
-        this.selectedCVFile = file;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'File Selected',
-          detail: `${file.name} selected for upload`
-        });
-      } else {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Invalid File Type',
-          detail: 'Please select a PDF or Word document'
-        });
-        event.target.value = ''; // Reset file input
-      }
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+
+    if (!file) return;
+
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+
+    if (allowedTypes.includes(file.type)) {
+      this.selectedCVFile = file;
+      this.messageService.add({
+        severity: 'success',
+        summary: 'File Selected',
+        detail: `${file.name} selected for upload`
+      });
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Invalid File Type',
+        detail: 'Please select a PDF or Word document'
+      });
+      input.value = ''; // Reset file input
     }
   }
 
-  triggerFileUpload() {
-    this.fileInput.nativeElement.click();
+  triggerFileUpload(): void {
+    this.fileInput?.nativeElement?.click();
   }
 
-  saveChanges() {
+  saveChanges(): void {
     this.profile.userId = this.user.id;
 
-    // Update links
+    // Recompute links from the two inputs
     this.profile.links = [];
     if (this.linkedinLink) this.profile.links.push(this.linkedinLink);
     if (this.githubLink) this.profile.links.push(this.githubLink);
+
+    // Safety: ensure arrays exist before sending
+    this.normalizeProfile();
 
     this.uploading = true;
 
@@ -144,10 +174,11 @@ export class ProfileComponent implements OnInit {
         if (existingProfile) {
           // Update existing profile
           if (this.selectedCVFile) {
-            // Update with CV
             this.userService.updateProfileWithCV(existingProfile.profileId, this.profile, this.selectedCVFile).subscribe({
               next: (updatedProfile) => {
-                this.profile = updatedProfile;
+                this.profile = updatedProfile ?? this.profile;
+                this.normalizeProfile();
+                this.extractLinks();
                 this.messageService.add({
                   severity: 'success',
                   summary: 'Success',
@@ -156,7 +187,7 @@ export class ProfileComponent implements OnInit {
                 this.finishSaving();
               },
               error: (err) => {
-                console.error("Error updating profile with CV:", err);
+                console.error('Error updating profile with CV:', err);
                 this.messageService.add({
                   severity: 'error',
                   summary: 'Error',
@@ -166,10 +197,11 @@ export class ProfileComponent implements OnInit {
               }
             });
           } else {
-            // Update without CV
             this.userService.updateProfile(existingProfile.profileId, this.profile).subscribe({
               next: (updatedProfile) => {
-                this.profile = updatedProfile;
+                this.profile = updatedProfile ?? this.profile;
+                this.normalizeProfile();
+                this.extractLinks();
                 this.messageService.add({
                   severity: 'success',
                   summary: 'Success',
@@ -178,7 +210,7 @@ export class ProfileComponent implements OnInit {
                 this.finishSaving();
               },
               error: (err) => {
-                console.error("Error updating profile:", err);
+                console.error('Error updating profile:', err);
                 this.messageService.add({
                   severity: 'error',
                   summary: 'Error',
@@ -191,10 +223,11 @@ export class ProfileComponent implements OnInit {
         } else {
           // Create new profile
           if (this.selectedCVFile) {
-            // Create with CV
             this.userService.addProfileWithCV(this.profile, this.selectedCVFile).subscribe({
               next: (newProfile) => {
-                this.profile = newProfile;
+                this.profile = newProfile ?? this.profile;
+                this.normalizeProfile();
+                this.extractLinks();
                 this.messageService.add({
                   severity: 'success',
                   summary: 'Success',
@@ -203,7 +236,7 @@ export class ProfileComponent implements OnInit {
                 this.finishSaving();
               },
               error: (err) => {
-                console.error("Error creating profile with CV:", err);
+                console.error('Error creating profile with CV:', err);
                 this.messageService.add({
                   severity: 'error',
                   summary: 'Error',
@@ -213,10 +246,11 @@ export class ProfileComponent implements OnInit {
               }
             });
           } else {
-            // Create without CV
             this.userService.addProfile(this.profile).subscribe({
               next: (newProfile) => {
-                this.profile = newProfile;
+                this.profile = newProfile ?? this.profile;
+                this.normalizeProfile();
+                this.extractLinks();
                 this.messageService.add({
                   severity: 'success',
                   summary: 'Success',
@@ -225,7 +259,7 @@ export class ProfileComponent implements OnInit {
                 this.finishSaving();
               },
               error: (err) => {
-                console.error("Error creating profile:", err);
+                console.error('Error creating profile:', err);
                 this.messageService.add({
                   severity: 'error',
                   summary: 'Error',
@@ -238,68 +272,83 @@ export class ProfileComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error("Error checking existing profile:", err);
+        console.error('Error checking existing profile:', err);
         this.uploading = false;
       }
     });
   }
 
-  private finishSaving() {
+  private finishSaving(): void {
     this.editMode = false;
     this.uploading = false;
     this.selectedCVFile = null;
-    if (this.fileInput) {
+    if (this.fileInput?.nativeElement) {
       this.fileInput.nativeElement.value = '';
     }
   }
 
+  downloadCV(): void {
+    if (this.profile.profileId && this.profile.cvFilePath) {
+      const downloadUrl = `http://localhost:8080/api/profile/${this.profile.profileId}/download-cv`;
+      window.open(downloadUrl, '_blank');
 
-  downloadCV(){
-       if (this.profile.profileId && this.profile.cvFilePath) {
-    // Method 1: Direct window.open (bypasses CORS for downloads)
-    const downloadUrl = `http://localhost:8080/api/profile/${this.profile.profileId}/download-cv`;
-    window.open(downloadUrl, '_blank');
-    
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'CV download started'
-    });
-  } else {
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'No CV Available',
-      detail: 'No CV file has been uploaded yet'
-    });
-  }
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'CV download started'
+      });
+    } else {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'No CV Available',
+        detail: 'No CV file has been uploaded yet'
+      });
+    }
   }
 
-  
-
-  cancelEdit() {
+  cancelEdit(): void {
     if (this.originalProfile) {
       this.profile = structuredClone(this.originalProfile);
+      this.normalizeProfile();
+      this.extractLinks();
     }
     this.editMode = false;
     this.selectedCVFile = null;
-    if (this.fileInput) {
+    if (this.fileInput?.nativeElement) {
       this.fileInput.nativeElement.value = '';
     }
   }
 
-  addExperience() {
-    this.profile.workHistory.unshift({ company: '', title: '', duration: '', description: '' });
+  /** === Experience / Education CRUD (null-safe) === */
+
+  addExperience(): void {
+    (this.profile.workHistory ??= []).unshift({
+      company: '',
+      title: '',
+      duration: '',
+      description: ''
+    } as WorkHistoryItem);
   }
 
-  removeExperience(index: number) {
-    this.profile.workHistory.splice(index, 1);
+  removeExperience(index: number): void {
+    (this.profile.workHistory ??= []);
+    if (index > -1 && index < this.profile.workHistory.length) {
+      this.profile.workHistory.splice(index, 1);
+    }
   }
 
-  addEducation() {
-    this.profile.education.unshift({ degree: '', school: '', duration: '' });
+  addEducation(): void {
+    (this.profile.education ??= []).unshift({
+      degree: '',
+      school: '',
+      duration: ''
+    } as EducationHistoryItem);
   }
 
-  removeEducation(index: number) {
-    this.profile.education.splice(index, 1);
+  removeEducation(index: number): void {
+    (this.profile.education ??= []);
+    if (index > -1 && index < this.profile.education.length) {
+      this.profile.education.splice(index, 1);
+    }
   }
 }

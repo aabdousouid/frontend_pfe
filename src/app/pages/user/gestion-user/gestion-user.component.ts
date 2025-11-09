@@ -20,22 +20,85 @@ import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { MenuModule } from 'primeng/menu';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { TooltipModule } from 'primeng/tooltip';
 
 // PrimeNG Services
-import { ConfirmationService, MessageService, MenuItem } from 'primeng/api';
-import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { UserManagementService } from '../../../shared/services/user-management.service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { Router } from '@angular/router';
+
+/** ===== Backend types (as returned by your API) ===== */
+interface BackendRole {
+  id: number;
+  name: string; // e.g., "ROLE_ADMIN", "ROLE_USER"
+}
+
+interface BackendEducation {
+  degree: string;
+  school: string;
+  duration: string;
+}
+
+interface BackendWorkHistory {
+  company: string;
+  title: string;
+  duration: string;
+  description: string;
+}
+
+interface BackendProfile {
+  profileId: number;
+  title: string | null;
+  phoneNumber: string | null;
+  address: string | null;
+  links: string[];
+  summary: string | null;
+  skills: string[];
+  experienceYears: number | null;
+  languages: string[];
+  certifications: string[];
+  cvFilePath: string | null;
+  education: BackendEducation[];
+  workHistory: BackendWorkHistory[];
+}
+
+interface BackendUser {
+  id: number;
+  username: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  password?: string;
+  emailVerified: boolean;
+  roles: BackendRole[];
+  verificationToken?: string | null;
+  verificationTokenExpiry?: string | null;
+  profile?: BackendProfile | null;
+  isActive?: boolean;
+  active?: boolean;
+}
+
+/** ===== UI model used by the table & dialogs ===== */
+type UserStatus = 'active' | 'blocked' | 'pending';
 
 interface User {
   id: number;
   firstName: string;
   lastName: string;
   email: string;
+  /** normalized, e.g. "admin" | "user" | "recruiter" | "hr_manager" | "candidate" */
   role: string;
-  status: 'active' | 'blocked' | 'pending';
-  lastLogin: Date;
-  createdAt: Date;
+  /** derived from emailVerified (and you can later wire real status) */
+  status: UserStatus;
+  /** taken from profile?.title or "—" */
   department: string;
+  /** optional fields not present in backend: keep nullable */
+  lastLogin: Date | null;
+  createdAt: Date | null;
   avatar?: string;
+  isActive: boolean;
 }
 
 @Component({
@@ -43,6 +106,8 @@ interface User {
   standalone: true,
   imports: [
     CommonModule,
+    IconFieldModule,
+    InputIconModule,
     FormsModule,
     TableModule,
     ButtonModule,
@@ -64,19 +129,19 @@ interface User {
     SplitButtonModule
   ],
   providers: [ConfirmationService, MessageService],
-  templateUrl:'./gestion-user.component.html',
-  styleUrl:'./gestion-user.component.scss'
+  templateUrl: './gestion-user.component.html',
+  styleUrl: './gestion-user.component.scss'
 })
 export class UserManagementComponent implements OnInit {
   users: User[] = [];
   filteredUsers: User[] = [];
-  
-  searchTerm: string = '';
-  selectedStatus: string = '';
-  selectedRole: string = '';
-  
-  userDetailsVisible: boolean = false;
-  editUserVisible: boolean = false;
+
+  searchTerm = '';
+  selectedStatus = '';
+  selectedRole = '';
+
+  userDetailsVisible = false;
+  editUserVisible = false;
   selectedUser: User | null = null;
   editingUser: User | null = null;
 
@@ -96,74 +161,67 @@ export class UserManagementComponent implements OnInit {
 
   constructor(
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private userService: UserManagementService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.loadUsers();
   }
 
+  /** Map "ROLE_ADMIN" -> "admin", "ROLE_USER" -> "user", etc. */
+  private normalizeRole(backendRoles: BackendRole[]): string {
+    if (!backendRoles || backendRoles.length === 0) return 'user';
+    const primary = backendRoles[0].name || '';
+    // take the substring after "ROLE_" and lower it, fallback to raw
+    return primary.startsWith('ROLE_') ? primary.substring(5).toLowerCase() : primary.toLowerCase();
+  }
+
+  /** Derive a status from emailVerified for now */
+private deriveStatus(emailVerified: boolean, isActive: boolean): 'active' | 'blocked' | 'pending' {
+  if (!isActive) return 'blocked';
+  return emailVerified ? 'active' : 'pending';
+}
+
+  /** Safely pick department from profile.title (or "—") */
+  private deriveDepartment(profile?: BackendProfile | null): string {
+    return (profile?.title?.trim() || '—');
+  }
+
+  /** Convert backend payload to UI model */
+ private mapBackendToUI(bu: BackendUser): User {
+  // tolerate either "isActive" or "active"; default true so you don't show everything as blocked when missing
+  const active = (bu.isActive ?? bu.active ?? true);
+  const verified = (bu.emailVerified ?? false);
+
+  return {
+    id: bu.id,
+    firstName: bu.firstname,
+    lastName: bu.lastname,
+    email: bu.email,
+    role: this.normalizeRole(bu.roles),
+    isActive: active,
+    status: this.deriveStatus(verified, active),
+    department: this.deriveDepartment(bu.profile ?? null),
+    lastLogin: null,
+    createdAt: null
+  };
+}
+
   loadUsers() {
-    // Mock data - replace with actual API call
-    this.users = [
-      {
-        id: 1,
-        firstName: 'Ahmed',
-        lastName: 'Ben Ali',
-        email: 'ahmed.benali@example.com',
-        role: 'admin',
-        status: 'active',
-        department: 'IT',
-        lastLogin: new Date('2024-01-10'),
-        createdAt: new Date('2023-06-15')
+    this.userService.getAllUsers().subscribe({
+      next: (data: BackendUser[]) => {
+        this.users = (data || []).map(this.mapBackendToUI.bind(this));
+        this.applyFilters();
+        console.log('[DEBUG] users:', this.users);
       },
-      {
-        id: 2,
-        firstName: 'Fatima',
-        lastName: 'Trabelsi',
-        email: 'fatima.trabelsi@example.com',
-        role: 'recruiter',
-        status: 'active',
-        department: 'RH',
-        lastLogin: new Date('2024-01-09'),
-        createdAt: new Date('2023-08-20')
-      },
-      {
-        id: 3,
-        firstName: 'Mohamed',
-        lastName: 'Gharbi',
-        email: 'mohamed.gharbi@example.com',
-        role: 'hr_manager',
-        status: 'blocked',
-        department: 'RH',
-        lastLogin: new Date('2024-01-05'),
-        createdAt: new Date('2023-09-10')
-      },
-      {
-        id: 4,
-        firstName: 'Leila',
-        lastName: 'Mansouri',
-        email: 'leila.mansouri@example.com',
-        role: 'candidate',
-        status: 'pending',
-        department: 'Marketing',
-        lastLogin: new Date('2024-01-08'),
-        createdAt: new Date('2024-01-01')
-      },
-      {
-        id: 5,
-        firstName: 'Karim',
-        lastName: 'Bouazizi',
-        email: 'karim.bouazizi@example.com',
-        role: 'user',
-        status: 'active',
-        department: 'Finance',
-        lastLogin: new Date('2024-01-11'),
-        createdAt: new Date('2023-11-15')
+      error: (err) => {
+        console.error('Error fetching users:', err);
+        this.users = [];
+        this.filteredUsers = [];
       }
-    ];
-    
-    this.filteredUsers = [...this.users];
+    });
   }
 
   get totalUsers(): number {
@@ -171,16 +229,16 @@ export class UserManagementComponent implements OnInit {
   }
 
   get activeUsers(): number {
-    return this.users.filter(user => user.status === 'active').length;
+    return this.users.filter(u => u.status === 'active').length;
   }
 
   get blockedUsers(): number {
-    return this.users.filter(user => user.status === 'blocked').length;
+    return this.users.filter(u => u.status === 'blocked').length;
   }
 
   onGlobalFilter(event: Event) {
     const target = event.target as HTMLInputElement;
-    this.searchTerm = target.value;
+    this.searchTerm = target.value || '';
     this.applyFilters();
   }
 
@@ -193,12 +251,15 @@ export class UserManagementComponent implements OnInit {
   }
 
   applyFilters() {
+    const term = this.searchTerm.toLowerCase();
     this.filteredUsers = this.users.filter(user => {
-      const matchesSearch = !this.searchTerm || 
-        user.firstName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        user.department.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchesSearch =
+        !term ||
+        user.firstName.toLowerCase().includes(term) ||
+        user.lastName.toLowerCase().includes(term) ||
+        user.email.toLowerCase().includes(term) ||
+        (user.department || '').toLowerCase().includes(term) ||
+        user.role.toLowerCase().includes(term);
 
       const matchesStatus = !this.selectedStatus || user.status === this.selectedStatus;
       const matchesRole = !this.selectedRole || user.role === this.selectedRole;
@@ -210,6 +271,9 @@ export class UserManagementComponent implements OnInit {
   viewUser(user: User) {
     this.selectedUser = user;
     this.userDetailsVisible = true;
+  }
+  viewUserProfile(userId:number | undefined){
+        this.router.navigate(['/app/profile/', userId]);
   }
 
   editUser(user: User) {
@@ -235,23 +299,40 @@ export class UserManagementComponent implements OnInit {
   }
 
   toggleUserStatus(user: User) {
-    const action = user.status === 'blocked' ? 'débloquer' : 'bloquer';
-    
-    this.confirmationService.confirm({
-      message: `Êtes-vous sûr de vouloir ${action} cet utilisateur ?`,
-      header: 'Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        user.status = user.status === 'blocked' ? 'active' : 'blocked';
-        this.applyFilters();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Succès',
-          detail: `Utilisateur ${action === 'débloquer' ? 'débloqué' : 'bloqué'} avec succès`
-        });
-      }
-    });
-  }
+  const willDeactivate = user.isActive; // if active -> deactivate
+  const actionLabel = willDeactivate ? 'désactiver' : 'activer';
+
+  this.confirmationService.confirm({
+    message: `Êtes-vous sûr de vouloir ${actionLabel} cet utilisateur ?`,
+    header: 'Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      this.userService.setActive(user.id, !willDeactivate).subscribe({
+        next: (updated) => {
+          const updatedActive = (updated.isActive ?? updated.active);
+          const updatedVerified = (updated.emailVerified ?? false);
+
+          user.isActive = updatedActive;
+          user.status = this.deriveStatus(updatedVerified, updatedActive);
+          this.applyFilters();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Succès',
+            detail: `Utilisateur ${willDeactivate ? 'désactivé' : 'activé'} avec succès`
+          });
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: `Impossible de ${actionLabel} l'utilisateur`
+          });
+        }
+      });
+    }
+  });
+}
+
 
   deleteUser(user: User) {
     this.confirmationService.confirm({
@@ -271,7 +352,6 @@ export class UserManagementComponent implements OnInit {
   }
 
   openNewUserDialog() {
-    // Implementation for creating new user
     this.messageService.add({
       severity: 'info',
       summary: 'Info',
@@ -280,13 +360,13 @@ export class UserManagementComponent implements OnInit {
   }
 
   getStatusLabel(status: string): string {
-    switch (status) {
-      case 'active': return 'Actif';
-      case 'blocked': return 'Bloqué';
-      case 'pending': return 'En attente';
-      default: return status;
-    }
+  switch (status) {
+    case 'active': return 'Actif';
+    case 'blocked': return 'Désactivé'; // or "Bloqué"
+    case 'pending': return 'En attente';
+    default: return status;
   }
+}
 
   getStatusSeverity(status: string): 'success' | 'warning' | 'danger' | 'info' {
     switch (status) {
@@ -321,7 +401,8 @@ export class UserManagementComponent implements OnInit {
     return colors[userId % colors.length];
   }
 
-  formatDate(date: Date): string {
+  formatDate(date: Date | null): string {
+    if (!date) return '—';
     return new Intl.DateTimeFormat('fr-FR', {
       day: '2-digit',
       month: '2-digit',
